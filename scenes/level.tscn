@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bk68ky80knjkl"]
+
+[ext_resource type="PackedScene" uid="uid://5pjdp06oaw6s" path="res://scenes/player.tscn" id="1_2q6dc"]
+
+[node name="Level" type="Node2D" unique_id=746325157]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=716001913]
+offset_left = -1500.0
+offset_top = -1500.0
+offset_right = 1500.0
+offset_bottom = 1500.0
+color = Color(0.11372549, 0.09411765, 0.14509805, 1)
+
+[node name="Player" parent="." unique_id=740577881 instance=ExtResource("1_2q6dc")]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1087988122]
+color = Color(0, 0, 0, 1)
