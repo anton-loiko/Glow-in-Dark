@@ -11,16 +11,22 @@ config_version=5
 [application]
 
 config/name="mc-game"
-run/main_scene="uid://c3ihd721i2vv1"
+run/main_scene="uid://b7wd40ndx4jhr"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*uid://djfsslhpvdsue"
+AudioManager="*uid://hy5665oy5ce"
+AdManager="*uid://bgiahtvfs3bjc"
 
 [display]
 
 window/size/viewport_width=720
 window/size/viewport_height=1280
-window/size/window_width_override=360
-window/size/window_height_override=640
+window/size/window_width_override=1080
+window/size/window_height_override=1920
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
@@ -37,3 +43,4 @@ pointing/emulate_touch_from_mouse=true
 
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
