@@ -13,10 +13,18 @@ var target_position: Vector2 = Vector2.ZERO
 var is_touching: bool = false
 
 @onready var light: PointLight2D = $PointLight2D
+@onready var sprite: Sprite2D = $Sprite2D
 
 func _ready() -> void:
 	target_position = global_position
 	light.texture_scale = MAX_LIGHT_SCALE
+	light_changed.emit(light.texture_scale)
+	
+	if GameManager.has_blue_skin:
+		# Меняем цвет света на светло-синий (RGB)
+		light.color = Color(0.3, 0.6, 1.0)
+		# Меняем оттенок самой картинки огонька
+		sprite.modulate = Color(0.3, 0.6, 1.0)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventScreenTouch:

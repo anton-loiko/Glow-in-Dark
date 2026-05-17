@@ -1,5 +1,9 @@
 extends Node
 
+
+var has_no_ads: bool = false
+var has_blue_skin: bool = false
+
 # Храним текущий уровень
 var current_level: int = 1
 # Максимальный достигнутый уровень (для кнопки "Продолжить")

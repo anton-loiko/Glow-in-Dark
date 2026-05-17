@@ -17,7 +17,7 @@ func generate_level() -> void:
 	var map_data = GameManager.levels_data[level_index]
 	
 	# Очищаем старую карту, если она была
-	tile_map.clear()
+	#tile_map.clear()
 	
 	# Проходим циклом по каждой строке массива (Y)
 	for y in range(map_data.size()):
@@ -33,8 +33,8 @@ func generate_level() -> void:
 				1: # СТЕНА
 					# Рисуем тайл в сетке. 
 					# 0 — это ID твоего TileSet, Vector2i(0,0) — координаты картинки в атласе
-					tile_map.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
-				
+					#tile_map.set_cell(Vector2i(x, y), 0, Vector2i(0, 0))
+					pass
 				0: # ПУСТОТА
 					pass # Ничего не делаем
 				
@@ -45,7 +45,7 @@ func generate_level() -> void:
 					spawn_object(EXIT_SCENE, pos)
 				
 				9: # ИГРОК (добавим 9 как ID для старта игрока)
-					spawn_object(PLAYER_SCENE, pos)
+					spawn_object(PLAYER_SCENE, Vector2(235.0, 10.0))
 
 # Вспомогательная функция для создания объекта
 func spawn_object(scene: PackedScene, pos: Vector2) -> void:
