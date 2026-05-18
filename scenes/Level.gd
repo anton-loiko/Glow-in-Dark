@@ -5,6 +5,7 @@ extends Node2D
 const PLAYER_SCENE = preload("res://scenes/Player.tscn")
 const FUEL_SCENE = preload("res://scenes/Fuel.tscn")
 const EXIT_SCENE = preload("res://scenes/Exit.tscn")
+const SPARK_SCENE = preload("res://scenes/Spark.tscn")
 
 @onready var tile_map: TileMapLayer = $TileMapLayer
 
@@ -27,7 +28,7 @@ func generate_level() -> void:
 			
 			# Определяем позицию в мировых координатах (пикселях)
 			# map_to_local берет номер клетки (например 2,3) и превращает в пиксели (например 128, 192)
-			var pos = tile_map.map_to_local(Vector2i(x, y))
+			#var pos = tile_map.map_to_local(Vector2i(x, y))
 			
 			match cell_type:
 				1: # СТЕНА
@@ -43,6 +44,9 @@ func generate_level() -> void:
 				
 				3: # ВЫХОД
 					spawn_object(EXIT_SCENE,  Vector2(230.0, 450.0))
+				
+				4: # Spark
+					spawn_object(SPARK_SCENE,  Vector2(230.0, 250.0))
 				
 				9: # ИГРОК (добавим 9 как ID для старта игрока)
 					spawn_object(PLAYER_SCENE, Vector2(235.0, 10.0))
