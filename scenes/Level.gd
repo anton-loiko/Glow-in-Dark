@@ -39,10 +39,10 @@ func generate_level() -> void:
 					pass # Ничего не делаем
 				
 				2: # ТОПЛИВО
-					spawn_object(FUEL_SCENE, pos)
+					spawn_object(FUEL_SCENE,  Vector2(12.0, 200.0))
 				
 				3: # ВЫХОД
-					spawn_object(EXIT_SCENE, pos)
+					spawn_object(EXIT_SCENE,  Vector2(430.0, 220.0))
 				
 				9: # ИГРОК (добавим 9 как ID для старта игрока)
 					spawn_object(PLAYER_SCENE, Vector2(235.0, 10.0))

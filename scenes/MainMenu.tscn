@@ -84,7 +84,7 @@ layout_mode = 2
 text = "МАГАЗИН"
 horizontal_alignment = 1
 
-[node name="BuyNoAdsButtonBuyNoAdsButton" type="Button" parent="ShopPanel/VBoxContainer" unique_id=532135880]
+[node name="BuyNoAdsButton" type="Button" parent="ShopPanel/VBoxContainer" unique_id=532135880]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Отключить рекламу - $0.99"
@@ -103,6 +103,6 @@ text = "Закрыть"
 [connection signal="pressed" from="VBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ShopButton" to="." method="_on_shop_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/LeaderboardButton" to="." method="_on_leaderboard_button_pressed"]
-[connection signal="pressed" from="ShopPanel/VBoxContainer/BuyNoAdsButtonBuyNoAdsButton" to="." method="_on_buy_no_ads_button_pressed"]
+[connection signal="pressed" from="ShopPanel/VBoxContainer/BuyNoAdsButton" to="." method="_on_buy_no_ads_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuySkinButton" to="." method="_on_buy_skin_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/CloseShopButton" to="." method="_on_close_shop_button_pressed"]

@@ -7,7 +7,6 @@ const CLICK_SFX = preload("res://assets/audio/click_001.ogg")
 @onready var buy_no_ads_button: Button = $ShopPanel/VBoxContainer/BuyNoAdsButton
 @onready var buy_skin_button: Button = $ShopPanel/VBoxContainer/BuySkinButton
 
-
 func _ready() -> void:
 	if GameManager.unlocked_level <= 1:
 		continue_button.hide()

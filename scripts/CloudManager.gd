@@ -8,77 +8,17 @@ var users_collection: FirestoreCollection
 var current_document: FirestoreDocument
 
 func authenticate_player() -> void:
-	print("1. Загрузка конфигурации Firebase...")
+	print("1. Подключение к Firebase...")
 	
-	var firebase_config: Dictionary = _load_config()
+	# Плагин GodotFirebase уже автоматически загрузил конфиг из своего .env файла.
+	# Мы просто подписываемся на события и вызываем логин.
 	
-	if firebase_config.is_empty():
-		print("КРИТИЧЕСКАЯ ОШИБКА: Конфигурация Firebase не найдена ни в JSON, ни в .env!")
-		sync_completed.emit()
-		return
-		
-	# --- ИСПРАВЛЕННАЯ СТРОКА ---
-	# Напрямую записываем наш распарсенный словарь в переменную плагина
-	Firebase.config = firebase_config
-	
-	# Подключаем сигналы только если они еще не подключены, 
-	# чтобы избежать ошибки двойного подключения при перезапусках
 	if not Firebase.Auth.login_succeeded.is_connected(_on_login_succeeded):
 		Firebase.Auth.login_succeeded.connect(_on_login_succeeded)
 	if not Firebase.Auth.login_failed.is_connected(_on_login_failed):
 		Firebase.Auth.login_failed.connect(_on_login_failed)
 	
 	Firebase.Auth.login_anonymous()
-
-# --- НОВАЯ ФУНКЦИЯ ЧТЕНИЯ И ПАРСИНГА КОНФИГОВ ---
-func _load_config() -> Dictionary:
-	var json_path: String = "res://firebase.json"
-	var env_path: String = "res://.env"
-	
-	# Попытка 1: Читаем firebase.json
-	if FileAccess.file_exists(json_path):
-		var file = FileAccess.open(json_path, FileAccess.READ)
-		var content = file.get_as_text()
-		
-		# Превращаем текст в объекты Godot (Словарь)
-		var parsed = JSON.parse_string(content)
-		
-		# Проверяем, что парсинг прошел успешно и мы получили именно словарь
-		if typeof(parsed) == TYPE_DICTIONARY:
-			print("Конфиг успешно загружен из firebase.json")
-			return parsed
-		else:
-			print("Ошибка: firebase.json имеет неверный формат. Переход к резервному варианту.")
-			
-	# Попытка 2: Читаем .env (Фолбэк)
-	if FileAccess.file_exists(env_path):
-		print("firebase.json не найден. Парсим .env файл...")
-		var env_dict: Dictionary = {}
-		var file = FileAccess.open(env_path, FileAccess.READ)
-		
-		# Читаем файл строка за строкой, пока не дойдем до конца
-		while not file.eof_reached():
-			# Берем строку и отрезаем лишние пробелы по краям
-			var line = file.get_line().strip_edges()
-			
-			# Игнорируем пустые строки и комментарии
-			if line.is_empty() or line.begins_with("#"):
-				continue
-				
-			# Разрезаем строку по знаку "равно" на две части (ключ и значение)
-			var parts = line.split("=", true, 1)
-			if parts.size() == 2:
-				var key = parts[0].strip_edges()
-				# Очищаем значение от возможных кавычек
-				var val = parts[1].strip_edges().replace("\"", "")
-				env_dict[key] = val
-		
-		if not env_dict.is_empty():
-			print("Конфиг успешно загружен из .env")
-			return env_dict
-
-	# Если оба файла отсутствуют или пусты, возвращаем пустой словарь
-	return {}
 
 func _on_login_succeeded(auth_info) -> void:
 	cloud_user_id = auth_info.localid
@@ -90,7 +30,7 @@ func _on_login_succeeded(auth_info) -> void:
 	sync_data()
 
 func _on_login_failed(error_code, message) -> void:
-	print("Ошибка авторизации: ", message)
+	print("Ошибка авторизации! Код: ", error_code, " | Причина: ", message)
 	sync_completed.emit()
 
 func sync_data() -> void:

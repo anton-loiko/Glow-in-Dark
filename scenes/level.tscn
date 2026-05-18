@@ -6,8 +6,8 @@
 
 [node name="Level" type="Node2D" unique_id=746325157]
 script = ExtResource("1_6vs76")
-metadata/_edit_vertical_guides_ = [-30.0]
-metadata/_edit_horizontal_guides_ = [200.0]
+metadata/_edit_vertical_guides_ = [222.0]
+metadata/_edit_horizontal_guides_ = [459.0]
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=716001913]
 offset_left = -400.0
