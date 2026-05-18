@@ -20,11 +20,11 @@ func _ready() -> void:
 	light.texture_scale = MAX_LIGHT_SCALE
 	light_changed.emit(light.texture_scale)
 	
-	if GameManager.has_blue_skin:
-		# Меняем цвет света на светло-синий (RGB)
-		light.color = Color(0.3, 0.6, 1.0)
-		# Меняем оттенок самой картинки огонька
-		sprite.modulate = Color(0.3, 0.6, 1.0)
+	# Запрашиваем цвет у менеджера на основе надетого скина
+	var skin_color: Color = GameManager.get_equipped_skin_color()
+	
+	light.color = skin_color
+	sprite.modulate = skin_color
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventScreenTouch:

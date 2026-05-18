@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://bk68ky80knjkl"]
 
-[ext_resource type="Script" uid="uid://bmopch3bigpgl" path="res://scripts/Level.gd" id="1_6vs76"]
+[ext_resource type="Script" uid="uid://bmopch3bigpgl" path="res://scenes/Level.gd" id="1_6vs76"]
 [ext_resource type="TileSet" uid="uid://bwut2822p8rpv" path="res://assets/tailset/city_tile_set.tres" id="2_6vs76"]
 [ext_resource type="PackedScene" uid="uid://cpk5t78mr6e7e" path="res://scenes/UI.tscn" id="3_qifjx"]
 
@@ -10,7 +10,6 @@ metadata/_edit_vertical_guides_ = [-30.0]
 metadata/_edit_horizontal_guides_ = [200.0]
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=716001913]
-visible = false
 offset_left = -400.0
 offset_top = -250.0
 offset_right = 600.0
@@ -34,8 +33,6 @@ tile_map_data = PackedByteArray("AAADAAkAAQARABAAAAAEAAkAAQASABAAAAAGABoAAQAFABE
 tile_set = ExtResource("2_6vs76")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1087988122]
-visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="UI" parent="." unique_id=1901153143 instance=ExtResource("3_qifjx")]
-visible = false

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bwvnoaru7rh3f"]
 
-[ext_resource type="Script" uid="uid://ct6kkck01gnvf" path="res://scripts/Fuel.gd" id="1_h2npa"]
+[ext_resource type="Script" uid="uid://ct6kkck01gnvf" path="res://scenes/Fuel.gd" id="1_h2npa"]
 
 [sub_resource type="Gradient" id="Gradient_abbwb"]
 colors = PackedColorArray(0.8117647, 0.54509807, 0.16078432, 1, 1, 1, 1, 0)

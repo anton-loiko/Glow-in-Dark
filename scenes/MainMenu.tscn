@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b7wd40ndx4jhr"]
 
-[ext_resource type="Script" uid="uid://cj7ae1khj2rmh" path="res://scripts/MainMenu.gd" id="1_yqorp"]
+[ext_resource type="Script" uid="uid://cj7ae1khj2rmh" path="res://scenes/MainMenu.gd" id="1_yqorp"]
 
 [node name="MainMenu" type="Control" unique_id=1231697064]
 layout_mode = 3
@@ -43,6 +43,10 @@ text = "New Game"
 [node name="ShopButton" type="Button" parent="VBoxContainer" unique_id=1262566496]
 layout_mode = 2
 text = "Store"
+
+[node name="LeaderboardButton" type="Button" parent="VBoxContainer" unique_id=878413691]
+layout_mode = 2
+text = "Leaderboard"
 
 [node name="ShopPanel" type="ColorRect" parent="." unique_id=216857696]
 visible = false
@@ -98,6 +102,7 @@ text = "Закрыть"
 [connection signal="pressed" from="VBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ShopButton" to="." method="_on_shop_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/LeaderboardButton" to="." method="_on_leaderboard_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuyNoAdsButtonBuyNoAdsButton" to="." method="_on_buy_no_ads_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuySkinButton" to="." method="_on_buy_skin_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/CloseShopButton" to="." method="_on_close_shop_button_pressed"]
