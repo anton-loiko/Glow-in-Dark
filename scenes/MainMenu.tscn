@@ -49,7 +49,6 @@ layout_mode = 2
 text = "Leaderboard"
 
 [node name="ShopPanel" type="ColorRect" parent="." unique_id=216857696]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -99,6 +98,30 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Закрыть"
 
+[node name="WatchAdButton" type="Button" parent="ShopPanel/VBoxContainer" unique_id=1117174576]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Смотреть рекламу (+50 Искр)"
+
+[node name="BuyPurpleSkinButton" type="Button" parent="ShopPanel/VBoxContainer" unique_id=133807693]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Фиолетовая магия - 150 Искр"
+
+[node name="MenuSparksLabel" type="Label" parent="." unique_id=192583426]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 10.0
+offset_right = -11.9999695
+offset_bottom = 33.000008
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.88235295, 0.09019608, 1)
+theme_override_font_sizes/font_size = 24
+text = "Sparks:0"
+
 [connection signal="pressed" from="VBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ShopButton" to="." method="_on_shop_button_pressed"]
@@ -106,3 +129,5 @@ text = "Закрыть"
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuyNoAdsButton" to="." method="_on_buy_no_ads_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuySkinButton" to="." method="_on_buy_skin_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/CloseShopButton" to="." method="_on_close_shop_button_pressed"]
+[connection signal="pressed" from="ShopPanel/VBoxContainer/WatchAdButton" to="." method="_on_watch_ad_button_pressed"]
+[connection signal="pressed" from="ShopPanel/VBoxContainer/BuyPurpleSkinButton" to="." method="_on_buy_purple_skin_button_pressed"]

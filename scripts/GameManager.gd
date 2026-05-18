@@ -80,13 +80,16 @@ func save_game() -> void:
 	var error = config.save(SAVE_PATH)
 	if error != OK:
 		print("Не удалось сохранить игру. Код ошибки: ", error)
-	else:
-		# Функция save_to_cloud() внутри использует await, но здесь мы можем вызвать её 
-		# напрямую без await, чтобы интерфейс не замирал в ожидании ответа от сервера.
-		# Она соберет новый массив скинов и флаг рекламы и тихо отправит их в Firestore в фоне.
-		print("Игра сохранась успешно. Вызываем: CloudManager.save_to_cloud.")
+		
+		
+	# Potentional Spam
+	#else:
+		## Функция save_to_cloud() внутри использует await, но здесь мы можем вызвать её 
+		## напрямую без await, чтобы интерфейс не замирал в ожидании ответа от сервера.
+		## Она соберет новый массив скинов и флаг рекламы и тихо отправит их в Firestore в фоне.
+		#print("Игра сохранась успешно. Вызываем: CloudManager.save_to_cloud.")
 
-		CloudManager.save_to_cloud()
+		#CloudManager.save_to_cloud()
 
 
 func load_game() -> void:
@@ -113,6 +116,7 @@ func complete_level():
 		unlocked_level = current_level
 		LeaderboardManager.submit_score(unlocked_level)
 		save_game()
+		CloudManager.save_to_cloud()
  
 	
 	# Проверяем, не закончились ли уровни
