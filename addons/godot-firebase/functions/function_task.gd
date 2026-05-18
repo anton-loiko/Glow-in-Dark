@@ -45,7 +45,7 @@ func _on_request_completed(result : int, response_code : int, headers : PackedSt
 	var bod = Utilities.get_json_data(body)
 	if bod == null:
 		bod = {content = body.get_string_from_utf8()} # I don't understand what this line does at all. What the hell?!
-
+	
 	var offline: bool = typeof(bod) == TYPE_NIL
 	from_cache = offline
 

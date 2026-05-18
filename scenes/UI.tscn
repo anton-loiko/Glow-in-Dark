@@ -54,7 +54,7 @@ texture_under = SubResource("GradientTexture2D_dj8aq")
 texture_over = SubResource("GradientTexture2D_5en4g")
 texture_progress = SubResource("GradientTexture2D_75u2n")
 
-[node name="Overlay" type="ColorRect" parent="Control" unique_id=1746687698]
+[node name="Overlay" type="ColorRect" parent="Control" unique_id=1746687698 groups=["UI"]]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -122,13 +122,14 @@ theme_override_font_sizes/font_size = 12
 text = "Дальше"
 
 [node name="SparksLabel" type="Label" parent="." unique_id=299155964]
+unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -80.0
-offset_top = 3.0
-offset_right = -10.0
-offset_bottom = 26.0
+offset_top = 5.0
+offset_right = -9.999939
+offset_bottom = 28.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
 text = "Sparks: 0"

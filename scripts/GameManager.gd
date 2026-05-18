@@ -74,30 +74,36 @@ func save_game() -> void:
 	config.set_value("inventory", "equipped_skin", equipped_skin)
 	config.set_value("inventory", "sparks", sparks)
 	
+	
+	
 	# Физически записываем файл в зашифрованную или изолированную папку приложения на телефоне
 	var error = config.save(SAVE_PATH)
 	if error != OK:
 		print("Не удалось сохранить игру. Код ошибки: ", error)
+	else:
+		# Функция save_to_cloud() внутри использует await, но здесь мы можем вызвать её 
+		# напрямую без await, чтобы интерфейс не замирал в ожидании ответа от сервера.
+		# Она соберет новый массив скинов и флаг рекламы и тихо отправит их в Firestore в фоне.
+		print("Игра сохранась успешно. Вызываем: CloudManager.save_to_cloud.")
+
+		CloudManager.save_to_cloud()
+
 
 func load_game() -> void:
 	var config = ConfigFile.new()
-	
-	# Пробуем прочитать файл с диска
 	var error = config.load(SAVE_PATH)
 	
-	# ERR_FILE_NOT_FOUND равен коду 7. Если файла нет (первый запуск игры), прерываем функцию
+	# Если файла на диске нет (самый первый запуск в жизни)
 	if error != OK:
-		print("Файл сохранения отсутствует, используются значения по умолчанию.")
+		print("Локальный файл не найден. Создаем базовый профиль на телефоне...")
+		# Сразу вызываем сохранение текущих стартовых переменных
+		save_game() 
 		return
 		
-	# Читаем значения. Третий параметр — это дефолтное значение, если ключ будет удален или поврежден
 	unlocked_level = config.get_value("progress", "unlocked_level", 1)
 	has_no_ads = config.get_value("purchases", "has_no_ads", false)
-	
-	# Загружаем массив. Третий параметр — значение по умолчанию
 	owned_skins = config.get_value("inventory", "owned_skins", ["default"])
 	equipped_skin = config.get_value("inventory", "equipped_skin", "default")
-	
 	sparks = config.get_value("inventory", "sparks", 0)
 
 # Функция перехода на следующий уровень
@@ -107,6 +113,7 @@ func complete_level():
 		unlocked_level = current_level
 		LeaderboardManager.submit_score(unlocked_level)
 		save_game()
+ 
 	
 	# Проверяем, не закончились ли уровни
 	if current_level <= levels_data.size():
@@ -126,3 +133,4 @@ func add_sparks(amount: int) -> void:
 	sparks += amount
 	sparks_changed.emit(sparks)
 	save_game() # Сразу сохраняем на диск, чтобы не потерять деньги
+ 

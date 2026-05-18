@@ -96,7 +96,7 @@ func _on_request_completed(result : int, response_code : int, headers : PackedSt
 	else:
 		generate_dynamic_link_error.emit(json.get_error_message())
 		# This used to return immediately when above, but it should still clear the request, so removing it
-		
+	
 	request = Requests.NONE
 
 func _on_FirebaseAuth_login_succeeded(auth_result : Dictionary) -> void:
