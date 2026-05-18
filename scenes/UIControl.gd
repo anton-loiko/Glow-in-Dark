@@ -7,6 +7,7 @@ const CLICK_SFX = preload("res://assets/audio/click_001.ogg")
 @onready var overlay: ColorRect = $Overlay
 @onready var game_over_menu: VBoxContainer = $Overlay/GameOverMenu
 @onready var win_menu: VBoxContainer = $Overlay/WinMenu
+@onready var sparks_label: Label = $Control/SparksLabel 
 
 func _ready() -> void:
 	# Находим игрока в дереве сцен и подписываемся на его сигнал
@@ -14,6 +15,15 @@ func _ready() -> void:
 	var player = get_tree().current_scene.find_child("Player", true, false)
 	if player:
 		player.light_changed.connect(_on_player_light_changed)
+
+	AdManager.reward_earned.connect(_on_reward_earned)
+	
+	# --- НОВЫЙ БЛОК ---
+	# При запуске уровня сразу пишем текущий баланс
+	sparks_label.text = "Искры: " + str(GameManager.sparks)
+	
+	# Подписываемся на изменения баланса в будущем
+	GameManager.sparks_changed.connect(_on_sparks_changed)
 
 func _on_player_light_changed(new_value: float) -> void:
 	# Обновляем значение полоски

@@ -2,26 +2,31 @@ extends Node
 
 const SAVE_PATH: String = "user://save_data.cfg"
 
-# --- НОВАЯ СИСТЕМА СКИНОВ ---
-# База данных всех существующих скинов в игре
+# 1. ДОБАВИТЬ ЭТИ СТРОКИ В НАЧАЛО ФАЙЛА (после has_no_ads)
+signal sparks_changed(new_amount: int) # Сигнал для обновления UI
+var sparks: int = 0
+
+# 2. ПОЛНОСТЬЮ ЗАМЕНИТЬ СЛОВАРЬ SKINS_DB
 const SKINS_DB: Dictionary = {
 	"default": {
-		"color": Color(1.0, 1.0, 1.0), # Белый
-		"price": 0.0,
-		"condition": "start" # Доступен изначально
+		"color": Color(1.0, 1.0, 1.0),
+		"price_usd": 0.0,
+		"price_sparks": 0,
+		"condition": "start"
 	},
 	"blue_flame": {
-		"color": Color(0.3, 0.6, 1.0), # Синий
-		"price": 1.99,
-		"condition": "store" # Покупается за деньги
+		"color": Color(0.3, 0.6, 1.0),
+		"price_usd": 1.99,
+		"price_sparks": 0,
+		"condition": "store_usd" # Покупка через банк
 	},
-	"halloween_ghost": {
-		"color": Color(0.5, 1.0, 0.5), # Токсично-зеленый
-		"price": 0.0,
-		"condition": "event_october" # Выдается сервером во время ивента
+	"purple_magic": {
+		"color": Color(0.8, 0.2, 1.0), # Фиолетовый цвет
+		"price_usd": 0.0,
+		"price_sparks": 150,
+		"condition": "store_sparks" # Покупка за игровую валюту
 	}
 }
-
 
 
 var has_no_ads: bool = false
@@ -67,6 +72,7 @@ func save_game() -> void:
 	# Сохраняем массив строк (ID скинов) и текущий выбор
 	config.set_value("inventory", "owned_skins", owned_skins)
 	config.set_value("inventory", "equipped_skin", equipped_skin)
+	config.set_value("inventory", "sparks", sparks)
 	
 	# Физически записываем файл в зашифрованную или изолированную папку приложения на телефоне
 	var error = config.save(SAVE_PATH)
@@ -91,7 +97,8 @@ func load_game() -> void:
 	# Загружаем массив. Третий параметр — значение по умолчанию
 	owned_skins = config.get_value("inventory", "owned_skins", ["default"])
 	equipped_skin = config.get_value("inventory", "equipped_skin", "default")
-
+	
+	sparks = config.get_value("inventory", "sparks", 0)
 
 # Функция перехода на следующий уровень
 func complete_level():
@@ -114,3 +121,8 @@ func get_equipped_skin_color() -> Color:
 	if SKINS_DB.has(equipped_skin):
 		return SKINS_DB[equipped_skin]["color"]
 	return SKINS_DB["default"]["color"]
+
+func add_sparks(amount: int) -> void:
+	sparks += amount
+	sparks_changed.emit(sparks)
+	save_game() # Сразу сохраняем на диск, чтобы не потерять деньги

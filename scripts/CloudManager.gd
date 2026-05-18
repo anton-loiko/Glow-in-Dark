@@ -63,6 +63,15 @@ func sync_data() -> void:
 		elif GameManager.has_no_ads and not (cloud_data.has("has_no_ads") and cloud_data["has_no_ads"] == true):
 			need_cloud_update = true
 		
+		# СРАВНЕНИЕ ВАЛЮТЫ (ИСКР)
+		if cloud_data.has("sparks"):
+			# Если в облаке денег больше, берем оттуда (чтобы предотвратить потерю при смене телефона)
+			# В реальном продакшене логика сложнее, но для старта берем максимальное значение
+			if cloud_data["sparks"] > GameManager.sparks:
+				GameManager.sparks = cloud_data["sparks"]
+			elif GameManager.sparks > cloud_data["sparks"]:
+				need_cloud_update = true
+		
 		GameManager.save_game()
 		
 		if need_cloud_update:
@@ -80,7 +89,8 @@ func save_to_cloud() -> void:
 	var data = {
 		"unlocked_level": GameManager.unlocked_level,
 		"owned_skins": GameManager.owned_skins,
-		"has_no_ads": GameManager.has_no_ads
+		"has_no_ads": GameManager.has_no_ads,
+		"sparks": GameManager.sparks
 	}
 	
 	current_document = await users_collection.add(cloud_user_id, data)

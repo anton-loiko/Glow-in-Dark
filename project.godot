@@ -17,13 +17,13 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Firebase="*uid://cvb26atjckwlq"
 GameManager="*uid://djfsslhpvdsue"
 AudioManager="*uid://hy5665oy5ce"
 AdManager="*uid://bgiahtvfs3bjc"
 StoreManager="*uid://wkhdbx05icvs"
 LeaderboardManager="*uid://cuurm57rs6ekr"
 CloudManager="*uid://h3q8um1ptes4"
-Firebase="*uid://cvb26atjckwlq"
 
 [display]
 

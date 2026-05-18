@@ -121,6 +121,18 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Дальше"
 
+[node name="SparksLabel" type="Label" parent="." unique_id=299155964]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -80.0
+offset_top = 3.0
+offset_right = -10.0
+offset_bottom = 26.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
+text = "Sparks: 0"
+
 [connection signal="pressed" from="Control/Overlay/GameOverMenu/ReviveButton" to="Control" method="_on_revive_button_pressed"]
 [connection signal="pressed" from="Control/Overlay/GameOverMenu/Button" to="Control" method="_on_restart_button_pressed"]
 [connection signal="pressed" from="Control/Overlay/WinMenu/Button" to="Control" method="_on_next_level_button_pressed"]
