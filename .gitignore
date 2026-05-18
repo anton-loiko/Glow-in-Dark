@@ -2,3 +2,8 @@
 .godot/
 /android/
 build
+
+
+firebase.json
+addons/**/.env
+

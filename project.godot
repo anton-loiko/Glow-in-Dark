@@ -23,6 +23,7 @@ AdManager="*uid://bgiahtvfs3bjc"
 StoreManager="*uid://wkhdbx05icvs"
 LeaderboardManager="*uid://cuurm57rs6ekr"
 CloudManager="*uid://h3q8um1ptes4"
+Firebase="*uid://cvb26atjckwlq"
 
 [display]
 
@@ -32,6 +33,10 @@ window/size/window_width_override=1080
 window/size/window_height_override=1920
 window/stretch/mode="canvas_items"
 window/handheld/orientation=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg")
 
 [input_devices]
 
