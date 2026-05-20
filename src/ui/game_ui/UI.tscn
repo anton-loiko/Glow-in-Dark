@@ -26,10 +26,16 @@ gradient = SubResource("Gradient_ua6yw")
 width = 100
 height = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qu8t6"]
+bg_color = Color(1, 0.3274344, 0.38764626, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eiyve"]
+bg_color = Color(9.62615e-08, 0.7008574, 0.5731082, 1)
+
 [node name="UI" type="CanvasLayer" unique_id=1901153143]
 process_mode = 3
 
-[node name="Control" type="Control" parent="." unique_id=1711831803]
+[node name="UIControl" type="Control" parent="." unique_id=1711831803]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -38,7 +44,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dj8aq")
 
-[node name="TextureProgressBar" type="TextureProgressBar" parent="Control" unique_id=1091104082]
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl" unique_id=1091104082]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -54,7 +60,7 @@ texture_under = SubResource("GradientTexture2D_dj8aq")
 texture_over = SubResource("GradientTexture2D_5en4g")
 texture_progress = SubResource("GradientTexture2D_75u2n")
 
-[node name="Overlay" type="ColorRect" parent="Control" unique_id=1746687698 groups=["UI"]]
+[node name="LosePanel" type="Panel" parent="UIControl" unique_id=311640636]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -62,10 +68,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.5529412)
+theme_override_styles/panel = SubResource("StyleBoxFlat_qu8t6")
 
-[node name="GameOverMenu" type="VBoxContainer" parent="Control/Overlay" unique_id=1681306540]
-visible = false
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/LosePanel" unique_id=1681306540]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -80,23 +85,34 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="Label" type="Label" parent="Control/Overlay/GameOverMenu" unique_id=223904571]
+[node name="Label" type="Label" parent="UIControl/LosePanel/VBoxContainer" unique_id=223904571]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.00018197033, 0.04126285, 0.25682852, 1)
+theme_override_font_sizes/font_size = 26
 text = "Свет погас"
 horizontal_alignment = 1
 
-[node name="ReviveButton" type="Button" parent="Control/Overlay/GameOverMenu" unique_id=1816540424]
+[node name="ReviveButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=1816540424]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Смотреть рекламу (+50% света)"
 
-[node name="Button" type="Button" parent="Control/Overlay/GameOverMenu" unique_id=353627666]
+[node name="Button" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=353627666]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Заново"
 
-[node name="WinMenu" type="VBoxContainer" parent="Control/Overlay" unique_id=1899551391]
+[node name="WinPanel" type="Panel" parent="UIControl" unique_id=1266359883]
 visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_eiyve")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/WinPanel" unique_id=1899551391]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -104,19 +120,25 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -72.0
-offset_top = -29.0
+offset_top = -40.5
 offset_right = 72.0
-offset_bottom = 29.0
+offset_bottom = 40.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="Label" type="Label" parent="Control/Overlay/WinMenu" unique_id=940988051]
+[node name="TitleLabel" type="Label" parent="UIControl/WinPanel/VBoxContainer" unique_id=940988051]
 layout_mode = 2
 text = "Уровень пройден"
 horizontal_alignment = 1
 
-[node name="Button" type="Button" parent="Control/Overlay/WinMenu" unique_id=821252769]
+[node name="RewardLabel" type="Label" parent="UIControl/WinPanel/VBoxContainer" unique_id=734472606]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Собрано искр: 0"
+horizontal_alignment = 1
+
+[node name="NextLevelButton" type="Button" parent="UIControl/WinPanel/VBoxContainer" unique_id=821252769]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Дальше"
@@ -134,6 +156,6 @@ grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
 text = "Sparks: 0"
 
-[connection signal="pressed" from="Control/Overlay/GameOverMenu/ReviveButton" to="Control" method="_on_revive_button_pressed"]
-[connection signal="pressed" from="Control/Overlay/GameOverMenu/Button" to="Control" method="_on_restart_button_pressed"]
-[connection signal="pressed" from="Control/Overlay/WinMenu/Button" to="Control" method="_on_next_level_button_pressed"]
+[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
+[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/Button" to="UIControl" method="_on_restart_button_pressed"]
+[connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]

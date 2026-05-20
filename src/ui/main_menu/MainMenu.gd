@@ -13,13 +13,19 @@ const ERROR_SFX = preload("res://src/assets/audio/error_008.ogg")
 @onready var menu_sparks_label: Label = $MenuSparksLabel
 @onready var buy_purple_skin_button: Button = $ShopPanel/VBoxContainer/BuyPurpleSkinButton
 
+@onready var leaderboard_panel: Panel = $LeaderboardPanel
+@onready var leaderboard_list_container: VBoxContainer = $LeaderboardPanel/VBoxContainer/LeaderboardScroll/LeaderboardList
+@onready var leaderboard_close_button:Button = $LeaderboardPanel/VBoxContainer/LeaderboardClose
+@onready var leaderboard_status_label:Label = $LeaderboardPanel/VBoxContainer/LeaderboardStatusLabel
+
 func _ready() -> void:
 	CloudManager.sync_completed.connect(_on_cloud_sync_completed)
 	StoreManager.purchase_success.connect(_on_purchase_success)
 	AdManager.reward_earned.connect(_on_reward_earned)
 	AdManager.ad_closed.connect(_on_ad_closed)
 	GameManager.sparks_changed.connect(_on_sparks_changed)
-	
+	LeaderboardManager.leaderboard_loaded.connect(_on_leaderboard_data_received)
+
 	if GameManager.unlocked_level <= 1:
 		continue_button.hide()
 	else:
@@ -28,6 +34,10 @@ func _ready() -> void:
 	update_shop_buttons()
 	
 	CloudManager.authenticate_player()
+	
+	leaderboard_panel.hide()
+	
+	# Подписываемся на сигнал менеджера: когда данные скачаются, сработает наша функция
 # Подписываемся на события рекламы и баланса
 
 	
@@ -52,10 +62,10 @@ func _update_skin_button(skin_id: String, button: Button, display_name: String, 
 		# Если скин куплен, проверяем, надет ли он
 		if GameManager.equipped_skin == skin_id:
 			button.text = "Надето: " + display_name
-			button.disabled = true 
+			button.disabled = true
 		else:
 			button.text = "Надеть " + display_name
-			button.disabled = false 
+			button.disabled = false
 	else:
 		# Если скина нет в инвентаре, выводим его цену
 		button.text = display_name + " - " + price_text
@@ -102,6 +112,45 @@ func _on_ad_closed() -> void:
 	watch_ad_button.disabled = false
 	watch_ad_button.text = "Смотреть рекламу (+50 Искр)"
 
+func _on_leaderboard_data_received(players: Array) -> void:
+	# Удаляем надпись "Загрузка..."
+	if not leaderboard_status_label.hidden:
+		leaderboard_status_label.text = ""
+		leaderboard_status_label.hide()
+	
+	# Если массив пустой (интернета нет или в базе никого нет)
+	if players.is_empty():
+		leaderboard_status_label.show()
+		leaderboard_status_label.text = "Не удалось загрузить топ"
+		return
+		
+	# Перебираем массив игроков, полученный из LeaderboardManager
+	var place = 1
+	for player_info in players:
+		# Создаем новый узел текста для каждой строчки таблицы
+		var player_row = Label.new()
+		
+		player_row.add_theme_color_override("font_color",Color(0,0,0))
+
+		# Формируем красивую строку, например: "1. Игрок_a3d8f1 — Уровень: 12"
+		player_row.text = str(place) + ". " + player_info["name"] + " — Уровень: " + str(player_info["level"])
+		
+		# Настраиваем размер шрифта, чтобы текст был читаемым
+		player_row.add_theme_font_size_override("font_size", 18)
+		
+		# Выделяем первые три призовых места золотым цветом
+		if place == 1:
+			player_row.modulate = Color(1.0, 0.85, 0.2) # Золото
+		elif place == 2:
+			player_row.modulate = Color(0.75, 0.75, 0.75) # Серебро
+		elif place == 3:
+			player_row.modulate = Color(0.6, 0.4, 0.2) # Бронза
+			
+		# Добавляем готовую строчку внутрь вертикального списка на экране
+		leaderboard_list_container.add_child(player_row)
+		
+		place += 1
+
 # ----On Press----
 
 func _on_continue_button_pressed() -> void:
@@ -141,7 +190,18 @@ func _on_buy_skin_button_pressed() -> void:
 
 func _on_leaderboard_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
-	LeaderboardManager.show_leaderboard()
+	leaderboard_panel.show()
+	
+	# Очищаем контейнер от старых надписей перед новым запросом
+	for child in leaderboard_list_container.get_children():
+		child.queue_free()
+		
+	leaderboard_status_label.show()
+	leaderboard_status_label.text = "Загрузка данных..."
+
+	
+	# Запускаем скачивание из Firebase
+	LeaderboardManager.fetch_top_players()
 
 func _on_watch_ad_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
@@ -187,3 +247,7 @@ func _on_buy_purple_skin_button_pressed() -> void:
 			print("Ошибка: Недостаточно Искр!")
 			# Здесь позже можно проиграть звук ошибки:
 			AudioManager.play_sfx(ERROR_SFX)
+
+func _on_leaderboard_close_pressed() -> void:
+	AudioManager.play_sfx(CLICK_SFX)
+	leaderboard_panel.hide()

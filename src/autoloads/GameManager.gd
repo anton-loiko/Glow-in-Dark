@@ -93,12 +93,14 @@ func complete_level():
 	current_level += 1
 	if current_level > unlocked_level:
 		unlocked_level = current_level
-		LeaderboardManager.submit_score(unlocked_level)
 		save_game()
 		CloudManager.save_to_cloud()
+
 		
-		current_level += 1
-		load_level(current_level)
+
+func next_level() -> void:
+	current_level += 1
+	load_level(current_level) 
 
 func load_level(level_number: int) -> void:
 	current_level = level_number

@@ -48,8 +48,13 @@ func _process(delta: float) -> void:
 
 		# Выключаем процесс, чтобы эта проверка не срабатывала 60 раз в секунду
 		set_process(false)
+		var ui = get_tree().current_scene.find_child("UIControl", true, false)
+
+		if ui and ui.has_method("show_game_over"):
+			ui.show_game_over()
+		
 		# "Кричим" всем узлам в группе UI, чтобы они запустили функцию show_game_over
-		get_tree().call_group("UI", "show_game_over")
+		#get_tree().call_group("UI", "show_game_over")s
 
 
 func _physics_process(_delta: float) -> void:

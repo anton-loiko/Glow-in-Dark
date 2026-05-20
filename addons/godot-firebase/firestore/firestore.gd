@@ -111,7 +111,12 @@ func query(query : FirestoreQuery) -> Array:
 	task._fields = JSON.stringify(body)
 	task._url = url
 	_pooled_request(task)
-	return await _handle_task_finished(task)
+	var result = await _handle_task_finished(task)
+	
+	if result == null:
+		return []
+	
+	return result
 	
 ## Issue an aggregation query (sum, average, count) against your Firestore database;
 ## cheaper than a normal query and counting (for instance) values directly.
@@ -239,6 +244,7 @@ func _handle_task_finished(task : FirestoreTask):
 	await task.task_finished
 	
 	if task.error.keys().size() > 0:
+		print("ERROR::::: ", task.error)
 		error.emit(task.error)
 		
 	return task.data
