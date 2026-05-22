@@ -20,6 +20,6 @@ color = Color(0, 0, 0, 1)
 [node name="LevelContainer" type="Node2D" parent="." unique_id=482410281]
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1087988122]
-color = Color(0, 0, 0, 1)
+color = Color(0.101960786, 0.10980392, 0.16078432, 1)
 
 [node name="UI" parent="." unique_id=1901153143 instance=ExtResource("3_qo1hw")]
