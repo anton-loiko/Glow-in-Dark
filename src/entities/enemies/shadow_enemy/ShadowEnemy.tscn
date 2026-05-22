@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://87crfg6dpml0"]
+
+[ext_resource type="Script" uid="uid://ct4s1yto36ia5" path="res://src/entities/enemies/shadow_enemy/ShadowEnemy.gd" id="1_300bf"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_300bf"]
+radius = 8.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_u7cur"]
+radius = 80.0
+
+[node name="ShadowEnemy" type="Area2D" unique_id=1929303661]
+script = ExtResource("1_300bf")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1954970671]
+
+[node name="Hitbox" type="CollisionShape2D" parent="." unique_id=608908497]
+shape = SubResource("CircleShape2D_300bf")
+
+[node name="DetectionZone" type="Area2D" parent="." unique_id=916489005]
+
+[node name="SightRadius" type="CollisionShape2D" parent="DetectionZone" unique_id=756393713]
+shape = SubResource("CircleShape2D_u7cur")
+debug_color = Color(0.7921569, 0.003921569, 0, 0.3254902)

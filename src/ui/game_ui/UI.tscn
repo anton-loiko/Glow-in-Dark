@@ -102,6 +102,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Заново"
 
+[node name="MenuButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=300988848]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Меню"
+
 [node name="WinPanel" type="Panel" parent="UIControl" unique_id=1266359883]
 visible = false
 layout_mode = 1
@@ -143,6 +148,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Дальше"
 
+[node name="MenuButton" type="Button" parent="UIControl/WinPanel/VBoxContainer" unique_id=1935173201]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Меню"
+
 [node name="SparksLabel" type="Label" parent="." unique_id=299155964]
 unique_name_in_owner = true
 anchors_preset = 1
@@ -158,4 +168,6 @@ text = "Sparks: 0"
 
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/Button" to="UIControl" method="_on_restart_button_pressed"]
+[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]
+[connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]

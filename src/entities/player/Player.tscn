@@ -38,4 +38,10 @@ texture = SubResource("GradientTexture2D_3vyb7")
 shape = SubResource("CircleShape2D_u8vuu")
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=461984158]
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 1.0
 texture = SubResource("GradientTexture2D_g2els")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=422419212]
+position_smoothing_enabled = true

@@ -26,7 +26,7 @@ func _ready() -> void:
 	GameManager.sparks_changed.connect(_on_sparks_changed)
 	LeaderboardManager.leaderboard_loaded.connect(_on_leaderboard_data_received)
 
-	if GameManager.unlocked_level <= 1:
+	if GameManager.unlocked_level <= 1 or not GameManager.is_level_exists(GameManager.unlocked_level):
 		continue_button.hide()
 	else:
 		continue_button.show()
@@ -75,7 +75,7 @@ func _on_cloud_sync_completed() -> void:
 	# Когда данные скачаются, обновляем кнопки (вдруг из облака пришел отключенный скин/реклама или новый уровень)
 	update_shop_buttons()
 	
-	if GameManager.unlocked_level > 1:
+	if GameManager.unlocked_level > 1 and GameManager.is_level_exists(GameManager.unlocked_level):
 		continue_button.show()
 
 func _on_purchase_success(item_id: String) -> void:

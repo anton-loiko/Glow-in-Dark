@@ -1,18 +1,24 @@
 extends Area2D
 
-# Сколько света восстанавливает одна единица топлива (40% от максимума)
 const LIGHT_RESTORE_AMOUNT: float = 0.4
 const PICKUP_SFX = preload("res://src/assets/audio/pickup_impactWood_light_001.ogg")
 
-# Эта функция сработает автоматически, когда кто-то войдет в зону
 func _on_body_entered(body: Node2D) -> void:
-	# Проверяем, что в зону вошел именно игрок, а не стена или враг
 	if body.name == "Player":
-		# На всякий случай проверяем, есть ли у объекта функция add_light
 		if body.has_method("add_light"):
-			# Вызываем функцию игрока и передаем количество топлива
+			set_deferred("monitoring", false)
+			
 			body.add_light(LIGHT_RESTORE_AMOUNT)
 			AudioManager.play_sfx(PICKUP_SFX)
 			
-			# Безопасно удаляем топливо со сцены и из памяти
-			queue_free()
+			var tween = create_tween()
+			
+			# Для топлива увеличиваем масштаб источника света PointLight2D и делаем прозрачным Sprite2D
+			if has_node("PointLight2D"):
+				tween.tween_property($PointLight2D, "texture_scale", 1.5, 0.2)
+				tween.parallel().tween_property($PointLight2D, "energy", 0.0, 0.2)
+				
+			if has_node("Sprite2D"):
+				tween.parallel().tween_property($Sprite2D, "modulate:a", 0.0, 0.2)
+			
+			tween.tween_callback(queue_free)

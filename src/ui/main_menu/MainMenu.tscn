@@ -134,6 +134,7 @@ theme_override_font_sizes/font_size = 24
 text = "Sparks:0"
 
 [node name="LeaderboardPanel" type="Panel" parent="." unique_id=333836499]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

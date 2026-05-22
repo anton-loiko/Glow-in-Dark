@@ -37,6 +37,7 @@ texture = SubResource("GradientTexture2D_l0aq0")
 shape = SubResource("CircleShape2D_38eme")
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=648618505]
+color = Color(0.27058825, 1, 0.40392157, 1)
 texture = SubResource("GradientTexture2D_uyw7u")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

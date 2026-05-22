@@ -5,15 +5,17 @@
 
 [node name="LevelRoot" type="Node2D" unique_id=746325157]
 script = ExtResource("1_c5yvc")
-metadata/_edit_vertical_guides_ = [222.0]
-metadata/_edit_horizontal_guides_ = [459.0]
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=716001913]
-offset_left = -400.0
-offset_top = -250.0
-offset_right = 600.0
-offset_bottom = 750.0
-color = Color(0.11372549, 0.09411765, 0.14509805, 1)
+[node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=1402011682]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="BackgroundLayer" unique_id=792313912]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="LevelContainer" type="Node2D" parent="." unique_id=482410281]
 
