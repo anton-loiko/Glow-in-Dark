@@ -2,7 +2,7 @@
 .godot/
 /android/
 build
-
+.DS_Store
 
 firebase.json
 addons/**/.env

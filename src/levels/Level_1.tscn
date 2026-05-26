@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dtj3hgkesdtyf" path="res://src/entities/exit/Exit.tscn" id="2_l7vjx"]
 [ext_resource type="PackedScene" uid="uid://bwvnoaru7rh3f" path="res://src/entities/interactables/fuel/Fuel.tscn" id="3_4antf"]
 [ext_resource type="PackedScene" uid="uid://bx8hcuk0xbql3" path="res://src/entities/interactables/spark/Spark.tscn" id="4_np8gb"]
+[ext_resource type="PackedScene" uid="uid://87crfg6dpml0" path="res://src/entities/enemies/shadow_enemy/ShadowEnemy.tscn" id="6_6ecbt"]
 
 [node name="Level_1" type="Node2D" unique_id=746325157]
 metadata/_edit_vertical_guides_ = [222.0]
@@ -43,3 +44,6 @@ position = Vector2(136, 269)
 
 [node name="Spark3" parent="." unique_id=737887283 instance=ExtResource("4_np8gb")]
 position = Vector2(53, 292)
+
+[node name="ShadowEnemy" parent="." unique_id=1929303661 instance=ExtResource("6_6ecbt")]
+position = Vector2(146, 243)
