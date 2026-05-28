@@ -4,7 +4,7 @@ const LIGHT_RESTORE_AMOUNT: float = 0.4
 const PICKUP_SFX = preload("res://src/assets/audio/pickup_impactWood_light_001.ogg")
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.name == "Player":
+	if body is Player:
 		if body.has_method("add_light"):
 			set_deferred("monitoring", false)
 			
@@ -13,7 +13,6 @@ func _on_body_entered(body: Node2D) -> void:
 			
 			var tween = create_tween()
 			
-			# Для топлива увеличиваем масштаб источника света PointLight2D и делаем прозрачным Sprite2D
 			if has_node("PointLight2D"):
 				tween.tween_property($PointLight2D, "texture_scale", 1.5, 0.2)
 				tween.parallel().tween_property($PointLight2D, "energy", 0.0, 0.2)

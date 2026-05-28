@@ -1,44 +1,34 @@
-extends Area2D
+class_name ShadowEnemy
+extends CharacterBody2D
 
-const DAMAGE_AMOUNT: float = -0.3
+const SPEED: float = 70.0
+const LIGHT_DAMAGE: float = 0.2
 const HIT_SFX = preload("res://src/assets/audio/error_008.ogg")
-const SPEED: float = 40.0
 
-var target: Node2D = null
+var direction: Vector2
 
-@onready var detection_zone: Area2D = $DetectionZone
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var hitbox: Area2D = $Hitbox
 
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
-	detection_zone.body_entered.connect(_on_detection_entered)
-	detection_zone.body_exited.connect(_on_detection_exited)
+	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	
+	var dirs: Array[Vector2] = [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]
+	direction = dirs.pick_random()
+	
+	if not hitbox.body_entered.is_connected:
+		hitbox.body_entered.connect(_on_hitbox_body_entered)
 
-func _process(delta: float) -> void:
-	if target and not target.is_dead:
-		global_position = global_position.move_toward(target.global_position, SPEED * delta)
+func _physics_process(delta: float) -> void:
+	var collision = move_and_collide(direction * SPEED * delta)
+	
+	if collision:
+		direction = direction.bounce(collision.get_normal())
 
-func _on_detection_entered(body: Node2D) -> void:
-	if body.name == "Player":
-		target = body
-
-func _on_detection_exited(body: Node2D) -> void:
-	if body.name == "Player":
-		target = null
-
-func _on_body_entered(body: Node2D) -> void:
-	if body.name == "Player":
-		if body.has_method("add_light"):
-			# Наносим урон (передаем отрицательное значение в функцию лечения)
-			body.add_light(DAMAGE_AMOUNT)
-			AudioManager.play_sfx(HIT_SFX)
+func _on_hitbox_body_entered(body: Node2D) -> void:
+	if body is Player:
+		if body.has_method("take_damage"):
+			var damage_dealt = body.take_damage(LIGHT_DAMAGE)
 			
-			# Отключаем логику, чтобы враг не нанес урон дважды
-			set_process(false)
-			detection_zone.set_deferred("monitoring", false)
-			set_deferred("monitoring", false)
-			
-			# Анимация "растворения" во тьме
-			var tween = create_tween()
-			tween.tween_property(sprite, "scale", Vector2.ZERO, 0.2)
-			tween.tween_callback(queue_free)
+			if damage_dealt:
+				AudioManager.play_sfx(HIT_SFX)
+				direction = (global_position - body.global_position).normalized()

@@ -3,8 +3,6 @@ extends Node
 signal leaderboard_loaded(leaderboard_data: Array)
 
 func fetch_top_players() -> void:
-	print("Запрос топ-10 игроков из Firebase...")
-	
 	# 1. Создаем бланк запроса
 	var query = FirestoreQuery.new()
 	
@@ -22,7 +20,6 @@ func fetch_top_players() -> void:
 	var query_result = await Firebase.Firestore.query(query)
 	
 	var leaderboard_list: Array = []
-	print("leaderboard_list", leaderboard_list)
 	# 6. Если сервер ответил и прислал нам массив документов
 	if query_result != null and not query_result.is_empty():
 		for doc in query_result:

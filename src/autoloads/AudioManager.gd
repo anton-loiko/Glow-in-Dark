@@ -46,6 +46,7 @@ func _on_music_finished() -> void:
 # Универсальная функция для воспроизведения любых коротких звуков
 func play_sfx(stream: AudioStream) -> void:
 	var sfx_player = AudioStreamPlayer.new()
+	sfx_player.process_mode = PROCESS_MODE_ALWAYS
 	sfx_player.stream = stream
 	add_child(sfx_player)
 	sfx_player.play()

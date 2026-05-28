@@ -10,9 +10,7 @@ var current_document: FirestoreDocument
 # Наш собственный файл для хранения "фейкового" аккаунта
 const SECRET_AUTH_FILE = "user://secret_auth.cfg"
 
-func authenticate_player() -> void:
-	print("Подключение к Firebase...")
-	
+func authenticate_player() -> void:	
 	if not Firebase.Auth.login_succeeded.is_connected(_on_login_succeeded):
 		Firebase.Auth.login_succeeded.connect(_on_login_succeeded)
 	if not Firebase.Auth.login_failed.is_connected(_on_login_failed):
@@ -31,11 +29,9 @@ func authenticate_player() -> void:
 		var fake_email = config.get_value("auth", "email", "")
 		var fake_pwd = config.get_value("auth", "password", "")
 		
-		print("Найден локальный профиль. Логинимся как: ", fake_email)
 		Firebase.Auth.login_with_email_and_password(fake_email, fake_pwd)
 	else:
 		# Первый запуск игры! Генерируем случайные данные
-		print("Профиля нет. Генерируем скрытый привязанный аккаунт...")
 		var random_id = str(Time.get_unix_time_from_system()).replace(".", "") + str(randi() % 10000)
 		var fake_email = "player_" + random_id + "@lightinthedark.com"
 		var fake_pwd = "Pass" + random_id + "!"
@@ -50,28 +46,22 @@ func authenticate_player() -> void:
 
 # Если регистрация прошла успешно, мы перенаправляем ее в логин
 func _on_signup_succeeded(auth_info) -> void:
-	print("--- Скрытый аккаунт успешно зарегистрирован! ---")
 	_on_login_succeeded(auth_info)
 
 func _on_login_succeeded(auth_info) -> void:
-	cloud_user_id = auth_info.localid
-	print("Игрок авторизован. Cloud ID: ", cloud_user_id)
-	
+	cloud_user_id = auth_info.localid	
 	users_collection = Firebase.Firestore.collection("users")
 	
 	login_success.emit()
 	sync_data()
 
 func _on_login_failed(error_code, message) -> void:
-	print("Ошибка авторизации! Код: ", error_code, " | Причина: ", message)
 	sync_completed.emit()
 
 func sync_data() -> void:
-	print("Скачивание документа из Firestore...")
 	current_document = await users_collection.get_doc(cloud_user_id)
 	
 	if current_document != null and current_document.document != null and not current_document.document.is_empty():
-		print("Облачное сохранение найдено. Слияние данных...")
 		var cloud_data = current_document.document
 		var need_cloud_update: bool = false
 		
@@ -136,7 +126,6 @@ func sync_data() -> void:
 		if need_cloud_update:
 			await save_to_cloud()
 	else:
-		print("Новый профиль. Отправка стартовых данных в облако...")
 		await save_to_cloud()
 		
 	sync_completed.emit()
@@ -166,7 +155,6 @@ func save_to_cloud() -> void:
 		
 		# Отправляем готовый документ на сервер
 		current_document = await users_collection.update(current_document)
-		print("Облако успешно обновлено (UPDATE)!")
 		
 	# 2. Сценарий создания абсолютно нового профиля (ADD)
 	else:
@@ -179,4 +167,3 @@ func save_to_cloud() -> void:
 		}
 		
 		current_document = await users_collection.add(cloud_user_id, normal_data)
-		print("Облако успешно обновлено (ADD)!")

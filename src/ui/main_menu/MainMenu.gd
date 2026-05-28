@@ -244,7 +244,6 @@ func _on_buy_purple_skin_button_pressed() -> void:
 			update_shop_buttons()
 		else:
 			# Денег не хватает
-			print("Ошибка: Недостаточно Искр!")
 			# Здесь позже можно проиграть звук ошибки:
 			AudioManager.play_sfx(ERROR_SFX)
 

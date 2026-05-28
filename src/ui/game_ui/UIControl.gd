@@ -1,3 +1,4 @@
+class_name GameUI
 extends Control
 
 const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
@@ -10,14 +11,20 @@ const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
 @onready var next_button: Button = $WinPanel/VBoxContainer/NextLevelButton
 @onready var revive_button: Button = $LosePanel/VBoxContainer/ReviveButton
 
-var sparks_collected_this_level: int = 0
+var sparks_at_level_start: int = 0
 var is_danger_mode: bool = false
 
 func _ready() -> void:
-	AdManager.reward_earned.connect(_on_reward_earned)
+	# Запоминаем кол-во искр на старте уровня для экрана победы
+	sparks_at_level_start = GameManager.sparks
 	sparks_label.text = "Sparks: " + str(GameManager.sparks)
 	
+	AdManager.reward_earned.connect(_on_reward_earned)
 	GameManager.sparks_changed.connect(_on_sparks_changed)
+	
+	# Явно настраиваем диапазоны прогресс-бара света
+	progress_bar.max_value = 1.0 
+	progress_bar.step = 0.01
 	progress_bar.tint_progress = Color.WHITE
 
 func _on_player_light_changed(new_value: float) -> void:
@@ -40,21 +47,22 @@ func show_game_over() -> void:
 
 func show_win_screen() -> void:
 	get_tree().paused = true
-	reward_label.text = "Collected sparks: " + str(sparks_collected_this_level)
+	var collected = GameManager.sparks - sparks_at_level_start
+	reward_label.text = "Collected sparks: " + str(collected)
 	win_panel.show()
 	lose_panel.hide()
 
 func _on_reward_earned() -> void:
-	var player = get_tree().current_scene.find_child("Player", true, false)
-	if player and player.has_method("revive"):
-		player.revive()
+	# Избавляемся от find_child, обращаемся через группу
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0 and players[0].has_method("revive"):
+		players[0].revive()
 		
 	lose_panel.hide()
 	get_tree().paused = false
 
 func _on_sparks_changed(new_amount: int) -> void:
 	sparks_label.text = "Sparks: " + str(new_amount)
-	sparks_collected_this_level += new_amount 
 
 func _on_restart_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
@@ -70,7 +78,6 @@ func _on_revive_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
 	revive_button.hide()
 	AdManager.show_rewarded_ad()
-
 
 func _on_menu_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)

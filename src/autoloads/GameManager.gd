@@ -47,14 +47,13 @@ func save_game() -> void:
 	
 	var error = config.save(SAVE_PATH)
 	if error != OK:
-		print("Не удалось сохранить игру. Код ошибки: ", error)
+		print(error)
 
 func load_game() -> void:
 	var config = ConfigFile.new()
 	var error = config.load(SAVE_PATH)
 	
 	if error != OK:
-		print("Локальный файл не найден. Создаем базовый профиль на телефоне...")
 		save_game() 
 		return
 		
@@ -82,7 +81,6 @@ func load_level(level_number: int) -> void:
 		# Загружаем главную сцену. Она сама прочитает current_level и вставит нужный лабиринт
 		get_tree().change_scene_to_file("res://src/levels/LevelRoot.tscn")
 	else:
-		print("Уровень ", level_number, " не найден! Игра пройдена.")
 		go_to_main_menu()
 
 

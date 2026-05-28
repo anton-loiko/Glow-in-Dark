@@ -3,7 +3,11 @@ extends Node2D
 @onready var level_container: Node2D = $LevelContainer
 @onready var ui: CanvasLayer = $UI 
 
+var darkness_modulate: CanvasModulate
+
 func _ready() -> void:
+	_setup_darkness()
+	
 	var level_path = "res://src/levels/Level_" + str(GameManager.current_level) + ".tscn"
 	
 	if ResourceLoader.exists(level_path):
@@ -15,12 +19,19 @@ func _ready() -> void:
 		var player = level_instance.find_child("Player", true, false)
 		var ui_control = ui.get_node("UIControl")
 		
-		if player and ui_control and ui_control.has_method("_on_player_light_changed"):
-			player.light_changed.connect(ui_control._on_player_light_changed)
+		if player and ui_control:
+			if ui_control.has_method("_on_player_light_changed"):
+				player.light_changed.connect(ui_control._on_player_light_changed)
+			if ui_control.has_method("show_game_over"):
+				player.died.connect(ui_control.show_game_over)
 			
 		_setup_camera_limits(level_instance, player)
-	else:
-		print("Ошибка: Уровень не найден по пути ", level_path)
+
+func _setup_darkness() -> void:
+	darkness_modulate = CanvasModulate.new()
+	# RGBA: Почти черный, но оставляет 5% видимости, чтобы игрок мог различать стены вне радиуса света
+	darkness_modulate.color = Color(0.05, 0.05, 0.05, 1.0)
+	add_child(darkness_modulate)
 
 func _setup_camera_limits(level: Node, player: Node) -> void:
 	if not player or not player.has_node("Camera2D"):
@@ -31,7 +42,6 @@ func _setup_camera_limits(level: Node, player: Node) -> void:
 	var tile_size := Vector2i.ZERO
 	var found_map := false
 	
-	# Уровни могут содержать несколько слоев TileMapLayer[cite: 121, 122]. Объединяем их размеры.
 	for child in level.get_children():
 		if child is TileMapLayer:
 			var r = child.get_used_rect()

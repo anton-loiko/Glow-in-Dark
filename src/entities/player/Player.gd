@@ -1,6 +1,8 @@
+class_name Player
 extends CharacterBody2D
 
 signal light_changed(new_value: float)
+signal died
 
 const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 const SPEED: float = 300.0
@@ -8,6 +10,7 @@ const MAX_LIGHT_SCALE: float = 1.0
 const MIN_LIGHT_SCALE: float = 0.0
 const LIGHT_FADE_RATE: float = 0.05
 const DANGER_THRESHOLD: float = 0.25
+const INVULNERABILITY_DURATION: float = 1.0
 
 var target_position: Vector2 = Vector2.ZERO
 var is_touching: bool = false
@@ -87,6 +90,16 @@ func add_light(amount: float) -> void:
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
 	light_changed.emit(current_light_health)
 
+func take_damage(amount: float) -> bool:
+	if is_dead: 
+		return false
+		
+	current_light_health -= amount
+	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
+	light_changed.emit(current_light_health)
+	
+	return true
+
 func die() -> void:
 	is_dead = true
 	is_touching = false
@@ -95,9 +108,7 @@ func die() -> void:
 	set_process(false)
 	set_physics_process(false)
 
-	var ui = get_tree().current_scene.find_child("UIControl", true, false)
-	if ui and ui.has_method("show_game_over"):
-		ui.show_game_over()
+	died.emit()
 
 func revive() -> void:
 	is_dead = false

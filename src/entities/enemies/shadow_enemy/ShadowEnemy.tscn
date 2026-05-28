@@ -4,8 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://cidpdeu4vedit" path="res://src/assets/images/sprites/Dark-Entity-Sheet.png" id="2_u7cur"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_oh76w"]
-radius = 4.0
-height = 14.0
+radius = 6.3
+height = 18.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_u7cur"]
+light_mode = 1
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_u7cur"]
 radius = 80.0
@@ -46,14 +49,23 @@ _data = {
 &"idle": SubResource("Animation_0m770")
 }
 
-[node name="ShadowEnemy" type="Area2D" unique_id=1929303661]
+[node name="ShadowEnemy" type="CharacterBody2D" unique_id=362992985]
+collision_layer = 0
 script = ExtResource("1_300bf")
 
+[node name="Hitbox" type="Area2D" parent="." unique_id=1906427315]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=608908497]
+shape = SubResource("CapsuleShape2D_oh76w")
+debug_color = Color(0.7178751, 0.46338576, 0.35718048, 0.73333335)
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=46717051]
+material = SubResource("CanvasItemMaterial_u7cur")
 texture = ExtResource("2_u7cur")
 hframes = 8
 
-[node name="Hitbox" type="CollisionShape2D" parent="." unique_id=608908497]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=753921627]
 shape = SubResource("CapsuleShape2D_oh76w")
 debug_color = Color(0, 0.6, 0.69803923, 0.73333335)
 metadata/_edit_lock_ = true
@@ -67,3 +79,5 @@ debug_color = Color(0.7921569, 0.003921569, 0, 0.3254902)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=62138006]
 libraries/ = SubResource("AnimationLibrary_qdjix")
+
+[connection signal="body_exited" from="Hitbox" to="." method="_on_hitbox_body_entered"]
