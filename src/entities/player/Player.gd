@@ -6,11 +6,12 @@ signal died
 
 const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 const SPEED: float = 300.0
+const ACCELERATION: float = 15.0
+const FRICTION: float = 20.0
 const MAX_LIGHT_SCALE: float = 1.0
 const MIN_LIGHT_SCALE: float = 0.0
 const LIGHT_FADE_RATE: float = 0.05
 const DANGER_THRESHOLD: float = 0.25
-const INVULNERABILITY_DURATION: float = 1.0
 
 var target_position: Vector2 = Vector2.ZERO
 var is_touching: bool = false
@@ -21,6 +22,7 @@ var current_light_health: float = MAX_LIGHT_SCALE
 @onready var light: PointLight2D = $PointLight2D
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var camera: Camera2D = $Camera2D
+@onready var trail_particles: GPUParticles2D = $TrailParticles
 
 func _ready() -> void:
 	target_position = global_position
@@ -30,6 +32,9 @@ func _ready() -> void:
 	var skin_color: Color = GameManager.get_equipped_skin_color()
 	light.color = skin_color
 	sprite.modulate = skin_color
+	
+	if trail_particles:
+		trail_particles.modulate = skin_color
 
 func _input(event: InputEvent) -> void:
 	if is_dead: return
@@ -64,9 +69,9 @@ func _process(delta: float) -> void:
 	if is_zero_approx(current_light_health) or current_light_health <= MIN_LIGHT_SCALE:
 		die()
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if is_dead:
-		velocity = Vector2.ZERO
+		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 		move_and_slide()
 		return
 
@@ -75,11 +80,11 @@ func _physics_process(_delta: float) -> void:
 		var distance: float = global_position.distance_to(target_position)
 		
 		if distance > 10.0:
-			velocity = direction * SPEED
+			velocity = velocity.lerp(direction * SPEED, ACCELERATION * delta)
 		else:
-			velocity = Vector2.ZERO
+			velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 	else:
-		velocity = Vector2.ZERO
+		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 
 	move_and_slide()
 
@@ -104,10 +109,11 @@ func die() -> void:
 	is_dead = true
 	is_touching = false
 	camera.offset = Vector2.ZERO
+	if trail_particles:
+		trail_particles.emitting = false
+	
 	AudioManager.play_sfx(GAME_OVER_SFX)
 	set_process(false)
-	set_physics_process(false)
-
 	died.emit()
 
 func revive() -> void:
@@ -115,5 +121,7 @@ func revive() -> void:
 	current_light_health = 0.5
 	light_changed.emit(current_light_health)
 	target_position = global_position
+	if trail_particles:
+		trail_particles.emitting = true
+		
 	set_process(true)
-	set_physics_process(true)

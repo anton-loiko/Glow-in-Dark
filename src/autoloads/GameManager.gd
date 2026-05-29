@@ -34,6 +34,8 @@ var equipped_skin: String = "default"
 
 func _ready() -> void:
 	load_game()
+	# Как только локальные данные загружены, запускаем скрытую авторизацию и синхронизацию с облаком
+	CloudManager.authenticate_player()
 
 func save_game() -> void:
 	var config = ConfigFile.new()
@@ -47,13 +49,14 @@ func save_game() -> void:
 	
 	var error = config.save(SAVE_PATH)
 	if error != OK:
-		print(error)
+		print("The game could not be saved. Error code: ", error)
 
 func load_game() -> void:
 	var config = ConfigFile.new()
 	var error = config.load(SAVE_PATH)
 	
 	if error != OK:
+		print("The local file was not found. Let's create a basic profile on the phone...")
 		save_game() 
 		return
 		
@@ -71,19 +74,16 @@ func complete_level():
 		CloudManager.save_to_cloud()
 
 func next_level() -> void:
-	# current_level уже увеличен в complete_level()
 	load_level(current_level) 
 
 func load_level(level_number: int) -> void:
 	current_level = level_number
 	
 	if is_level_exists(level_number):
-		# Загружаем главную сцену. Она сама прочитает current_level и вставит нужный лабиринт
 		get_tree().change_scene_to_file("res://src/levels/LevelRoot.tscn")
 	else:
+		print("Level ", level_number, " Not found!")
 		go_to_main_menu()
-
-
 
 func is_level_exists(level_number: int) -> bool:
 	var level_path = "res://src/levels/Level_" + str(level_number) + ".tscn"
