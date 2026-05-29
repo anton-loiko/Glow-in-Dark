@@ -250,3 +250,7 @@ func _on_buy_purple_skin_button_pressed() -> void:
 func _on_leaderboard_close_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
 	leaderboard_panel.hide()
+
+
+func _on_settings_button_pressed() -> void:
+	$SettingsMenu.show()

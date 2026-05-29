@@ -17,7 +17,7 @@ func _ready() -> void:
 		level_container.add_child(level_instance)
 		
 		var player = level_instance.find_child("Player", true, false)
-		var ui_control = ui.get_node("UIControl")
+		var ui_control = ui.get_node("%UIControl")
 		
 		if player and ui_control:
 			if ui_control.has_method("_on_player_light_changed"):

@@ -4,16 +4,15 @@ var music_player: AudioStreamPlayer
 var current_track_index: int = 0
 
 var playlist: Array[AudioStream] = [
-preload("res://src/assets/audio/Piano_1.ogg"),
-preload("res://src/assets/audio/Piano_2.ogg"),
-preload("res://src/assets/audio/Piano_3.ogg"),
-preload("res://src/assets/audio/Piano_4.ogg"),
-preload("res://src/assets/audio/Piano_5.ogg"),
-preload("res://src/assets/audio/Piano_6.ogg"),
-preload("res://src/assets/audio/Piano_7.ogg"),
-preload("res://src/assets/audio/Piano_8.ogg"),
+	preload("res://src/assets/audio/Piano_1.ogg"),
+	preload("res://src/assets/audio/Piano_2.ogg"),
+	preload("res://src/assets/audio/Piano_3.ogg"),
+	preload("res://src/assets/audio/Piano_4.ogg"),
+	preload("res://src/assets/audio/Piano_5.ogg"),
+	preload("res://src/assets/audio/Piano_6.ogg"),
+	preload("res://src/assets/audio/Piano_7.ogg"),
+	preload("res://src/assets/audio/Piano_8.ogg"),
 ]
-
 
 func _ready() -> void:
 	music_player = AudioStreamPlayer.new()
@@ -24,13 +23,16 @@ func _ready() -> void:
 	# Перемешиваем список песен случайным образом при запуске игры
 	playlist.shuffle()
 	
-	play_current_track()
-
+	# Используем call_deferred, чтобы GameManager гарантированно успел загрузить настройки из файла
+	call_deferred("apply_settings")
 
 func play_current_track() -> void:
 	# Берем трек из списка под текущим номером и передаем в плеер
 	music_player.stream = playlist[current_track_index]
-	music_player.play()
+	
+	# Играем только если музыка включена в настройках
+	if GameManager.music_enabled:
+		music_player.play()
 
 func _on_music_finished() -> void:
 	# Увеличиваем номер трека на 1 (переходим к следующему)
@@ -45,6 +47,10 @@ func _on_music_finished() -> void:
 
 # Универсальная функция для воспроизведения любых коротких звуков
 func play_sfx(stream: AudioStream) -> void:
+	# Блокируем создание звука, если в настройках он выключен
+	if not GameManager.sound_enabled: 
+		return
+		
 	var sfx_player = AudioStreamPlayer.new()
 	sfx_player.process_mode = PROCESS_MODE_ALWAYS
 	sfx_player.stream = stream
@@ -54,3 +60,18 @@ func play_sfx(stream: AudioStream) -> void:
 	# Подписываемся на встроенный сигнал окончания звука.
 	# Когда звук доиграет, узел сам себя безопасно удалит из памяти.
 	sfx_player.finished.connect(sfx_player.queue_free)
+
+func apply_settings() -> void:
+	if GameManager.music_enabled:
+		if not music_player.playing:
+			if music_player.stream == null:
+				play_current_track()
+			else:
+				music_player.play()
+	else:
+		music_player.stop()
+
+func vibrate() -> void:
+	if GameManager.vibration_enabled:
+		# Вызывает короткую вибрацию (работает только на реальных iOS/Android)
+		Input.vibrate_handheld(50)

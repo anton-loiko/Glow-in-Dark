@@ -4,12 +4,12 @@ extends Control
 const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
 
 @onready var progress_bar: TextureProgressBar = $TextureProgressBar
-@onready var lose_panel: Panel = $LosePanel
-@onready var win_panel: Panel = $WinPanel
+@onready var lose_panel: Panel = %LosePanel
+@onready var win_panel: Panel = %WinPanel
 @onready var sparks_label: Label = %SparksLabel
-@onready var reward_label: Label = $WinPanel/VBoxContainer/RewardLabel
-@onready var next_button: Button = $WinPanel/VBoxContainer/NextLevelButton
-@onready var revive_button: Button = $LosePanel/VBoxContainer/ReviveButton
+@onready var reward_label: Label = %WinPanel/VBoxContainer/RewardLabel
+@onready var next_button: Button = %WinPanel/VBoxContainer/NextLevelButton
+@onready var revive_button: Button = %LosePanel/VBoxContainer/ReviveButton
 
 var sparks_at_level_start: int = 0
 var is_danger_mode: bool = false

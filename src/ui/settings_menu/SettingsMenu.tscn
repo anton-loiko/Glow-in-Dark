@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://dk7e6txoe6nou"]
+
+[ext_resource type="Script" uid="uid://clcjf23sx7tv8" path="res://src/ui/settings_menu/SettingsMenu.gd" id="1_q80vx"]
+
+[node name="SettingsMenu" type="Control" unique_id=1920631989]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q80vx")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1351097967]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.061698094, 0.3616923, 0.57505435, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=482401878]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.0
+offset_top = -52.0
+offset_right = 22.0
+offset_bottom = 52.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="SoundButton" type="CheckButton" parent="VBoxContainer" unique_id=865292173]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sound"
+
+[node name="MusicButton" type="CheckButton" parent="VBoxContainer" unique_id=1824384015]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Music"
+
+[node name="VibrationButton" type="CheckButton" parent="VBoxContainer" unique_id=7144953]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Vibration"
+
+[node name="ResetButton" type="Button" parent="VBoxContainer" unique_id=475877787]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset Progress
+"
+
+[node name="CloseButton" type="Button" parent="VBoxContainer" unique_id=1502625599]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Close"

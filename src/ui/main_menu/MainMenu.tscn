@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b7wd40ndx4jhr"]
 
 [ext_resource type="Script" uid="uid://cj7ae1khj2rmh" path="res://src/ui/main_menu/MainMenu.gd" id="1_yqorp"]
+[ext_resource type="PackedScene" uid="uid://dk7e6txoe6nou" path="res://src/ui/settings_menu/SettingsMenu.tscn" id="2_m3ldw"]
 
 [sub_resource type="Gradient" id="Gradient_aql4q"]
 colors = PackedColorArray(1, 1, 1, 1, 0.7254902, 1, 1, 1)
@@ -57,6 +58,10 @@ text = "Store"
 [node name="LeaderboardButton" type="Button" parent="VBoxContainer" unique_id=878413691]
 layout_mode = 2
 text = "Leaderboard"
+
+[node name="SettingsButton" type="Button" parent="VBoxContainer" unique_id=1509911220]
+layout_mode = 2
+text = "Settings"
 
 [node name="ShopPanel" type="ColorRect" parent="." unique_id=216857696]
 visible = false
@@ -185,10 +190,15 @@ text = "Close"
 [node name="MarginContainer2" type="MarginContainer" parent="LeaderboardPanel/VBoxContainer" unique_id=1977623715]
 layout_mode = 2
 
+[node name="SettingsMenu" parent="." unique_id=1920631989 instance=ExtResource("2_m3ldw")]
+visible = false
+layout_mode = 1
+
 [connection signal="pressed" from="VBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/ShopButton" to="." method="_on_shop_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/LeaderboardButton" to="." method="_on_leaderboard_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuyNoAdsButton" to="." method="_on_buy_no_ads_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/BuySkinButton" to="." method="_on_buy_skin_button_pressed"]
 [connection signal="pressed" from="ShopPanel/VBoxContainer/WatchAdButton" to="." method="_on_watch_ad_button_pressed"]

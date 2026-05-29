@@ -13,10 +13,7 @@ const MIN_LIGHT_SCALE: float = 0.0
 const LIGHT_FADE_RATE: float = 0.05
 const DANGER_THRESHOLD: float = 0.25
 
-var target_position: Vector2 = Vector2.ZERO
-var is_touching: bool = false
 var is_dead: bool = false
-
 var current_light_health: float = MAX_LIGHT_SCALE
 
 @onready var light: PointLight2D = $PointLight2D
@@ -25,7 +22,6 @@ var current_light_health: float = MAX_LIGHT_SCALE
 @onready var trail_particles: GPUParticles2D = $TrailParticles
 
 func _ready() -> void:
-	target_position = global_position
 	current_light_health = MAX_LIGHT_SCALE
 	light_changed.emit(current_light_health)
 	
@@ -35,20 +31,6 @@ func _ready() -> void:
 	
 	if trail_particles:
 		trail_particles.modulate = skin_color
-
-func _input(event: InputEvent) -> void:
-	if is_dead: return
-
-	if event is InputEventMouseButton or event is InputEventScreenTouch:
-		if event.is_pressed():
-			target_position = get_global_mouse_position()
-			is_touching = true
-		else:
-			is_touching = false
-			
-	if event is InputEventMouseMotion or event is InputEventScreenDrag:
-		if is_touching:
-			target_position = get_global_mouse_position()
 
 func _process(delta: float) -> void:
 	if is_dead: return
@@ -75,14 +57,10 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	if is_touching:
-		var direction: Vector2 = global_position.direction_to(target_position)
-		var distance: float = global_position.distance_to(target_position)
-		
-		if distance > 10.0:
-			velocity = velocity.lerp(direction * SPEED, ACCELERATION * delta)
-		else:
-			velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
+	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	
+	if input_direction != Vector2.ZERO:
+		velocity = velocity.lerp(input_direction * SPEED, ACCELERATION * delta)
 	else:
 		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 
@@ -102,12 +80,10 @@ func take_damage(amount: float) -> bool:
 	current_light_health -= amount
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
 	light_changed.emit(current_light_health)
-	
 	return true
 
 func die() -> void:
 	is_dead = true
-	is_touching = false
 	camera.offset = Vector2.ZERO
 	if trail_particles:
 		trail_particles.emitting = false
@@ -120,7 +96,7 @@ func revive() -> void:
 	is_dead = false
 	current_light_health = 0.5
 	light_changed.emit(current_light_health)
-	target_position = global_position
+	
 	if trail_particles:
 		trail_particles.emitting = true
 		

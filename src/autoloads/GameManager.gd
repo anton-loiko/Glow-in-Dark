@@ -32,9 +32,12 @@ var unlocked_level: int = 1
 var owned_skins: Array = ["default"]
 var equipped_skin: String = "default"
 
+var sound_enabled: bool = true
+var music_enabled: bool = true
+var vibration_enabled: bool = true
+
 func _ready() -> void:
 	load_game()
-	# Как только локальные данные загружены, запускаем скрытую авторизацию и синхронизацию с облаком
 	CloudManager.authenticate_player()
 
 func save_game() -> void:
@@ -47,6 +50,10 @@ func save_game() -> void:
 	config.set_value("inventory", "equipped_skin", equipped_skin)
 	config.set_value("inventory", "sparks", sparks)
 	
+	config.set_value("settings", "sound_enabled", sound_enabled)
+	config.set_value("settings", "music_enabled", music_enabled)
+	config.set_value("settings", "vibration_enabled", vibration_enabled)
+	
 	var error = config.save(SAVE_PATH)
 	if error != OK:
 		print("The game could not be saved. Error code: ", error)
@@ -56,7 +63,7 @@ func load_game() -> void:
 	var error = config.load(SAVE_PATH)
 	
 	if error != OK:
-		print("The local file was not found. Let's create a basic profile on the phone...")
+		print("Локальный файл не найден. Создаем базовый профиль на телефоне...")
 		save_game() 
 		return
 		
@@ -65,6 +72,10 @@ func load_game() -> void:
 	owned_skins = config.get_value("inventory", "owned_skins", ["default"])
 	equipped_skin = config.get_value("inventory", "equipped_skin", "default")
 	sparks = config.get_value("inventory", "sparks", 0)
+	
+	sound_enabled = config.get_value("settings", "sound_enabled", true)
+	music_enabled = config.get_value("settings", "music_enabled", true)
+	vibration_enabled = config.get_value("settings", "vibration_enabled", true)
 
 func complete_level():
 	current_level += 1
@@ -82,7 +93,7 @@ func load_level(level_number: int) -> void:
 	if is_level_exists(level_number):
 		get_tree().change_scene_to_file("res://src/levels/LevelRoot.tscn")
 	else:
-		print("Level ", level_number, " Not found!")
+		print("Уровень ", level_number, " не найден! Игра пройдена.")
 		go_to_main_menu()
 
 func is_level_exists(level_number: int) -> bool:
@@ -101,3 +112,11 @@ func add_sparks(amount: int) -> void:
 	sparks += amount
 	sparks_changed.emit(sparks)
 	save_game()
+
+func reset_progress() -> void:
+	unlocked_level = 1
+	sparks = 0
+	owned_skins = ["default"]
+	equipped_skin = "default"
+	save_game()
+	CloudManager.save_to_cloud()
