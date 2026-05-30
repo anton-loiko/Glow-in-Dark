@@ -1,14 +1,12 @@
 [gd_scene format=3 uid="uid://bgnj5ttq8e5vy"]
 
 [ext_resource type="Script" uid="uid://bpcfa1myfi3c0" path="res://src/ui/main_menu/panel_manager/PanelManager.gd" id="1_rsxwy"]
-[ext_resource type="ButtonGroup" uid="uid://btouycuok16x6" path="res://src/ui/main_menu/tab_button/hub_button_group.tres" id="2_hg3hc"]
 [ext_resource type="Theme" uid="uid://b7esdixhq3wfn" path="res://src/ui/main_menu/panel_manager/PanelTheme.tres" id="2_o2fhx"]
 [ext_resource type="PackedScene" uid="uid://bh08hndi076g1" path="res://src/ui/main_menu/tabs/shop/Shop.tscn" id="3_bb8mr"]
 [ext_resource type="PackedScene" uid="uid://bw3m47egoda6m" path="res://src/ui/main_menu/tabs/gear/Gear.tscn" id="3_kq2k0"]
 [ext_resource type="PackedScene" uid="uid://b6s071a1y8juu" path="res://src/ui/main_menu/tabs/base/Base.tscn" id="3_o2fhx"]
 [ext_resource type="PackedScene" uid="uid://dcf0r3mgki81l" path="res://src/ui/main_menu/tabs/skills/Skills.tscn" id="3_rhda7"]
 [ext_resource type="PackedScene" uid="uid://cloftxqgnvs1d" path="res://src/ui/main_menu/tabs/home/Home.tscn" id="3_tfshb"]
-[ext_resource type="Theme" uid="uid://brbgb87qohjbj" path="res://src/ui/main_menu/tab_button/BarButtonTheme.tres" id="8_7sghk"]
 [ext_resource type="PackedScene" uid="uid://bu11lhgnesc6q" path="res://src/ui/main_menu/tab_button/TabButton.tscn" id="8_8es5f"]
 [ext_resource type="Texture2D" uid="uid://dk0ovi2824iqq" path="res://src/assets/images/modern_rpg_icon_pack/14-dungeon-objects/icon_25.png" id="9_gigbh"]
 [ext_resource type="Texture2D" uid="uid://bn515thwgtaxh" path="res://src/assets/images/modern_rpg_icon_pack/15-status-effects/icon_47.png" id="9_oep7p"]
@@ -166,64 +164,3 @@ layout_mode = 2
 button_group = SubResource("ButtonGroup_ov5c8")
 default_text = "Base"
 default_icon = ExtResource("14_cqmyg")
-
-[node name="ShopButton_old" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=378670929]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-theme = ExtResource("8_7sghk")
-toggle_mode = true
-button_group = ExtResource("2_hg3hc")
-text = "Shop"
-icon = ExtResource("9_gigbh")
-icon_alignment = 1
-
-[node name="SkillsButton_old" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=977300557]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-theme = ExtResource("8_7sghk")
-toggle_mode = true
-button_group = ExtResource("2_hg3hc")
-text = "Skills"
-icon = ExtResource("10_21uob")
-icon_alignment = 1
-
-[node name="HomeButton_old" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1864545282]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-theme = ExtResource("8_7sghk")
-toggle_mode = true
-button_pressed = true
-button_group = ExtResource("2_hg3hc")
-text = "Explore"
-icon = ExtResource("9_oep7p")
-icon_alignment = 1
-
-[node name="GearButton_old" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=623105696]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-theme = ExtResource("8_7sghk")
-toggle_mode = true
-button_group = ExtResource("2_hg3hc")
-text = "Gear"
-icon = ExtResource("13_cqmyg")
-icon_alignment = 1
-
-[node name="BaseButton_old" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=319868544]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-theme = ExtResource("8_7sghk")
-toggle_mode = true
-button_group = ExtResource("2_hg3hc")
-text = "Base"
-icon = ExtResource("14_cqmyg")
-icon_alignment = 1
