@@ -76,6 +76,7 @@ layout_mode = 2
 
 [node name="HomePanel" type="PanelContainer" parent="VBoxContainer" unique_id=1134746371]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("2_o2fhx")

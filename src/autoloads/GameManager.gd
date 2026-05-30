@@ -39,6 +39,7 @@ var vibration_enabled: bool = true
 func _ready() -> void:
 	load_game()
 	CloudManager.authenticate_player()
+	GameManager.current_level = GameManager.unlocked_level
 
 func save_game() -> void:
 	var config = ConfigFile.new()

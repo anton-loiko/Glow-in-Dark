@@ -10,10 +10,14 @@ config_version=5
 
 [application]
 
-config/name="mc-game"
+config/name="GitD"
 run/main_scene="uid://b7wd40ndx4jhr"
 config/features=PackedStringArray("4.6", "Mobile")
+boot_splash/bg_color=Color(0, 0.16635564, 0.17243594, 1)
+boot_splash/show_image=false
+boot_splash/stretch_mode=2
 config/icon="res://icon.svg"
+boot_splash/minimum_display_time=5
 
 [autoload]
 
