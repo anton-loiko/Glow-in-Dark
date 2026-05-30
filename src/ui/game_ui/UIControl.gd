@@ -10,11 +10,14 @@ const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
 @onready var reward_label: Label = %WinPanel/VBoxContainer/RewardLabel
 @onready var next_button: Button = %WinPanel/VBoxContainer/NextLevelButton
 @onready var revive_button: Button = %LosePanel/VBoxContainer/ReviveButton
+@onready var virtual_joystick: VirtualJoystick = %"Virtual Joystick"
 
 var sparks_at_level_start: int = 0
 var is_danger_mode: bool = false
 
 func _ready() -> void:
+	virtual_joystick.show()
+	
 	# Запоминаем кол-во искр на старте уровня для экрана победы
 	sparks_at_level_start = GameManager.sparks
 	sparks_label.text = "Sparks: " + str(GameManager.sparks)
@@ -41,12 +44,14 @@ func _on_player_light_changed(new_value: float) -> void:
 
 func show_game_over() -> void:
 	get_tree().paused = true
+	virtual_joystick.hide()
 	lose_panel.show()
 	revive_button.show()
 	win_panel.hide()
 
 func show_win_screen() -> void:
 	get_tree().paused = true
+	virtual_joystick.hide()
 	var collected = GameManager.sparks - sparks_at_level_start
 	reward_label.text = "Collected sparks: " + str(collected)
 	win_panel.show()

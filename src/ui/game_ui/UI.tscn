@@ -76,17 +76,6 @@ texture_under = SubResource("GradientTexture2D_dj8aq")
 texture_over = SubResource("GradientTexture2D_5en4g")
 texture_progress = SubResource("GradientTexture2D_75u2n")
 
-[node name="Virtual Joystick" parent="UIControl" unique_id=1665255622 instance=ExtResource("2_qu8t6")]
-layout_mode = 0
-anchors_preset = 0
-anchor_top = 0.0
-anchor_bottom = 0.0
-offset_left = 20.0
-offset_top = 340.0
-offset_right = 140.0
-offset_bottom = 460.0
-grow_vertical = 1
-
 [node name="LosePanel" type="Panel" parent="UIControl" unique_id=311640636]
 unique_name_in_owner = true
 visible = false
@@ -182,8 +171,47 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Меню"
 
+[node name="Virtual Joystick" parent="." unique_id=1665255622 instance=ExtResource("2_qu8t6")]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.27450982)
+anchors_preset = 15
+anchor_top = 0.0
+anchor_right = 1.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+joystick_mode = 1
+
+[node name="Base" parent="Virtual Joystick" index="0"]
+custom_minimum_size = Vector2(40, 40)
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -140.0
+offset_right = 20.0
+offset_bottom = -100.0
+grow_vertical = 0
+pivot_offset = Vector2(0, 0)
+expand_mode = 1
+
+[node name="Tip" parent="Virtual Joystick/Base" index="0"]
+custom_minimum_size = Vector2(20, 20)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+pivot_offset = Vector2(0, 0)
+expand_mode = 1
+
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/Button" to="UIControl" method="_on_restart_button_pressed"]
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
+
+[editable path="Virtual Joystick"]
