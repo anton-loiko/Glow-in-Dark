@@ -26,7 +26,10 @@ func _ready() -> void:
 				player.died.connect(ui_control.show_game_over)
 			
 		_setup_camera_limits(level_instance, player)
-
+	else:
+		print("[ERROR]:::: Temp Error and redirect to main")
+		GameManager.go_to_main_menu()
+	
 func _setup_darkness() -> void:
 	darkness_modulate = CanvasModulate.new()
 	# RGBA: Почти черный, но оставляет 5% видимости, чтобы игрок мог различать стены вне радиуса света

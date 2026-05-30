@@ -5,14 +5,15 @@ extends Control
 @onready var loader: AnimatedSprite2D = %Loader
 
 func _ready() -> void:
-	panel_manager.hide()
-	preloading_screen.show()
-	loader.play('default')
+	panel_manager.show()
+	preloading_screen.hide()
 
 	AdManager.reward_earned.connect(_on_reward_earned)
 	CloudManager.sync_completed.connect(_on_cloud_sync_completed)
 	StoreManager.purchase_success.connect(_on_purchase_success)	
 	
+	if CloudManager.sync_in_porgress:
+		_show_preloading_screen()
 
 func _on_cloud_sync_completed() -> void:
 	panel_manager.show()
@@ -41,3 +42,9 @@ func _on_reward_earned(amount: int) -> void:
 	
 	# Мгновенно синхронизируем с Firebase, чтобы не потерять награду
 	CloudManager.save_to_cloud()
+
+
+func _show_preloading_screen():
+	panel_manager.hide()
+	preloading_screen.show()
+	loader.play('default')

@@ -7,10 +7,14 @@ var cloud_user_id: String = ""
 var users_collection: FirestoreCollection
 var current_document: FirestoreDocument
 
+var sync_in_porgress: bool = false
+
 # Наш собственный файл для хранения "фейкового" аккаунта
 const SECRET_AUTH_FILE = "user://secret_auth.cfg"
 
-func authenticate_player() -> void:	
+func authenticate_player() -> void:
+	sync_in_porgress = true
+
 	if not Firebase.Auth.login_succeeded.is_connected(_on_login_succeeded):
 		Firebase.Auth.login_succeeded.connect(_on_login_succeeded)
 	if not Firebase.Auth.login_failed.is_connected(_on_login_failed):
@@ -56,11 +60,13 @@ func _on_login_succeeded(auth_info) -> void:
 	sync_data()
 
 func _on_login_failed(error_code, message) -> void:
-	sync_completed.emit()
+	print("[ERROR: ]:::: error_code: ", error_code, "; message: ", message)
+	_sync_complete()
 
 func sync_data() -> void:
 	current_document = await users_collection.get_doc(cloud_user_id)
-	
+	sync_in_porgress = true
+
 	if current_document != null and current_document.document != null and not current_document.document.is_empty():
 		var cloud_data = current_document.document
 		var need_cloud_update: bool = false
@@ -128,7 +134,7 @@ func sync_data() -> void:
 	else:
 		await save_to_cloud()
 		
-	sync_completed.emit()
+	_sync_complete()
 
 func save_to_cloud() -> void:
 	if cloud_user_id == "": 
@@ -167,3 +173,9 @@ func save_to_cloud() -> void:
 		}
 		
 		current_document = await users_collection.add(cloud_user_id, normal_data)
+
+
+
+func _sync_complete() -> void:
+	sync_completed.emit()
+	sync_in_porgress = false
