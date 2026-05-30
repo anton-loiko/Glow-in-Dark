@@ -12,7 +12,6 @@ extends MarginContainer
 @onready var gear_panel: PanelContainer = %GearPanel
 @onready var base_panel: PanelContainer = %BasePanel
 
-
 func _ready() -> void:
 	show_panel(home_panel)
 	home_button.grab_focus()

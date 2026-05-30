@@ -16,9 +16,6 @@ border_width_top = 12
 border_width_right = 8
 border_color = Color(0.3352541, 0.18945426, 0.12246635, 1)
 border_blend = true
-shadow_color = Color(0.33333334, 0.1882353, 0.12156863, 0.6)
-shadow_size = 1
-anti_aliasing_size = 5.87
 
 [resource]
 Button/colors/font_pressed_color = Color(1, 1, 0.11764706, 1)
