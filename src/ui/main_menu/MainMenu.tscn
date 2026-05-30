@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cj7ae1khj2rmh" path="res://src/ui/main_menu/MainMenu.gd" id="1_yqorp"]
 [ext_resource type="PackedScene" uid="uid://dk7e6txoe6nou" path="res://src/ui/settings_menu/SettingsMenu.tscn" id="2_m3ldw"]
+[ext_resource type="PackedScene" uid="uid://bgnj5ttq8e5vy" path="res://src/ui/main_menu/PanelManager.tscn" id="2_xre00"]
 
 [sub_resource type="Gradient" id="Gradient_aql4q"]
 colors = PackedColorArray(1, 1, 1, 1, 0.7254902, 1, 1, 1)
@@ -22,7 +23,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_yqorp")
 
+[node name="PanelManager" parent="." unique_id=1361023300 instance=ExtResource("2_xre00")]
+layout_mode = 1
+
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=415794213]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -125,6 +130,7 @@ theme_override_font_sizes/font_size = 12
 text = "Закрыть"
 
 [node name="MenuSparksLabel" type="Label" parent="." unique_id=192583426]
+visible = false
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0

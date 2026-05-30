@@ -1,0 +1,178 @@
+[gd_scene format=3 uid="uid://bgnj5ttq8e5vy"]
+
+[ext_resource type="Script" uid="uid://bpcfa1myfi3c0" path="res://src/ui/main_menu/PanelManager.gd" id="1_rsxwy"]
+[ext_resource type="ButtonGroup" uid="uid://btouycuok16x6" path="res://src/ui/main_menu/tabs/hub_button_group.tres" id="2_hg3hc"]
+[ext_resource type="Theme" uid="uid://b7esdixhq3wfn" path="res://src/ui/main_menu/tabs/PanelTheme.tres" id="2_o2fhx"]
+[ext_resource type="PackedScene" uid="uid://bh08hndi076g1" path="res://src/ui/main_menu/tabs/shop/Shop.tscn" id="3_bb8mr"]
+[ext_resource type="PackedScene" uid="uid://bw3m47egoda6m" path="res://src/ui/main_menu/tabs/gear/Gear.tscn" id="3_kq2k0"]
+[ext_resource type="PackedScene" uid="uid://b6s071a1y8juu" path="res://src/ui/main_menu/tabs/base/Base.tscn" id="3_o2fhx"]
+[ext_resource type="PackedScene" uid="uid://dcf0r3mgki81l" path="res://src/ui/main_menu/tabs/skills/Skills.tscn" id="3_rhda7"]
+[ext_resource type="PackedScene" uid="uid://cloftxqgnvs1d" path="res://src/ui/main_menu/tabs/home/Home.tscn" id="3_tfshb"]
+[ext_resource type="Theme" uid="uid://brbgb87qohjbj" path="res://src/ui/main_menu/tabs/BarButtonTheme.tres" id="8_7sghk"]
+[ext_resource type="Texture2D" uid="uid://dk0ovi2824iqq" path="res://src/assets/images/modern_rpg_icon_pack/14-dungeon-objects/icon_25.png" id="9_gigbh"]
+[ext_resource type="Texture2D" uid="uid://bn515thwgtaxh" path="res://src/assets/images/modern_rpg_icon_pack/15-status-effects/icon_47.png" id="9_oep7p"]
+[ext_resource type="Texture2D" uid="uid://m0h3ypbfwfj4" path="res://src/assets/images/modern_rpg_icon_pack/16-runes-enchantments/icon_54.png" id="10_21uob"]
+[ext_resource type="Texture2D" uid="uid://4x3dmmf7f785" path="res://src/assets/images/modern_rpg_icon_pack/02-armor/icon_58.png" id="13_cqmyg"]
+[ext_resource type="Texture2D" uid="uid://s64my6v3doqq" path="res://src/assets/images/modern_rpg_icon_pack/14-dungeon-objects/icon_49.png" id="14_cqmyg"]
+
+[node name="PanelManager" type="MarginContainer" unique_id=1361023300]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rsxwy")
+
+[node name="Backbground" type="ColorRect" parent="." unique_id=1071790658]
+layout_mode = 2
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1236336908]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="ShopPanel" type="PanelContainer" parent="VBoxContainer" unique_id=1052969379]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_o2fhx")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/ShopPanel" unique_id=538015899]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Shop" parent="VBoxContainer/ShopPanel/MarginContainer" unique_id=999045000 instance=ExtResource("3_bb8mr")]
+layout_mode = 2
+
+[node name="SkillsPanel" type="PanelContainer" parent="VBoxContainer" unique_id=1171041350]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_o2fhx")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/SkillsPanel" unique_id=776030027]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Skills" parent="VBoxContainer/SkillsPanel/MarginContainer" unique_id=938733778 instance=ExtResource("3_rhda7")]
+layout_mode = 2
+
+[node name="HomePanel" type="PanelContainer" parent="VBoxContainer" unique_id=1134746371]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_o2fhx")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HomePanel" unique_id=1605239367]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Home" parent="VBoxContainer/HomePanel/MarginContainer" unique_id=154912027 instance=ExtResource("3_tfshb")]
+layout_mode = 2
+
+[node name="GearPanel" type="PanelContainer" parent="VBoxContainer" unique_id=1763867075]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_o2fhx")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/GearPanel" unique_id=466467231]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Gear" parent="VBoxContainer/GearPanel/MarginContainer" unique_id=1658114213 instance=ExtResource("3_kq2k0")]
+layout_mode = 2
+
+[node name="BasePanel" type="PanelContainer" parent="VBoxContainer" unique_id=1488077460]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_o2fhx")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/BasePanel" unique_id=2092974542]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Base" parent="VBoxContainer/BasePanel/MarginContainer" unique_id=1388674909 instance=ExtResource("3_o2fhx")]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1983199495]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 0
+
+[node name="ShopButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=378670929]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_7sghk")
+toggle_mode = true
+button_group = ExtResource("2_hg3hc")
+text = "Shop"
+icon = ExtResource("9_gigbh")
+icon_alignment = 1
+
+[node name="SkillsButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=977300557]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_7sghk")
+toggle_mode = true
+button_group = ExtResource("2_hg3hc")
+text = "Skills"
+icon = ExtResource("10_21uob")
+icon_alignment = 1
+
+[node name="HomeButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1864545282]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_7sghk")
+toggle_mode = true
+button_pressed = true
+button_group = ExtResource("2_hg3hc")
+text = "Explore"
+icon = ExtResource("9_oep7p")
+icon_alignment = 1
+
+[node name="GearButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=623105696]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_7sghk")
+toggle_mode = true
+button_group = ExtResource("2_hg3hc")
+text = "Gear"
+icon = ExtResource("13_cqmyg")
+icon_alignment = 1
+
+[node name="BaseButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=319868544]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("8_7sghk")
+toggle_mode = true
+button_group = ExtResource("2_hg3hc")
+text = "Base"
+icon = ExtResource("14_cqmyg")
+icon_alignment = 1
