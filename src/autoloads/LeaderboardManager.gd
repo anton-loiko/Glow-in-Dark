@@ -25,7 +25,7 @@ func fetch_top_players() -> void:
 		for doc in query_result:
 			var doc_data = doc.document
 			
-			var player_name = "Игрок"
+			var player_name = "Player"
 			var player_level = 1
 			
 			# Распаковываем число уровня из REST API формата Firebase
@@ -34,9 +34,9 @@ func fetch_top_players() -> void:
 			
 			# Чтобы не раскрывать чужие скрытые email, мы делаем имя из ID документа.
 			# doc.doc_name — это уникальный буквенно-цифровой код аккаунта.
-			# left(6) обрезает его, оставляя первые 6 символов (например, Игрок_a84f1d)
+			# left(6) обрезает его, оставляя первые 6 символов (например, Player_a84f1d)
 			if doc.doc_name != "":
-				player_name = "Игрок_" + doc.doc_name.left(6)
+				player_name = "Player_" + doc.doc_name.left(6)
 			
 			# Кладим чистые данные в наш итоговый список
 			leaderboard_list.append({

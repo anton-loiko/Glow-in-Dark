@@ -4,13 +4,13 @@ extends MarginContainer
 @onready var skills_button: Button = %SkillsButton
 @onready var home_button: Button = %HomeButton
 @onready var gear_button: Button = %GearButton
-@onready var base_button: Button = %BaseButton
+@onready var ranked_button: Button = %RankedButton
 
 @onready var shop_panel: PanelContainer = %ShopPanel
 @onready var skills_panel: PanelContainer = %SkillsPanel
 @onready var home_panel: PanelContainer = %HomePanel
 @onready var gear_panel: PanelContainer = %GearPanel
-@onready var base_panel: PanelContainer = %BasePanel
+@onready var ranked_panel: PanelContainer = %RankedPanel
 
 func _ready() -> void:
 	show_panel(home_panel)
@@ -21,7 +21,7 @@ func _ready() -> void:
 	skills_button.pressed.connect(show_panel.bind(skills_panel))
 	home_button.pressed.connect(show_panel.bind(home_panel))
 	gear_button.pressed.connect(show_panel.bind(gear_panel))
-	base_button.pressed.connect(show_panel.bind(base_panel))
+	ranked_button.pressed.connect(show_panel.bind(ranked_panel))
 	
 
 func show_panel(panel_to_show: PanelContainer) -> void:
@@ -33,4 +33,4 @@ func _hide_all_panels()->void:
 	skills_panel.hide()
 	home_panel.hide()
 	gear_panel.hide()
-	base_panel.hide()
+	ranked_panel.hide()

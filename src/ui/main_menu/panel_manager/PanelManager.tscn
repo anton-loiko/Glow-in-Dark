@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://b7esdixhq3wfn" path="res://src/ui/main_menu/panel_manager/PanelTheme.tres" id="2_o2fhx"]
 [ext_resource type="PackedScene" uid="uid://bh08hndi076g1" path="res://src/ui/main_menu/tabs/shop/Shop.tscn" id="3_bb8mr"]
 [ext_resource type="PackedScene" uid="uid://bw3m47egoda6m" path="res://src/ui/main_menu/tabs/gear/Gear.tscn" id="3_kq2k0"]
-[ext_resource type="PackedScene" uid="uid://b6s071a1y8juu" path="res://src/ui/main_menu/tabs/base/Base.tscn" id="3_o2fhx"]
+[ext_resource type="PackedScene" uid="uid://b6s071a1y8juu" path="res://src/ui/main_menu/tabs/ranked/Ranked.tscn" id="3_o2fhx"]
 [ext_resource type="PackedScene" uid="uid://dcf0r3mgki81l" path="res://src/ui/main_menu/tabs/skills/Skills.tscn" id="3_rhda7"]
 [ext_resource type="PackedScene" uid="uid://cloftxqgnvs1d" path="res://src/ui/main_menu/tabs/home/Home.tscn" id="3_tfshb"]
 [ext_resource type="PackedScene" uid="uid://bu11lhgnesc6q" path="res://src/ui/main_menu/tab_button/TabButton.tscn" id="8_8es5f"]
@@ -107,21 +107,21 @@ theme_override_constants/margin_bottom = 5
 [node name="Gear" parent="VBoxContainer/GearPanel/MarginContainer" unique_id=1658114213 instance=ExtResource("3_kq2k0")]
 layout_mode = 2
 
-[node name="BasePanel" type="PanelContainer" parent="VBoxContainer" unique_id=1488077460]
+[node name="RankedPanel" type="PanelContainer" parent="VBoxContainer" unique_id=1488077460]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("2_o2fhx")
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/BasePanel" unique_id=2092974542]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/RankedPanel" unique_id=2092974542]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="Base" parent="VBoxContainer/BasePanel/MarginContainer" unique_id=1388674909 instance=ExtResource("3_o2fhx")]
+[node name="Ranked" parent="VBoxContainer/RankedPanel/MarginContainer" unique_id=1388674909 instance=ExtResource("3_o2fhx")]
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1983199495]
@@ -158,9 +158,9 @@ button_group = SubResource("ButtonGroup_vau7f")
 default_text = "Gear"
 default_icon = ExtResource("13_cqmyg")
 
-[node name="BaseButton" parent="VBoxContainer/HBoxContainer" unique_id=1685699081 instance=ExtResource("8_8es5f")]
+[node name="RankedButton" parent="VBoxContainer/HBoxContainer" unique_id=1685699081 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
 button_group = SubResource("ButtonGroup_k0bv6")
-default_text = "Base"
+default_text = "Ranked"
 default_icon = ExtResource("14_cqmyg")
