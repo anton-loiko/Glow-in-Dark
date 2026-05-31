@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://diqaeekswt55k" path="res://src/core_loop/HUD/game_ui/UIControl.gd" id="1_dj8aq"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="2_qu8t6"]
+[ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
 
 [sub_resource type="Gradient" id="Gradient_ll0sn"]
 offsets = PackedFloat32Array(0.015625, 1)
@@ -68,33 +69,43 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dj8aq")
 
-[node name="SparksLabel" type="Label" parent="UIControl" unique_id=299155964]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 200.0
-offset_right = 270.0
-offset_bottom = 23.0
-grow_horizontal = 0
-size_flags_horizontal = 8
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
-text = "Sparks: 0"
-
-[node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl" unique_id=1091104082]
+[node name="SafeAreaContainer" parent="UIControl" unique_id=362836226 instance=ExtResource("3_gpq8j")]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -50.0
-offset_top = 10.0
-offset_right = 50.0
-offset_bottom = 20.0
-grow_horizontal = 2
+
+[node name="HUD" type="MarginContainer" parent="UIControl/SafeAreaContainer" unique_id=1988987002]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/SafeAreaContainer/HUD" unique_id=1120807376]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer" unique_id=1346013282]
+layout_mode = 2
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1091104082]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
 texture_under = SubResource("GradientTexture2D_dj8aq")
 texture_over = SubResource("GradientTexture2D_5en4g")
 texture_progress = SubResource("GradientTexture2D_75u2n")
+
+[node name="MarginContainer" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1050376698]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SparksLabel" type="Label" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=299155964]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
+text = "Sparks: 0"
 
 [node name="LosePanel" type="Panel" parent="UIControl" unique_id=311640636]
 unique_name_in_owner = true

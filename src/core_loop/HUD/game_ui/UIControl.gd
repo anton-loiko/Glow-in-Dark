@@ -3,7 +3,7 @@ extends Control
 
 const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
 
-@onready var progress_bar: TextureProgressBar = $TextureProgressBar
+@onready var progress_bar: TextureProgressBar = %TextureProgressBar
 @onready var lose_panel: Panel = %LosePanel
 @onready var win_panel: Panel = %WinPanel
 @onready var sparks_label: Label = %SparksLabel
