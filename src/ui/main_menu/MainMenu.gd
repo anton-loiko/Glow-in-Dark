@@ -1,7 +1,7 @@
 extends Control
 
-@onready var panel_manager: MarginContainer = $PanelManager
-@onready var preloading_screen: MarginContainer = $PreloadingScreen
+@onready var panel_manager: MarginContainer = %PanelManager
+@onready var preloading_screen: MarginContainer = %PreloadingScreen
 @onready var loader: AnimatedSprite2D = %Loader
 
 func _ready() -> void:
