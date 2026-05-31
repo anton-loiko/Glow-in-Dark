@@ -9,6 +9,11 @@ const ITEM_NO_ADS = "com.forwardmobile.lightinthedark.no_ads"
 const ITEM_BLUE_SKIN = "com.forwardmobile.lightinthedark.blue_skin"
 
 func buy_item(item_id: String) -> void:
+	var chance = randf()
+	
+	# Имитируем не успешную покупку
+	if chance < 0.1:
+		purchase_failed.emit("Failed just for test")
 	
 	# Имитируем ожидание ответа от банка/магазина (1.5 секунды)
 	await get_tree().create_timer(1.5).timeout
