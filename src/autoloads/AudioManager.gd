@@ -15,7 +15,11 @@ var playlist: Array[AudioStream] = [
 ]
 
 func _ready() -> void:
+	process_mode = PROCESS_MODE_ALWAYS
+	
 	music_player = AudioStreamPlayer.new()
+	music_player.process_mode = PROCESS_MODE_ALWAYS
+
 	add_child(music_player)
 	
 	music_player.finished.connect(_on_music_finished)

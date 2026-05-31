@@ -92,13 +92,13 @@ func load_level(level_number: int) -> void:
 	current_level = level_number
 	
 	if is_level_exists(level_number):
-		get_tree().change_scene_to_file("res://src/levels/LevelRoot.tscn")
+		get_tree().change_scene_to_file("res://src/core_loop/levels/LevelRoot.tscn")
 	else:
 		print("Уровень ", level_number, " не найден! Игра пройдена.")
 		go_to_main_menu()
 
 func is_level_exists(level_number: int) -> bool:
-	var level_path = "res://src/levels/Level_" + str(level_number) + ".tscn"
+	var level_path = "res://src/core_loop/levels/Level_" + str(level_number) + ".tscn"
 	return ResourceLoader.exists(level_path)
 
 func go_to_main_menu() -> void:
@@ -116,8 +116,9 @@ func add_sparks(amount: int) -> void:
 
 func reset_progress() -> void:
 	unlocked_level = 1
+	current_level = 1
 	sparks = 0
-	owned_skins = ["default"]
-	equipped_skin = "default"
+	#owned_skins = ["default"]
+	#equipped_skin = "default"
 	save_game()
 	CloudManager.save_to_cloud()

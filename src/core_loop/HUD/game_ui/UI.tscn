@@ -1,0 +1,242 @@
+[gd_scene format=3 uid="uid://cpk5t78mr6e7e"]
+
+[ext_resource type="Script" uid="uid://diqaeekswt55k" path="res://src/core_loop/HUD/game_ui/UIControl.gd" id="1_dj8aq"]
+[ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="2_qu8t6"]
+
+[sub_resource type="Gradient" id="Gradient_ll0sn"]
+offsets = PackedFloat32Array(0.015625, 1)
+colors = PackedColorArray(0.49411765, 0.49411765, 0.49411765, 1, 0.4955091, 0.4955091, 0.4955091, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dj8aq"]
+gradient = SubResource("Gradient_ll0sn")
+width = 100
+height = 10
+
+[sub_resource type="Gradient" id="Gradient_ro3t7"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5en4g"]
+gradient = SubResource("Gradient_ro3t7")
+width = 2
+height = 10
+
+[sub_resource type="Gradient" id="Gradient_ua6yw"]
+colors = PackedColorArray(0.6835208, 0.5984089, 0.19823518, 1, 1, 1, 0.08235294, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_75u2n"]
+gradient = SubResource("Gradient_ua6yw")
+width = 100
+height = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qu8t6"]
+bg_color = Color(1, 0.3274344, 0.38764626, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eiyve"]
+bg_color = Color(9.62615e-08, 0.7008574, 0.5731082, 1)
+
+[sub_resource type="Gradient" id="Gradient_4g0qy"]
+offsets = PackedFloat32Array(0.010250569, 0.6697039, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.67058825, 0.67058825, 0.67058825, 0.39607844, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_s8oxs"]
+gradient = SubResource("Gradient_4g0qy")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.724359, 0.22222222)
+
+[sub_resource type="Gradient" id="Gradient_qu8t6"]
+offsets = PackedFloat32Array(0, 0.60364467, 1)
+colors = PackedColorArray(1.5883148e-06, 0.4891237, 0.48922426, 1, 0, 0.49019608, 0.49019608, 1, 0, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4g0qy"]
+gradient = SubResource("Gradient_qu8t6")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.9102564, 0.113247864)
+
+[node name="UI" type="CanvasLayer" unique_id=1901153143]
+process_mode = 3
+metadata/_edit_vertical_guides_ = [0.0, 270.0]
+metadata/_edit_horizontal_guides_ = [480.0, 0.0]
+
+[node name="UIControl" type="Control" parent="." unique_id=1711831803]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dj8aq")
+
+[node name="SparksLabel" type="Label" parent="UIControl" unique_id=299155964]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 200.0
+offset_right = 270.0
+offset_bottom = 23.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
+text = "Sparks: 0"
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl" unique_id=1091104082]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -50.0
+offset_top = 10.0
+offset_right = 50.0
+offset_bottom = 20.0
+grow_horizontal = 2
+max_value = 1.0
+step = 0.01
+texture_under = SubResource("GradientTexture2D_dj8aq")
+texture_over = SubResource("GradientTexture2D_5en4g")
+texture_progress = SubResource("GradientTexture2D_75u2n")
+
+[node name="LosePanel" type="Panel" parent="UIControl" unique_id=311640636]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qu8t6")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/LosePanel" unique_id=1681306540]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -43.0
+offset_top = -29.0
+offset_right = 43.0
+offset_bottom = 29.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="UIControl/LosePanel/VBoxContainer" unique_id=223904571]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.00018197033, 0.04126285, 0.25682852, 1)
+theme_override_font_sizes/font_size = 26
+text = "Свет погас"
+horizontal_alignment = 1
+
+[node name="ReviveButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=1816540424]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Смотреть рекламу (+50% света)"
+
+[node name="Button" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=353627666]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Заново"
+
+[node name="MenuButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=300988848]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Меню"
+
+[node name="WinPanel" type="Panel" parent="UIControl" unique_id=1266359883]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_eiyve")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/WinPanel" unique_id=1899551391]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -40.5
+offset_right = 72.0
+offset_bottom = 40.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="UIControl/WinPanel/VBoxContainer" unique_id=940988051]
+layout_mode = 2
+text = "Уровень пройден"
+horizontal_alignment = 1
+
+[node name="RewardLabel" type="Label" parent="UIControl/WinPanel/VBoxContainer" unique_id=734472606]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Собрано искр: 0"
+horizontal_alignment = 1
+
+[node name="NextLevelButton" type="Button" parent="UIControl/WinPanel/VBoxContainer" unique_id=821252769]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Дальше"
+
+[node name="MenuButton" type="Button" parent="UIControl/WinPanel/VBoxContainer" unique_id=1935173201]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Меню"
+
+[node name="Virtual Joystick" parent="." unique_id=1665255622 instance=ExtResource("2_qu8t6")]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.27450982)
+anchors_preset = 15
+anchor_top = 0.0
+anchor_right = 1.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+clampzone_size = 22.0
+joystick_mode = 1
+
+[node name="Base" parent="Virtual Joystick" index="0"]
+custom_minimum_size = Vector2(40, 40)
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -160.0
+offset_right = 6.1035156e-05
+offset_bottom = -120.0
+pivot_offset = Vector2(20, 20)
+texture = SubResource("GradientTexture2D_s8oxs")
+expand_mode = 1
+stretch_mode = 2
+
+[node name="Tip" parent="Virtual Joystick/Base" index="0"]
+custom_minimum_size = Vector2(20, 20)
+anchors_preset = -1
+offset_left = 1.9999695
+offset_top = 2.0
+offset_right = 21.999973
+offset_bottom = 22.0
+pivot_offset = Vector2(0, 0)
+texture = SubResource("GradientTexture2D_4g0qy")
+expand_mode = 1
+stretch_mode = 4
+
+[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
+[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/Button" to="UIControl" method="_on_restart_button_pressed"]
+[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
+[connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]
+[connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
+
+[editable path="Virtual Joystick"]

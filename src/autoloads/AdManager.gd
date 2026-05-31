@@ -19,8 +19,8 @@ func _ready() -> void:
 		
 		admob.rewarded_ad_loaded.connect(func(): is_rewarded_loaded = true)
 		admob.rewarded_ad_closed.connect(_on_rewarded_closed)
-		admob.rewarded_ad_failed_to_load.connect(func(err): ad_failed.emit())
-		admob.rewarded_user_earned_reward.connect(func(reward_type, amount): reward_earned.emit(amount))
+		admob.rewarded_ad_failed_to_load.connect(_on_rewarded_ad_failed_to_load)
+		admob.rewarded_user_earned_reward.connect(_on_rewarded_user_earned_reward)
 		
 		admob.interstitial_loaded.connect(func(): is_interstitial_loaded = true)
 		admob.interstitial_closed.connect(_on_interstitial_closed)
@@ -37,9 +37,10 @@ func _load_all_ads() -> void:
 		admob.load_interstitial(INTERSTITIAL_ID)
 
 func show_rewarded_ad() -> void:
-	if GameManager.has_no_ads:
-		reward_earned.emit(1)
-		return
+	# FIXME: Probably it should be for "Foreced AD", not for rewarded.
+	#if GameManager.has_no_ads:
+		#reward_earned.emit(1)
+		#return
 		
 	if admob and is_rewarded_loaded:
 		is_rewarded_loaded = false
@@ -48,7 +49,7 @@ func show_rewarded_ad() -> void:
 		print("Симуляция просмотра Rewarded (ПК): Успешно")
 		var timer = get_tree().create_timer(1.0)
 		timer.timeout.connect(func():
-			reward_earned.emit(1)
+			reward_earned.emit(50)
 			ad_closed.emit()
 		)
 	else:
@@ -76,3 +77,11 @@ func _on_rewarded_closed() -> void:
 func _on_interstitial_closed() -> void:
 	ad_closed.emit()
 	_load_all_ads()
+
+func _on_rewarded_ad_failed_to_load(err) -> void:
+	print("[ERROR]::[_on_rewarded_ad_failed_to_load]:::: ", err)
+	ad_failed.emit()
+	
+func _on_rewarded_user_earned_reward(reward_type, amount) -> void:
+	print("[_on_rewarded_user_earned_reward]::[reward_type]::::", reward_type)
+	reward_earned.emit(amount)

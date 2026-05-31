@@ -174,8 +174,6 @@ func save_to_cloud() -> void:
 		
 		current_document = await users_collection.add(cloud_user_id, normal_data)
 
-
-
 func _sync_complete() -> void:
 	sync_completed.emit()
 	sync_in_porgress = false

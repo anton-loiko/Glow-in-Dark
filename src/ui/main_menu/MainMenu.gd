@@ -10,7 +10,8 @@ func _ready() -> void:
 
 	AdManager.reward_earned.connect(_on_reward_earned)
 	CloudManager.sync_completed.connect(_on_cloud_sync_completed)
-	StoreManager.purchase_success.connect(_on_purchase_success)	
+	StoreManager.purchase_success.connect(_on_purchase_success)
+	StoreManager.purchase_failed.connect(_on_purchase_failed)
 	
 	if CloudManager.sync_in_porgress:
 		_show_preloading_screen()
@@ -20,7 +21,12 @@ func _on_cloud_sync_completed() -> void:
 	preloading_screen.hide()
 	loader.stop()
 
+func _on_purchase_failed(reason: String) -> void:
+	print("[ERROR]::[_on_purchase_failed]:::: ", reason)
+
 func _on_purchase_success(item_id: String) -> void:
+	print("[_on_purchase_success]:::: item_id: ", item_id)
+
 	if item_id == StoreManager.ITEM_NO_ADS:
 		GameManager.has_no_ads = true
 		

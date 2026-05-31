@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://5pjdp06oaw6s"]
+
+[ext_resource type="Script" uid="uid://clceti84brmx0" path="res://src/core_loop/entities/player/Player.gd" id="1_3vyb7"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3py4g"]
+light_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_3py4g"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_awdo7"]
+gradient = SubResource("Gradient_3py4g")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.9, 0.5)
+
+[sub_resource type="Curve" id="Curve_3py4g"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_awdo7"]
+curve = SubResource("Curve_3py4g")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3py4g"]
+particle_flag_disable_z = true
+gravity = Vector3(0, 0, 0)
+scale_min = 0.0
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_awdo7")
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_awdo7"]
+light_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_u8vuu"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_3vyb7"]
+gradient = SubResource("Gradient_u8vuu")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.9, 0.5)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_u8vuu"]
+radius = 7.0
+
+[sub_resource type="Gradient" id="Gradient_3vyb7"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_g2els"]
+gradient = SubResource("Gradient_3vyb7")
+width = 180
+height = 180
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.9, 0.5)
+
+[node name="Player" type="CharacterBody2D" unique_id=740577881 groups=["player"]]
+script = ExtResource("1_3vyb7")
+metadata/_edit_horizontal_guides_ = [10.0]
+
+[node name="TrailParticles" type="GPUParticles2D" parent="." unique_id=464090430]
+material = SubResource("CanvasItemMaterial_3py4g")
+amount = 30
+texture = SubResource("GradientTexture2D_awdo7")
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_3py4g")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=361187433]
+material = SubResource("CanvasItemMaterial_awdo7")
+texture = SubResource("GradientTexture2D_3vyb7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=524020536]
+shape = SubResource("CircleShape2D_u8vuu")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=461984158]
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 1.0
+texture = SubResource("GradientTexture2D_g2els")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=422419212]
+position_smoothing_enabled = true
+position_smoothing_speed = 10.0
