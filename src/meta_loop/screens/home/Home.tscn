@@ -4,8 +4,8 @@
 [ext_resource type="FontFile" uid="uid://bd31g3qnocnqb" path="res://src/assets/fonts/Kenney/Kenney Mini Square Mono.ttf" id="2_d7tsp"]
 [ext_resource type="FontFile" uid="uid://l1swtmd3pa67" path="res://src/assets/fonts/Kenney/Kenney Pixel Square.ttf" id="2_r6ph5"]
 [ext_resource type="PackedScene" uid="uid://c30gc56g10e24" path="res://src/meta_loop/common/currency/soft/SoftCurrency.tscn" id="2_utxai"]
-[ext_resource type="Texture2D" uid="uid://drn12rmj3v03h" path="res://src/assets/images/kenney_game_icons/sheet_white2x.png" id="3_7s3xh"]
 [ext_resource type="PackedScene" uid="uid://dk7e6txoe6nou" path="res://src/ui/settings_menu/SettingsMenu.tscn" id="3_k2xu3"]
+[ext_resource type="Texture2D" uid="uid://dpcdhkmms2wky" path="res://src/assets/images/kenney_game_icons/White/2x/gear.png" id="4_5hv5m"]
 [ext_resource type="PackedScene" uid="uid://bcw8u0pi622py" path="res://src/meta_loop/screens/home/home_screen_button/HomeScreenButton.tscn" id="5_t61jl"]
 [ext_resource type="Texture2D" uid="uid://c5ntbegknp8me" path="res://src/assets/images/modern_rpg_icon_pack/14-dungeon-objects/icon_39.png" id="6_5hv5m"]
 
@@ -31,10 +31,6 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 shadow_color = Color(0.1764706, 0.1764706, 0.26666668, 0.6)
 shadow_size = 2
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r6ph5"]
-atlas = ExtResource("3_7s3xh")
-region = Rect2(320, 1720, 64, 64)
 
 [sub_resource type="Gradient" id="Gradient_r6ph5"]
 colors = PackedColorArray(0.011764706, 0.39607844, 0.3019608, 1, 0.011764706, 0.39607844, 0.3019608, 0.6)
@@ -63,7 +59,7 @@ width = 250
 height = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hv5m"]
-bg_color = Color(0.6, 0.6, 0.6, 0.19607843)
+bg_color = Color(1, 1, 1, 0.05882353)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
@@ -144,15 +140,15 @@ size_flags_horizontal = 3
 
 [node name="SettingsButton" type="Button" parent="UIContainer/VBoxContainer/Header/HBoxContainer1" unique_id=307077551]
 unique_name_in_owner = true
+texture_filter = 1
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 theme_override_colors/icon_pressed_color = Color(1, 1, 1, 0.43137255)
-theme_override_constants/icon_max_width = 10
 theme_override_styles/normal = SubResource("StyleBoxFlat_7s3xh")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_7s3xh")
 theme_override_styles/hover = SubResource("StyleBoxFlat_7s3xh")
 theme_override_styles/focus = SubResource("StyleBoxFlat_7s3xh")
-icon = SubResource("AtlasTexture_r6ph5")
+icon = ExtResource("4_5hv5m")
 icon_alignment = 1
 expand_icon = true
 
@@ -188,7 +184,7 @@ size_flags_vertical = 3
 
 [node name="Left" type="VBoxContainer" parent="UIContainer/VBoxContainer/HBoxContainer" unique_id=1407118917]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 2
 
 [node name="Top" type="PanelContainer" parent="UIContainer/VBoxContainer/HBoxContainer/Left" unique_id=991973540]
 layout_mode = 2
@@ -248,7 +244,7 @@ size_flags_horizontal = 3
 
 [node name="Right" type="VBoxContainer" parent="UIContainer/VBoxContainer/HBoxContainer" unique_id=1555554937]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 10
 
 [node name="Top" type="PanelContainer" parent="UIContainer/VBoxContainer/HBoxContainer/Right" unique_id=1345920858]
 layout_mode = 2

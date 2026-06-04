@@ -41,7 +41,7 @@ size_flags_vertical = 0
 
 [node name="Icon" type="TextureRect" parent="VBoxContainer" unique_id=2037618527]
 unique_name_in_owner = true
-z_index = 1
+texture_filter = 1
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 size_flags_horizontal = 4

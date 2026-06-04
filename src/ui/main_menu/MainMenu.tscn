@@ -118,6 +118,7 @@ size_flags_vertical = 10
 [node name="Loader" type="AnimatedSprite2D" parent="SafeAreaContainer/PreloadingScreen/VBoxContainer/HBoxContainer" unique_id=1820926955]
 unique_name_in_owner = true
 process_mode = 3
+texture_filter = 1
 position = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_af53c")
 frame_progress = 0.4047377

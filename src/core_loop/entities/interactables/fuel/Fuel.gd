@@ -3,6 +3,11 @@ extends Area2D
 const LIGHT_RESTORE_AMOUNT: float = 0.4
 const PICKUP_SFX = preload("res://src/assets/audio/pickup_impactWood_light_001.ogg")
 
+@onready var animatedSprite = $AnimatedSprite2D
+
+func _ready() -> void:
+	animatedSprite.play()
+
 func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
 		if body.has_method("add_light"):

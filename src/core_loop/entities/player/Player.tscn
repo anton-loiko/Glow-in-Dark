@@ -1,16 +1,19 @@
 [gd_scene format=3 uid="uid://5pjdp06oaw6s"]
 
 [ext_resource type="Script" uid="uid://clceti84brmx0" path="res://src/core_loop/entities/player/Player.gd" id="1_3vyb7"]
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3py4g"]
-light_mode = 1
+[ext_resource type="Material" uid="uid://jw3roji05wk3" path="res://src/core_loop/entities/player/player_canvas_item_material.tres" id="2_175b4"]
+[ext_resource type="Texture2D" uid="uid://bjs8ijyuet1lh" path="res://src/assets/images/sprites/Player_default_idle.png" id="3_1vsc1"]
+[ext_resource type="Texture2D" uid="uid://b2j71xct5pnpg" path="res://src/core_loop/entities/player/new_atlas_texture.tres" id="3_6myxe"]
+[ext_resource type="Texture2D" uid="uid://cyyca53rrpf50" path="res://src/assets/images/sprites/Player_default_move_down.png" id="5_w7tlw"]
+[ext_resource type="Texture2D" uid="uid://d0nmkrgb4ejip" path="res://src/assets/images/sprites/Player_default_move_right.png" id="6_jmna5"]
+[ext_resource type="Texture2D" uid="uid://w3s3t5xl8yyt" path="res://src/assets/images/sprites/Player_default_move_up.png" id="6_vbqp7"]
 
 [sub_resource type="Gradient" id="Gradient_3py4g"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+colors = PackedColorArray(1, 1, 0.83137256, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_awdo7"]
 gradient = SubResource("Gradient_3py4g")
-width = 32
+width = 24
 height = 32
 fill = 1
 fill_from = Vector2(0.5, 0.5)
@@ -30,9 +33,6 @@ scale_min = 0.0
 scale_max = 0.5
 scale_curve = SubResource("CurveTexture_awdo7")
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_awdo7"]
-light_mode = 1
-
 [sub_resource type="Gradient" id="Gradient_u8vuu"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
@@ -44,16 +44,105 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.9, 0.5)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_w7tlw"]
+atlas = ExtResource("3_1vsc1")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vbqp7"]
+atlas = ExtResource("3_1vsc1")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmna5"]
+atlas = ExtResource("3_1vsc1")
+region = Rect2(16, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o5kc1"]
+atlas = ExtResource("5_w7tlw")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a1ahj"]
+atlas = ExtResource("5_w7tlw")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ridf5"]
+atlas = ExtResource("6_jmna5")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2qvhv"]
+atlas = ExtResource("6_jmna5")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5form"]
+atlas = ExtResource("6_vbqp7")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ltgq8"]
+atlas = ExtResource("6_vbqp7")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_o5kc1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_6myxe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w7tlw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vbqp7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmna5")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o5kc1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a1ahj")
+}],
+"loop": true,
+"name": &"move_down",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ridf5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2qvhv")
+}],
+"loop": true,
+"name": &"move_right",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5form")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ltgq8")
+}],
+"loop": true,
+"name": &"move_up",
+"speed": 4.0
+}]
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_u8vuu"]
-radius = 7.0
+radius = 5.0
 
 [sub_resource type="Gradient" id="Gradient_3vyb7"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_g2els"]
 gradient = SubResource("Gradient_3vyb7")
-width = 180
-height = 180
+width = 120
+height = 120
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.9, 0.5)
@@ -63,15 +152,40 @@ script = ExtResource("1_3vyb7")
 metadata/_edit_horizontal_guides_ = [10.0]
 
 [node name="TrailParticles" type="GPUParticles2D" parent="." unique_id=464090430]
-material = SubResource("CanvasItemMaterial_3py4g")
+visible = false
+material = ExtResource("2_175b4")
 amount = 30
 texture = SubResource("GradientTexture2D_awdo7")
 lifetime = 0.5
 process_material = SubResource("ParticleProcessMaterial_3py4g")
 
+[node name="TrailParticles2" type="GPUParticles2D" parent="." unique_id=1845700075]
+material = ExtResource("2_175b4")
+amount = 20
+texture = SubResource("GradientTexture2D_awdo7")
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_3py4g")
+
+[node name="TrailParticles3" type="GPUParticles2D" parent="." unique_id=1882754782]
+visible = false
+material = ExtResource("2_175b4")
+amount = 20
+texture = ExtResource("3_6myxe")
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_3py4g")
+
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=361187433]
-material = SubResource("CanvasItemMaterial_awdo7")
+visible = false
+texture_filter = 1
+material = ExtResource("2_175b4")
 texture = SubResource("GradientTexture2D_3vyb7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=506295829]
+texture_filter = 1
+material = ExtResource("2_175b4")
+position = Vector2(0, -2)
+sprite_frames = SubResource("SpriteFrames_o5kc1")
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=524020536]
 shape = SubResource("CircleShape2D_u8vuu")

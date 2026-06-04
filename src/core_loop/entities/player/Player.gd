@@ -4,8 +4,7 @@ extends CharacterBody2D
 signal light_changed(new_value: float)
 signal died
 
-const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
-const SPEED: float = 300.0
+const SPEED: float = 80.0 # 300.0
 const ACCELERATION: float = 15.0
 const FRICTION: float = 20.0
 const MAX_LIGHT_SCALE: float = 1.0
@@ -20,21 +19,24 @@ var current_light_health: float = MAX_LIGHT_SCALE
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var camera: Camera2D = $Camera2D
 @onready var trail_particles: GPUParticles2D = $TrailParticles
+@onready var animatedSprite = $AnimatedSprite2D
 
 func _ready() -> void:
+	animatedSprite.play('idle')
+	
 	current_light_health = MAX_LIGHT_SCALE
 	light_changed.emit(current_light_health)
 	
 	var skin_color: Color = GameManager.get_equipped_skin_color()
 	light.color = skin_color
-	sprite.modulate = skin_color
+	animatedSprite.modulate = skin_color
 	
 	if trail_particles:
 		trail_particles.modulate = skin_color
 
 func _process(delta: float) -> void:
 	if is_dead: return
-
+	
 	current_light_health -= LIGHT_FADE_RATE * delta
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
 	light_changed.emit(current_light_health)
@@ -56,12 +58,29 @@ func _physics_process(delta: float) -> void:
 		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 		move_and_slide()
 		return
-
-	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	
+	# TODO: Rewrite to state machine
+	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if input_direction != Vector2.ZERO:
+		animatedSprite.flip_h = false
+
+		if input_direction.y > 0: # Down
+			print("Down")
+			animatedSprite.play('move_down')
+		elif input_direction.y < 0: # UP
+			print("Up")
+			animatedSprite.play('move_up')
+		elif input_direction.x > 0: # Right
+			print("Right")
+			animatedSprite.play('move_right')
+		elif input_direction.x < 0: # Left
+			animatedSprite.flip_h = true
+			animatedSprite.play('move_right')
+		
 		velocity = velocity.lerp(input_direction * SPEED, ACCELERATION * delta)
 	else:
+		# TODO: check if it good solution, play idle on process.
+		animatedSprite.play("idle")
 		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 
 	move_and_slide()
@@ -88,7 +107,6 @@ func die() -> void:
 	if trail_particles:
 		trail_particles.emitting = false
 	
-	AudioManager.play_sfx(GAME_OVER_SFX)
 	set_process(false)
 	died.emit()
 

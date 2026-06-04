@@ -61,6 +61,7 @@ shape = SubResource("CapsuleShape2D_oh76w")
 debug_color = Color(0.7178751, 0.46338576, 0.35718048, 0.73333335)
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=46717051]
+texture_filter = 1
 material = SubResource("CanvasItemMaterial_u7cur")
 texture = ExtResource("2_u7cur")
 hframes = 8

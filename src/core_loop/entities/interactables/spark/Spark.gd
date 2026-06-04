@@ -4,7 +4,12 @@ extends Area2D
 const PICKUP_SFX = preload("res://src/assets/audio/pickup_coin_powerUp9.ogg")
 const SPARK_VALUE: int = 1
 
+@onready var animatedSprite = $AnimatedSprite2D
+
+
 func _ready() -> void:
+	animatedSprite.play()
+	
 	if not body_entered.is_connected:
 		body_entered.connect(_on_body_entered)
 

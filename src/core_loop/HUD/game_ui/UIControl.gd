@@ -2,6 +2,7 @@ class_name GameUI
 extends Control
 
 const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
+const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 
 @onready var progress_bar: TextureProgressBar = %TextureProgressBar
 @onready var lose_panel: Panel = %LosePanel
@@ -46,6 +47,7 @@ func show_game_over() -> void:
 	get_tree().paused = true
 	virtual_joystick.hide()
 	lose_panel.show()
+	AudioManager.play_sfx(GAME_OVER_SFX)
 	revive_button.show()
 	win_panel.hide()
 

@@ -2,8 +2,11 @@ class_name Exit
 extends Area2D
 
 const WIN_SFX = preload("res://src/assets/audio/win_zap1.ogg")
+@onready var animatedSprite = $AnimatedSprite2D
 
 func _ready() -> void:
+	animatedSprite.play()
+	
 	if not body_entered.is_connected:
 		body_entered.connect(_on_body_entered)
 

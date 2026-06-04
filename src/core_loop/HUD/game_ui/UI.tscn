@@ -86,6 +86,7 @@ layout_mode = 2
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1091104082]
 unique_name_in_owner = true
+texture_filter = 1
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
@@ -219,6 +220,7 @@ clampzone_size = 22.0
 joystick_mode = 1
 
 [node name="Base" parent="Virtual Joystick" index="0"]
+texture_filter = 1
 custom_minimum_size = Vector2(40, 40)
 anchors_preset = -1
 anchor_top = 1.0
@@ -233,6 +235,7 @@ expand_mode = 1
 stretch_mode = 2
 
 [node name="Tip" parent="Virtual Joystick/Base" index="0"]
+texture_filter = 1
 custom_minimum_size = Vector2(20, 20)
 anchors_preset = -1
 offset_left = 1.9999695
