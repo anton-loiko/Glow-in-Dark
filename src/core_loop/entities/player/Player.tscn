@@ -197,6 +197,5 @@ shadow_filter_smooth = 1.0
 texture = SubResource("GradientTexture2D_g2els")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=422419212]
-zoom = Vector2(2, 2)
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0

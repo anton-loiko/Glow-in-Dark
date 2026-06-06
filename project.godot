@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/bg_color=Color(0.039215688, 0.05882353, 0.09411765, 1)
 boot_splash/stretch_mode=2
 boot_splash/use_filter=false
+boot_splash/image="uid://81ffxjynrwpg"
 
 [autoload]
 
@@ -32,8 +33,8 @@ CloudManager="*uid://h3q8um1ptes4"
 
 window/size/viewport_width=270
 window/size/viewport_height=480
-window/size/window_width_override=1080
-window/size/window_height_override=1920
+window/size/window_width_override=1280
+window/size/window_height_override=2856
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="2_mlydd"]
 [ext_resource type="PackedScene" uid="uid://bgnj5ttq8e5vy" path="res://src/meta_loop/panel_manager/PanelManager.tscn" id="2_xre00"]
 [ext_resource type="Texture2D" uid="uid://nrj156lhi21x" path="res://src/assets/images/loaders_beach_avr/spritesheets/squares/square_002.png" id="3_xre00"]
+[ext_resource type="Texture2D" uid="uid://81ffxjynrwpg" path="res://src/assets/app/splash/splash.png" id="4_y5wf7"]
 [ext_resource type="Texture2D" uid="uid://gvjtufpwafrn" path="res://src/assets/app/spinner/spinner.png" id="5_56llo"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mlydd"]
@@ -113,7 +114,7 @@ grow_vertical = 2
 script = ExtResource("1_yqorp")
 
 [node name="ScreenColor" type="CanvasLayer" parent="." unique_id=1997892190]
-layer = -1
+layer = -2
 
 [node name="ColorRect" type="ColorRect" parent="ScreenColor" unique_id=2020306476]
 anchors_preset = 15
@@ -121,7 +122,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.019607844, 0.019607844, 0.043137256, 1)
+color = Color(0.039215688, 0.05882353, 0.09411765, 1)
 
 [node name="SafeAreaContainer" parent="." unique_id=362836226 instance=ExtResource("2_mlydd")]
 layout_mode = 1
@@ -138,6 +139,26 @@ theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 40
+
+[node name="CanvasLayer" type="CanvasLayer" parent="SafeAreaContainer/PreloadingScreen" unique_id=123847556]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="SafeAreaContainer/PreloadingScreen/CanvasLayer" unique_id=1819622952]
+texture_filter = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -135.0
+offset_top = -240.0
+offset_right = 135.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("4_y5wf7")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SafeAreaContainer/PreloadingScreen" unique_id=425385291]
 layout_mode = 2

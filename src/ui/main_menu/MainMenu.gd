@@ -3,6 +3,7 @@ extends Control
 @onready var panel_manager: MarginContainer = %PanelManager
 @onready var preloading_screen: MarginContainer = %PreloadingScreen
 @onready var loader: AnimatedSprite2D = %Loader
+@onready var screenColor: ColorRect = $ScreenColor/ColorRect
 
 func _ready() -> void:
 	panel_manager.show()
@@ -17,9 +18,7 @@ func _ready() -> void:
 		_show_preloading_screen()
 
 func _on_cloud_sync_completed() -> void:
-	panel_manager.show()
-	preloading_screen.hide()
-	loader.stop()
+	_show_panelManager_screen()
 
 func _on_purchase_failed(reason: String) -> void:
 	print("[ERROR]::[_on_purchase_failed]:::: ", reason)
@@ -50,7 +49,14 @@ func _on_reward_earned(amount: int) -> void:
 	CloudManager.save_to_cloud()
 
 
+func _show_panelManager_screen():
+	panel_manager.show()
+	preloading_screen.hide()
+	loader.stop()
+	screenColor.color = Color("#05050b")
+
 func _show_preloading_screen():
 	panel_manager.hide()
 	preloading_screen.show()
 	loader.play('planet')
+	screenColor.color = Color("#0a0f18")
