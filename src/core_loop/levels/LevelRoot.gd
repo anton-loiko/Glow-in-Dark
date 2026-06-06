@@ -1,13 +1,11 @@
-extends Node2D
+extends Control
 
-@onready var level_container: Node2D = $LevelContainer
-@onready var ui: CanvasLayer = $UI 
+@onready var level_container: Node2D = %LevelContainer
+@onready var ui: CanvasLayer = %UI 
 
 var darkness_modulate: CanvasModulate
 
 func _ready() -> void:
-	_setup_darkness()
-	
 	var level_path = "res://src/core_loop/levels/Level_" + str(GameManager.current_level) + ".tscn"
 	
 	if ResourceLoader.exists(level_path):
@@ -29,12 +27,6 @@ func _ready() -> void:
 	else:
 		print("[ERROR]:::: Temp Error and redirect to main")
 		GameManager.go_to_main_menu()
-	
-func _setup_darkness() -> void:
-	darkness_modulate = CanvasModulate.new()
-	# RGBA: Почти черный, но оставляет 5% видимости, чтобы игрок мог различать стены вне радиуса света
-	darkness_modulate.color = Color(0.05, 0.05, 0.05, 1.0)
-	add_child(darkness_modulate)
 
 func _setup_camera_limits(level: Node, player: Node) -> void:
 	if not player or not player.has_node("Camera2D"):

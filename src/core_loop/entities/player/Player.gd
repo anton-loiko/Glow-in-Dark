@@ -65,13 +65,10 @@ func _physics_process(delta: float) -> void:
 		animatedSprite.flip_h = false
 
 		if input_direction.y > 0: # Down
-			print("Down")
 			animatedSprite.play('move_down')
 		elif input_direction.y < 0: # UP
-			print("Up")
 			animatedSprite.play('move_up')
 		elif input_direction.x > 0: # Right
-			print("Right")
 			animatedSprite.play('move_right')
 		elif input_direction.x < 0: # Left
 			animatedSprite.flip_h = true
