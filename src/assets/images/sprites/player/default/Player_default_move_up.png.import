@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6p71mficw61n"
-path="res://.godot/imported/Fuel.png-c3a1431afed7954a595984578e3d4645.ctex"
+uid="uid://w3s3t5xl8yyt"
+path="res://.godot/imported/Player_default_move_up.png-2aba7cd131613e2339d071d614e4d68a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://src/assets/images/sprites/Fuel.png"
-dest_files=["res://.godot/imported/Fuel.png-c3a1431afed7954a595984578e3d4645.ctex"]
+source_file="res://src/assets/images/sprites/player/default/Player_default_move_up.png"
+dest_files=["res://.godot/imported/Player_default_move_up.png-2aba7cd131613e2339d071d614e4d68a.ctex"]
 
 [params]
 

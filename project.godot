@@ -10,14 +10,14 @@ config_version=5
 
 [application]
 
-config/name="GitD"
+config/name="Glow in the Dark"
+config/version="1.0.0"
 run/main_scene="uid://b7wd40ndx4jhr"
 config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/bg_color=Color(0, 0.16635564, 0.17243594, 1)
-boot_splash/show_image=false
 boot_splash/stretch_mode=2
-boot_splash/image="uid://begocjg3nm55s"
-config/icon="res://icon.svg"
+boot_splash/image="uid://b8uqy14yaxm10"
+config/icon="uid://cn4u1h4vcf3tj"
 
 [autoload]
 

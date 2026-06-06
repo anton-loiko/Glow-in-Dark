@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cidpdeu4vedit"
-path="res://.godot/imported/Dark-Entity-Sheet.png-33a940751c2061e6652ba0bb2e9a51c3.ctex"
+uid="uid://cyyca53rrpf50"
+path="res://.godot/imported/Player_default_move_down.png-f48a29556fc9a7de4357e9cb2675cf8b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://src/assets/images/sprites/Dark-Entity-Sheet.png"
-dest_files=["res://.godot/imported/Dark-Entity-Sheet.png-33a940751c2061e6652ba0bb2e9a51c3.ctex"]
+source_file="res://src/assets/images/sprites/player/default/Player_default_move_down.png"
+dest_files=["res://.godot/imported/Player_default_move_down.png-f48a29556fc9a7de4357e9cb2675cf8b.ctex"]
 
 [params]
 

@@ -1,18 +1,7 @@
 [gd_scene format=3 uid="uid://dtj3hgkesdtyf"]
 
 [ext_resource type="Script" uid="uid://6ar6ttjb4ex4" path="res://src/core_loop/entities/exit/Exit.gd" id="1_c4vl1"]
-[ext_resource type="Texture2D" uid="uid://nrjde28kiw6j" path="res://src/assets/images/sprites/Exit-Sheet.png" id="2_m1i2c"]
-
-[sub_resource type="Gradient" id="Gradient_38eme"]
-colors = PackedColorArray(0, 0.46666667, 0.5529412, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_l0aq0"]
-gradient = SubResource("Gradient_38eme")
-width = 24
-height = 24
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.9, 0.5)
+[ext_resource type="Texture2D" uid="uid://nrjde28kiw6j" path="res://src/assets/images/sprites/interactables/exit/Exit-Sheet.png" id="2_m1i2c"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cxffg"]
 atlas = ExtResource("2_m1i2c")
@@ -52,11 +41,6 @@ fill_to = Vector2(0.9, 0.5)
 
 [node name="Exit" type="Area2D" unique_id=1281466509]
 script = ExtResource("1_c4vl1")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=812357406]
-visible = false
-texture_filter = 1
-texture = SubResource("GradientTexture2D_l0aq0")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1744737902]
 texture_filter = 1

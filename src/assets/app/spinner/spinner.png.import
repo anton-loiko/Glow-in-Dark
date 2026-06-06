@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnb8os2nqcgnf"
-path="res://.godot/imported/Player_default.png-fc96711afe33ad6003b921cda774bf19.ctex"
+uid="uid://gvjtufpwafrn"
+path="res://.godot/imported/spinner.png-34bdfb24583e87a536909509b9cbaa87.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://src/assets/images/sprites/Player_default.png"
-dest_files=["res://.godot/imported/Player_default.png-fc96711afe33ad6003b921cda774bf19.ctex"]
+source_file="res://src/assets/app/spinner/spinner.png"
+dest_files=["res://.godot/imported/spinner.png-34bdfb24583e87a536909509b9cbaa87.ctex"]
 
 [params]
 

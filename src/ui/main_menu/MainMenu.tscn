@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="2_mlydd"]
 [ext_resource type="PackedScene" uid="uid://bgnj5ttq8e5vy" path="res://src/meta_loop/panel_manager/PanelManager.tscn" id="2_xre00"]
 [ext_resource type="Texture2D" uid="uid://nrj156lhi21x" path="res://src/assets/images/loaders_beach_avr/spritesheets/squares/square_002.png" id="3_xre00"]
+[ext_resource type="Texture2D" uid="uid://gvjtufpwafrn" path="res://src/assets/app/spinner/spinner.png" id="5_56llo"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mlydd"]
 atlas = ExtResource("3_xre00")
@@ -37,6 +38,22 @@ region = Rect2(96, 0, 16, 16)
 atlas = ExtResource("3_xre00")
 region = Rect2(112, 0, 16, 16)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_af53c"]
+atlas = ExtResource("5_56llo")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ldwx4"]
+atlas = ExtResource("5_56llo")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_omtnj"]
+atlas = ExtResource("5_56llo")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j86ma"]
+atlas = ExtResource("5_56llo")
+region = Rect2(48, 0, 16, 16)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_af53c"]
 animations = [{
 "frames": [{
@@ -67,6 +84,23 @@ animations = [{
 "loop": true,
 "name": &"default",
 "speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_af53c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ldwx4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_omtnj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j86ma")
+}],
+"loop": true,
+"name": &"planet",
+"speed": 5.0
 }]
 
 [node name="MainMenu" type="Control" unique_id=1231697064]
@@ -99,7 +133,6 @@ layout_mode = 2
 
 [node name="PreloadingScreen" type="MarginContainer" parent="SafeAreaContainer" unique_id=399074350]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 40
@@ -121,4 +154,4 @@ process_mode = 3
 texture_filter = 1
 position = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_af53c")
-frame_progress = 0.4047377
+animation = &"planet"

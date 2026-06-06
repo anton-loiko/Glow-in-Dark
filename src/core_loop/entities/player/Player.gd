@@ -79,8 +79,11 @@ func _physics_process(delta: float) -> void:
 		
 		velocity = velocity.lerp(input_direction * SPEED, ACCELERATION * delta)
 	else:
-		# TODO: check if it good solution, play idle on process.
-		animatedSprite.play("idle")
+		# Включаем idle только если мы уже не находимся в этом состоянии
+		if animatedSprite.animation != &"idle":
+			animatedSprite.play(&"idle")
+		
+		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
 
 	move_and_slide()

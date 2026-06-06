@@ -53,4 +53,4 @@ func _on_reward_earned(amount: int) -> void:
 func _show_preloading_screen():
 	panel_manager.hide()
 	preloading_screen.show()
-	loader.play('default')
+	loader.play('planet')

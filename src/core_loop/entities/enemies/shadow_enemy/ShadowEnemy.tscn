@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://87crfg6dpml0"]
 
 [ext_resource type="Script" uid="uid://ct4s1yto36ia5" path="res://src/core_loop/entities/enemies/shadow_enemy/ShadowEnemy.gd" id="1_300bf"]
-[ext_resource type="Texture2D" uid="uid://cidpdeu4vedit" path="res://src/assets/images/sprites/Dark-Entity-Sheet.png" id="2_u7cur"]
+[ext_resource type="Texture2D" uid="uid://cidpdeu4vedit" path="res://src/assets/images/sprites/enemies/shadow/Dark-Entity-Sheet.png" id="2_u7cur"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_oh76w"]
 radius = 6.3

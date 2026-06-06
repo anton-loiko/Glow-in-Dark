@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://bx8hcuk0xbql3"]
 
 [ext_resource type="Script" uid="uid://cwcxctamtuhup" path="res://src/core_loop/entities/interactables/spark/Spark.gd" id="1_7i54f"]
-[ext_resource type="Texture2D" uid="uid://begocjg3nm55s" path="res://src/assets/images/spark.png" id="1_gv1b8"]
-[ext_resource type="Texture2D" uid="uid://de51w8hw4ts25" path="res://src/assets/images/sprites/Spark.png" id="3_nualh"]
+[ext_resource type="Texture2D" uid="uid://de51w8hw4ts25" path="res://src/assets/images/sprites/interactables/spark/Spark.png" id="3_nualh"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_aykwl"]
 atlas = ExtResource("3_nualh")
@@ -57,13 +56,6 @@ fill_to = Vector2(0.9, 0.5)
 
 [node name="Spark" type="Area2D" unique_id=77131627]
 script = ExtResource("1_7i54f")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1410925747]
-visible = false
-modulate = Color(1, 0.81960785, 0.2784314, 1)
-texture_filter = 1
-scale = Vector2(0.02, 0.02)
-texture = ExtResource("1_gv1b8")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1719944693]
 texture_filter = 1

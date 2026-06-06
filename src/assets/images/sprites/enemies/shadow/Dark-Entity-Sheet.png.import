@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://begocjg3nm55s"
-path="res://.godot/imported/spark.png-e8b7da6c231511ca45e41ae5d48f4c30.ctex"
+uid="uid://cidpdeu4vedit"
+path="res://.godot/imported/Dark-Entity-Sheet.png-41cb5b34c5840a241c743b9dec122ba3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://src/assets/images/spark.png"
-dest_files=["res://.godot/imported/spark.png-e8b7da6c231511ca45e41ae5d48f4c30.ctex"]
+source_file="res://src/assets/images/sprites/enemies/shadow/Dark-Entity-Sheet.png"
+dest_files=["res://.godot/imported/Dark-Entity-Sheet.png-41cb5b34c5840a241c743b9dec122ba3.ctex"]
 
 [params]
 
