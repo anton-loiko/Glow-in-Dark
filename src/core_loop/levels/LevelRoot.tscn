@@ -6,6 +6,12 @@
 [node name="LevelRoot" type="Node2D" unique_id=746325157]
 script = ExtResource("1_c5yvc")
 
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1067295469]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=306799132]
+
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=1402011682]
 layer = -1
 

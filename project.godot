@@ -17,8 +17,6 @@ config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/bg_color=Color(0.039215688, 0.05882353, 0.09411765, 1)
 boot_splash/stretch_mode=2
 boot_splash/use_filter=false
-boot_splash/image="uid://b8uqy14yaxm10"
-config/icon="uid://cn4u1h4vcf3tj"
 
 [autoload]
 
