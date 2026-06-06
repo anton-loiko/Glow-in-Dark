@@ -13,7 +13,7 @@ colors = PackedColorArray(1, 1, 0.83137256, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_awdo7"]
 gradient = SubResource("Gradient_3py4g")
-width = 24
+width = 22
 height = 32
 fill = 1
 fill_from = Vector2(0.5, 0.5)
@@ -32,17 +32,6 @@ gravity = Vector3(0, 0, 0)
 scale_min = 0.0
 scale_max = 0.5
 scale_curve = SubResource("CurveTexture_awdo7")
-
-[sub_resource type="Gradient" id="Gradient_u8vuu"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_3vyb7"]
-gradient = SubResource("Gradient_u8vuu")
-width = 32
-height = 32
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.9, 0.5)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w7tlw"]
 atlas = ExtResource("3_1vsc1")
@@ -165,20 +154,6 @@ amount = 20
 texture = SubResource("GradientTexture2D_awdo7")
 lifetime = 0.5
 process_material = SubResource("ParticleProcessMaterial_3py4g")
-
-[node name="TrailParticles3" type="GPUParticles2D" parent="." unique_id=1882754782]
-visible = false
-material = ExtResource("2_175b4")
-amount = 20
-texture = ExtResource("3_6myxe")
-lifetime = 0.5
-process_material = SubResource("ParticleProcessMaterial_3py4g")
-
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=361187433]
-visible = false
-texture_filter = 1
-material = ExtResource("2_175b4")
-texture = SubResource("GradientTexture2D_3vyb7")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=506295829]
 texture_filter = 1
