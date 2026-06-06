@@ -1,6 +1,6 @@
 extends Node
 
-signal reward_earned(amount: int)
+signal reward_earned()
 signal ad_closed
 signal ad_failed
 
@@ -49,7 +49,7 @@ func show_rewarded_ad() -> void:
 		print("Симуляция просмотра Rewarded (ПК): Успешно")
 		var timer = get_tree().create_timer(1.0)
 		timer.timeout.connect(func():
-			reward_earned.emit(50)
+			reward_earned.emit()
 			ad_closed.emit()
 		)
 	else:

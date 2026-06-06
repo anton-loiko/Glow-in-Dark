@@ -16,9 +16,8 @@ var is_dead: bool = false
 var current_light_health: float = MAX_LIGHT_SCALE
 
 @onready var light: PointLight2D = $PointLight2D
-@onready var sprite: Sprite2D = $Sprite2D
 @onready var camera: Camera2D = $Camera2D
-@onready var trail_particles: GPUParticles2D = $TrailParticles
+@onready var trail_particles: GPUParticles2D = %TrailParticles
 @onready var animatedSprite = $AnimatedSprite2D
 
 func _ready() -> void:
@@ -104,18 +103,47 @@ func take_damage(amount: float) -> bool:
 func die() -> void:
 	is_dead = true
 	camera.offset = Vector2.ZERO
-	if trail_particles:
-		trail_particles.emitting = false
+
+		
+		
+		
+	animatedSprite.play("die")
+	var tween = create_tween().set_parallel(true)
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+
+	tween.tween_property(animatedSprite, "scale", Vector2(0.22, 0.22), 1.0)
+	tween.tween_property(trail_particles, "amount", 1, 1.2)
+	tween.tween_property(trail_particles, "amount_ratio", 0, 1.2)
 	
+	call_delay_die(2)
+
+func call_delay_die(delay_time: float) -> void:
+	var timer = Timer.new()
+	add_child(timer)
+	
+	timer.wait_time = delay_time
+	timer.one_shot = true
+	
+	# Connect to the target function, and automatically queue_free the timer
+	timer.timeout.connect(call_delay_die_callback)
+	timer.timeout.connect(timer.queue_free) 
+	
+	timer.start()
+
+func call_delay_die_callback():
+	trail_particles.emitting = false
 	set_process(false)
 	died.emit()
 
 func revive() -> void:
+	animatedSprite.play("idle")
+	animatedSprite.scale= Vector2(1.0, 1.0)
+	trail_particles.amount= 25
+	trail_particles.amount_ratio = 1.0
+	
 	is_dead = false
 	current_light_health = 0.5
 	light_changed.emit(current_light_health)
-	
-	if trail_particles:
-		trail_particles.emitting = true
+	trail_particles.emitting = true
 		
 	set_process(true)

@@ -126,11 +126,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Смотреть рекламу (+50% света)"
 
-[node name="Button" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=353627666]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Заново"
-
 [node name="MenuButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=300988848]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
@@ -194,7 +189,6 @@ scale = Vector2(0.2, 0.2)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 clampzone_size = 20.0
-joystick_mode = 1
 metadata/_edit_lock_ = true
 
 [node name="Base" parent="Virtual Joystick" index="0"]
@@ -204,7 +198,6 @@ texture_filter = 1
 texture_filter = 1
 
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
-[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/Button" to="UIControl" method="_on_restart_button_pressed"]
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]

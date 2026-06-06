@@ -48,7 +48,7 @@ func show_game_over() -> void:
 	virtual_joystick.hide()
 	lose_panel.show()
 	AudioManager.play_sfx(GAME_OVER_SFX)
-	revive_button.show()
+	#revive_button.show() # should be hide if once did review 
 	win_panel.hide()
 
 func show_win_screen() -> void:
@@ -60,21 +60,18 @@ func show_win_screen() -> void:
 	lose_panel.hide()
 
 func _on_reward_earned() -> void:
-	# Избавляемся от find_child, обращаемся через группу
 	var players = get_tree().get_nodes_in_group("player")
+	
 	if players.size() > 0 and players[0].has_method("revive"):
 		players[0].revive()
-		
+	
+	revive_button.hide()
 	lose_panel.hide()
+	virtual_joystick.show()
 	get_tree().paused = false
 
 func _on_sparks_changed(new_amount: int) -> void:
 	sparks_label.text = "Sparks: " + str(new_amount)
-
-func _on_restart_button_pressed() -> void:
-	AudioManager.play_sfx(CLICK_SFX)
-	get_tree().paused = false 
-	get_tree().reload_current_scene()
 
 func _on_next_level_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
@@ -83,7 +80,7 @@ func _on_next_level_button_pressed() -> void:
 
 func _on_revive_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
-	revive_button.hide()
+	revive_button.disabled = true
 	AdManager.show_rewarded_ad()
 
 func _on_menu_button_pressed() -> void:

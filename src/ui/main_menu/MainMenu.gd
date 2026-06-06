@@ -41,8 +41,9 @@ func _on_purchase_success(item_id: String) -> void:
 	# Жестко фиксируем новые покупки в файле сохранения
 	GameManager.save_game()
 
-func _on_reward_earned(amount: int) -> void:
+func _on_reward_earned() -> void:
 	# Начисляем валюту
+	var amount: int = 50
 	GameManager.add_sparks(amount)
 	
 	# Мгновенно синхронизируем с Firebase, чтобы не потерять награду
