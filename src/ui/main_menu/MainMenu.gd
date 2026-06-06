@@ -53,10 +53,10 @@ func _show_panelManager_screen():
 	panel_manager.show()
 	preloading_screen.hide()
 	loader.stop()
-	screenColor.color = Color("#05050b")
+	screenColor.color = Color("05050b")
 
 func _show_preloading_screen():
 	panel_manager.hide()
 	preloading_screen.show()
 	loader.play('planet')
-	screenColor.color = Color("#0a0f18")
+	screenColor.color = Color("0a0f18")

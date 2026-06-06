@@ -4,7 +4,7 @@ extends Button
 @export_category("Props")
 @export var default_text: String
 @export var default_icon: Texture2D
-@export var default_border_color: Color = Color("#BCBCBE")
+@export var default_border_color: Color = Color("BCBCBE")
 
 @onready var custom_text: Label = %Text
 @onready var custom_icon: TextureRect = %Icon
