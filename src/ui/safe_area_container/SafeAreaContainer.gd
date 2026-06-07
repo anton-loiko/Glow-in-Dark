@@ -31,7 +31,7 @@ func _update_margins_for_safe_area() -> void:
 	var margin_bottom: int = roundi((screen_size.y - (safe_area.position.y + safe_area.size.y)) * scale_y)
 	
 	# 5. Применяем вычисленные отступы к MarginContainer через переопределение темы.
-	add_theme_constant_override("margin_left", margin_left)
+	#add_theme_constant_override("margin_left", margin_left)
 	add_theme_constant_override("margin_top", margin_top)
-	add_theme_constant_override("margin_right", margin_right)
-	add_theme_constant_override("margin_bottom", margin_bottom)
+	#add_theme_constant_override("margin_right", margin_right)
+	#add_theme_constant_override("margin_bottom", margin_bottom)

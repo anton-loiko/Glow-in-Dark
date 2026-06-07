@@ -4,15 +4,15 @@ const font = preload("res://src/assets/fonts/Kenney/Kenney Pixel Square.ttf")
 
 @onready var leaderboard_list_container: VBoxContainer = %LeaderboardList
 @onready var leaderboard_status_label:Label = %LeaderboardStatusLabel
-@onready var rankedPanel: PanelContainer = get_node("%RankedPanel")  
+@onready var basePanel: PanelContainer = get_node("%BasePanel")  
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	LeaderboardManager.leaderboard_loaded.connect(_on_leaderboard_data_received)
-	rankedPanel.visibility_changed.connect(_on_visibility_changed)
+	basePanel.visibility_changed.connect(_on_visibility_changed)
 
 func _on_visibility_changed() -> void:
-	if rankedPanel.visible:
+	if basePanel.visible:
 		_fetch_leaderboard()
 
 func _on_leaderboard_data_received(players: Array) -> void:

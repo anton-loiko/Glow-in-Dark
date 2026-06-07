@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b6s071a1y8juu"]
 
-[ext_resource type="Script" uid="uid://1hxaf8l0dtmy" path="res://src/meta_loop/screens/ranked/Ranked.gd" id="1_iq1eb"]
+[ext_resource type="Script" uid="uid://1hxaf8l0dtmy" path="res://src/meta_loop/screens/base/Base.gd" id="1_iq1eb"]
 [ext_resource type="FontFile" uid="uid://l1swtmd3pa67" path="res://src/assets/fonts/Kenney/Kenney Pixel Square.ttf" id="2_tvip6"]
 
 [sub_resource type="Gradient" id="Gradient_cn0sc"]
@@ -14,7 +14,7 @@ fill_to = Vector2(0, 0.9893162)
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_iq1eb"]
 texture = SubResource("GradientTexture2D_m3ldw")
 
-[node name="Ranked" type="Control" unique_id=999045000]
+[node name="Base" type="Control" unique_id=999045000]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

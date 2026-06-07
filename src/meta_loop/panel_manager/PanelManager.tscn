@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://b7esdixhq3wfn" path="res://src/meta_loop/panel_manager/PanelTheme.tres" id="2_o2fhx"]
 [ext_resource type="PackedScene" uid="uid://bh08hndi076g1" path="res://src/meta_loop/screens/shop/Shop.tscn" id="3_bb8mr"]
 [ext_resource type="PackedScene" uid="uid://bw3m47egoda6m" path="res://src/meta_loop/screens/gear/Gear.tscn" id="3_kq2k0"]
-[ext_resource type="PackedScene" uid="uid://b6s071a1y8juu" path="res://src/meta_loop/screens/ranked/Ranked.tscn" id="3_o2fhx"]
+[ext_resource type="PackedScene" uid="uid://b6s071a1y8juu" path="res://src/meta_loop/screens/base/Base.tscn" id="3_o2fhx"]
 [ext_resource type="PackedScene" uid="uid://dcf0r3mgki81l" path="res://src/meta_loop/screens/skills/Skills.tscn" id="3_rhda7"]
 [ext_resource type="PackedScene" uid="uid://cloftxqgnvs1d" path="res://src/meta_loop/screens/home/Home.tscn" id="3_tfshb"]
 [ext_resource type="PackedScene" uid="uid://bu11lhgnesc6q" path="res://src/meta_loop/panel_manager/tab_button/TabButton.tscn" id="8_8es5f"]
@@ -12,17 +12,37 @@
 [ext_resource type="Texture2D" uid="uid://bn515thwgtaxh" path="res://src/assets/images/modern_rpg_icon_pack/15-status-effects/icon_47.png" id="9_oep7p"]
 [ext_resource type="Texture2D" uid="uid://m0h3ypbfwfj4" path="res://src/assets/images/modern_rpg_icon_pack/16-runes-enchantments/icon_54.png" id="10_21uob"]
 [ext_resource type="Texture2D" uid="uid://4x3dmmf7f785" path="res://src/assets/images/modern_rpg_icon_pack/02-armor/icon_58.png" id="13_cqmyg"]
-[ext_resource type="Texture2D" uid="uid://s64my6v3doqq" path="res://src/assets/images/modern_rpg_icon_pack/14-dungeon-objects/icon_49.png" id="14_cqmyg"]
+[ext_resource type="Texture2D" uid="uid://bnphe21vtwsl0" path="res://src/assets/images/modern_rpg_icon_pack/11-fish-loot/fish-loot_sheet.png" id="13_dkh74"]
+[ext_resource type="FontFile" uid="uid://bpswjd8kym2yf" path="res://src/assets/fonts/Kenney/Kenney Pixel.ttf" id="14_dkh74"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_lr2c6"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_dkh74"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_2fmko"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_84rqj"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_8es5f"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_eagnp"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_vau7f"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_2r2a7"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_k0bv6"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_38ak3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_84rqj"]
+atlas = ExtResource("13_dkh74")
+region = Rect2(131, 124, 26, 28)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dkh74"]
+bg_color = Color(0.14901961, 0.14901961, 0.14901961, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+expand_margin_left = 3.0
+expand_margin_top = 1.0
+expand_margin_right = 3.0
+expand_margin_bottom = 1.0
 
 [node name="PanelManager" type="MarginContainer" unique_id=1361023300]
 anchors_preset = 15
@@ -108,21 +128,21 @@ theme_override_constants/margin_bottom = 5
 [node name="Gear" parent="VBoxContainer/GearPanel/MarginContainer" unique_id=1658114213 instance=ExtResource("3_kq2k0")]
 layout_mode = 2
 
-[node name="RankedPanel" type="PanelContainer" parent="VBoxContainer" unique_id=1488077460]
+[node name="BasePanel" type="PanelContainer" parent="VBoxContainer" unique_id=1488077460]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("2_o2fhx")
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/RankedPanel" unique_id=2092974542]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/BasePanel" unique_id=2092974542]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="Ranked" parent="VBoxContainer/RankedPanel/MarginContainer" unique_id=1388674909 instance=ExtResource("3_o2fhx")]
+[node name="Base" parent="VBoxContainer/BasePanel/MarginContainer" unique_id=1388674909 instance=ExtResource("3_o2fhx")]
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1983199495]
@@ -134,34 +154,49 @@ theme_override_constants/separation = 0
 [node name="ShopButton" parent="VBoxContainer/HBoxContainer" unique_id=547368414 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_lr2c6")
+button_group = SubResource("ButtonGroup_dkh74")
 default_text = "Shop"
 default_icon = ExtResource("9_gigbh")
 
 [node name="SkillsButton" parent="VBoxContainer/HBoxContainer" unique_id=1713732010 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_2fmko")
+button_group = SubResource("ButtonGroup_84rqj")
 default_text = "Skills"
 default_icon = ExtResource("10_21uob")
 
 [node name="HomeButton" parent="VBoxContainer/HBoxContainer" unique_id=1887777274 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_8es5f")
+button_group = SubResource("ButtonGroup_eagnp")
 default_text = "Explore"
 default_icon = ExtResource("9_oep7p")
 
 [node name="GearButton" parent="VBoxContainer/HBoxContainer" unique_id=652734299 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_vau7f")
+button_group = SubResource("ButtonGroup_2r2a7")
 default_text = "Gear"
 default_icon = ExtResource("13_cqmyg")
 
-[node name="RankedButton" parent="VBoxContainer/HBoxContainer" unique_id=1685699081 instance=ExtResource("8_8es5f")]
+[node name="BaseButton" parent="VBoxContainer/HBoxContainer" unique_id=1685699081 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_k0bv6")
+button_group = SubResource("ButtonGroup_38ak3")
 default_text = "Ranked"
-default_icon = ExtResource("14_cqmyg")
+default_icon = SubResource("AtlasTexture_84rqj")
+
+[node name="DisableDescription" type="Label" parent="." unique_id=1725893970]
+unique_name_in_owner = true
+top_level = true
+z_index = 3
+texture_filter = 1
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("14_dkh74")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/normal = SubResource("StyleBoxFlat_dkh74")
+text = "Disable Descriprtion"
+horizontal_alignment = 1
+autowrap_mode = 2
