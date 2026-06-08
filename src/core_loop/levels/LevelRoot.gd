@@ -4,7 +4,6 @@ extends Control
 @onready var ui: CanvasLayer = %UI 
 
 func _ready() -> void:
-	# Всегда загружаем Level_1 как универсальный шаблон для генерации
 	var level_path = "res://src/core_loop/levels/Level_1.tscn"
 	
 	if ResourceLoader.exists(level_path):
@@ -35,6 +34,7 @@ func _setup_camera_limits(level: Node, player: Node) -> void:
 	var map_rect := Rect2i()
 	var tile_size := Vector2i.ZERO
 	var found_map := false
+	const camera_gap := 50
 	
 	for child in level.get_children():
 		if child is TileMapLayer:
@@ -47,12 +47,12 @@ func _setup_camera_limits(level: Node, player: Node) -> void:
 				map_rect = map_rect.merge(r)
 				
 	if found_map:
-		camera.limit_left = map_rect.position.x * tile_size.x
-		camera.limit_right = map_rect.end.x * tile_size.x
-		camera.limit_top = -20000000 
-		camera.limit_bottom = map_rect.end.y * tile_size.y
+		camera.limit_left = map_rect.position.x * tile_size.x - camera_gap
+		camera.limit_right = map_rect.end.x * tile_size.x + camera_gap
+		camera.limit_top = -camera_gap
+		camera.limit_bottom = 20000000 # Бесконечность теперь внизу
 	else:
-		camera.limit_left = 0
-		camera.limit_right = 270 
-		camera.limit_top = -20000000 
-		camera.limit_bottom = 480
+		camera.limit_left = -camera_gap
+		camera.limit_right = 270 + camera_gap
+		camera.limit_top = -camera_gap
+		camera.limit_bottom = 20000000 # Бесконечность теперь внизу

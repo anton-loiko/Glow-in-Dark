@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://diqaeekswt55k" path="res://src/core_loop/HUD/game_ui/UIControl.gd" id="1_dj8aq"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="2_qu8t6"]
+[ext_resource type="Shader" uid="uid://vppnsrwh72jk" path="res://src/core_loop/HUD/game_ui/vignette.gdshader" id="3_b7x4a"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
 
 [sub_resource type="Gradient" id="Gradient_ll0sn"]
@@ -33,6 +34,11 @@ bg_color = Color(1, 0.3274344, 0.38764626, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eiyve"]
 bg_color = Color(9.62615e-08, 0.7008574, 0.5731082, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tyhax"]
+shader = ExtResource("3_b7x4a")
+shader_parameter/vignette_color = Color(0.6, 0, 0, 1)
+shader_parameter/intensity = 0.0
 
 [sub_resource type="Gradient" id="Gradient_b7x4a"]
 colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0)
@@ -183,6 +189,17 @@ text = "Дальше"
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "Меню"
+
+[node name="VignetteRect" type="ColorRect" parent="UIControl" unique_id=353424898]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_tyhax")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="Virtual Joystick" parent="." unique_id=1665255622 instance=ExtResource("2_qu8t6")]
 unique_name_in_owner = true

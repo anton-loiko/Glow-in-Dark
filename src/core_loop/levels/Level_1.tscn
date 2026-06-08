@@ -9,9 +9,9 @@
 metadata/_edit_vertical_guides_ = [270.0]
 metadata/_edit_horizontal_guides_ = [480.0]
 
-[node name="Player" parent="." unique_id=740577881 instance=ExtResource("1_c7163")]
-position = Vector2(135, 400)
-
 [node name="ChunkManager" type="Node2D" parent="." unique_id=727313637]
 script = ExtResource("2_0myv8")
 chunk_scenes = Array[PackedScene]([ExtResource("3_eyg5h"), ExtResource("4_4a4qs")])
+
+[node name="Player" parent="." unique_id=740577881 instance=ExtResource("1_c7163")]
+position = Vector2(135, 20)
