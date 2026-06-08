@@ -3,10 +3,9 @@ extends Control
 @onready var level_container: Node2D = %LevelContainer
 @onready var ui: CanvasLayer = %UI 
 
-var darkness_modulate: CanvasModulate
-
 func _ready() -> void:
-	var level_path = "res://src/core_loop/levels/Level_" + str(GameManager.current_level) + ".tscn"
+	# Всегда загружаем Level_1 как универсальный шаблон для генерации
+	var level_path = "res://src/core_loop/levels/Level_1.tscn"
 	
 	if ResourceLoader.exists(level_path):
 		var level_resource = load(level_path)
@@ -25,7 +24,7 @@ func _ready() -> void:
 			
 		_setup_camera_limits(level_instance, player)
 	else:
-		print("[ERROR]:::: Temp Error and redirect to main")
+		print("[ERROR]:::: Level Template not found")
 		GameManager.go_to_main_menu()
 
 func _setup_camera_limits(level: Node, player: Node) -> void:
@@ -49,6 +48,11 @@ func _setup_camera_limits(level: Node, player: Node) -> void:
 				
 	if found_map:
 		camera.limit_left = map_rect.position.x * tile_size.x
-		camera.limit_top = map_rect.position.y * tile_size.y
 		camera.limit_right = map_rect.end.x * tile_size.x
+		camera.limit_top = -20000000 
 		camera.limit_bottom = map_rect.end.y * tile_size.y
+	else:
+		camera.limit_left = 0
+		camera.limit_right = 270 
+		camera.limit_top = -20000000 
+		camera.limit_bottom = 480

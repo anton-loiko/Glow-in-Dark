@@ -60,7 +60,7 @@ func show_win_screen() -> void:
 	lose_panel.hide()
 
 func _on_reward_earned() -> void:
-	var players = get_tree().get_nodes_in_group("player")
+	var players = get_tree().get_nodes_in_group("Player")
 	
 	if players.size() > 0 and players[0].has_method("revive"):
 		players[0].revive()

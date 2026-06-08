@@ -1,5 +1,29 @@
 extends Node
 
+# --- Параметры баланса игры ---
+const BASE_CHUNKS_TO_WIN: int = 5
+const CHUNKS_PER_LEVEL_STEP: int = 2
+const CHUNK_SIZE_Y: float = 480.0
+
+const BASE_FUEL_CHANCE: float = 0.15
+const BASE_SPARK_CHANCE: float = 0.3
+const BASE_ENEMY_CHANCE: float = 0.1
+
+func get_chunks_to_win() -> int:
+	return BASE_CHUNKS_TO_WIN + (current_level * CHUNKS_PER_LEVEL_STEP)
+
+func get_enemy_spawn_chance() -> float:
+	# Шанс врагов растет на 2% с каждым уровнем (максимум 60%)
+	return min(BASE_ENEMY_CHANCE + (current_level * 0.02), 0.6)
+
+func get_fuel_spawn_chance() -> float:
+	# Шанс топлива падает с ростом уровня (минимум 5%)
+	return max(BASE_FUEL_CHANCE - (current_level * 0.005), 0.05)
+
+func get_spark_spawn_chance() -> float:
+	return BASE_SPARK_CHANCE
+# ------------------------------
+
 const SAVE_PATH: String = "user://save_data.cfg"
 
 signal sparks_changed(new_amount: int)
@@ -39,7 +63,7 @@ var vibration_enabled: bool = true
 func _ready() -> void:
 	load_game()
 	CloudManager.authenticate_player()
-	GameManager.current_level = GameManager.unlocked_level
+	current_level = unlocked_level
 
 func save_game() -> void:
 	var config = ConfigFile.new()
@@ -90,16 +114,11 @@ func next_level() -> void:
 
 func load_level(level_number: int) -> void:
 	current_level = level_number
-	
-	if is_level_exists(level_number):
-		get_tree().change_scene_to_file("res://src/core_loop/levels/LevelRoot.tscn")
-	else:
-		print("Уровень ", level_number, " не найден! Игра пройдена.")
-		go_to_main_menu()
+	get_tree().change_scene_to_file("res://src/core_loop/levels/LevelRoot.tscn")
 
-func is_level_exists(level_number: int) -> bool:
-	var level_path = "res://src/core_loop/levels/Level_" + str(level_number) + ".tscn"
-	return ResourceLoader.exists(level_path)
+func is_level_exists(_level_number: int) -> bool:
+	# Вся игра теперь строится динамически из одного шаблона
+	return true
 
 func go_to_main_menu() -> void:
 	get_tree().change_scene_to_file("res://src/ui/main_menu/MainMenu.tscn")
@@ -118,7 +137,5 @@ func reset_progress() -> void:
 	unlocked_level = 1
 	current_level = 1
 	sparks = 0
-	#owned_skins = ["default"]
-	#equipped_skin = "default"
 	save_game()
 	CloudManager.save_to_cloud()
