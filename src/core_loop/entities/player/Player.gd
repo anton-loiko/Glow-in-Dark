@@ -9,7 +9,7 @@ const ACCELERATION: float = 15.0
 const FRICTION: float = 20.0
 const MAX_LIGHT_SCALE: float = 1.0
 const MIN_LIGHT_SCALE: float = 0.0
-const LIGHT_FADE_RATE: float = 0.01 # Было 0.05. Теперь свет затухает очень медленно (1% в секунду)
+const LIGHT_FADE_RATE: float = 0.01 
 const DANGER_THRESHOLD: float = 0.25
 
 var is_dead: bool = false
@@ -110,7 +110,12 @@ func take_damage(amount: float) -> bool:
 	if is_dead: 
 		return false
 		
-	current_light_health -= amount
+	var actual_damage = amount
+	# Применение навыка "ЩИТ СВЕТА"
+	if GameManager.active_skills.has("light_shield"):
+		actual_damage *= GameManager.SKILL_SHIELD_DAMAGE_REDUCTION
+		
+	current_light_health -= actual_damage
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
 	light_changed.emit(current_light_health)
 	

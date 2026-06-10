@@ -9,6 +9,13 @@ const BASE_FUEL_CHANCE: float = 0.15
 const BASE_SPARK_CHANCE: float = 0.3
 const BASE_ENEMY_CHANCE: float = 0.1
 
+# --- Настройки навыков ---
+const SKILL_MAGNET_RADIUS: float = 120.0
+const SKILL_MAGNET_SPEED: float = 200.0
+const SKILL_SHADOW_BURN_MULT: float = 2.5
+const SKILL_SHIELD_DAMAGE_REDUCTION: float = 0.5 # Снижение урона на 50%
+# ------------------------------
+
 func get_chunks_to_win() -> int:
 	return BASE_CHUNKS_TO_WIN + (current_level * CHUNKS_PER_LEVEL_STEP)
 
@@ -24,10 +31,34 @@ func get_spark_spawn_chance() -> float:
 	return BASE_SPARK_CHANCE
 # ------------------------------
 
-const SAVE_PATH: String = "user://save_data.cfg"
+# --- Roguelike База Навыков ---
+const SKILLS_DB: Dictionary = {
+	"magnet": {
+		"title": "МАГНИТ ИСКР",
+		"icon": "res://src/assets/images/skills/skill_magnet.png", 
+		"color": Color(0.2, 0.5, 0.9) # Синий (Утилиты)
+	},
+	"light_shield": {
+		"title": "ЩИТ СВЕТА",
+		"icon": "res://src/assets/images/skillsskill_shield.png",
+		"color": Color(0.9, 0.7, 0.1) # Желтый (Свет/Защита)
+	},
+	"shadow_burn": {
+		"title": "ОГНЕННАЯ АУРА",
+		"icon": "res://src/assets/images/skillsskill_fire.png",
+		"color": Color(0.8, 0.2, 0.2) # Красный (Атака)
+	}
+}
 
 signal sparks_changed(new_amount: int)
+signal skill_choice_triggered 
+
 var sparks: int = 0
+var run_sparks_counter: int = 0 
+var active_skills: Array[String] = [] 
+# ------------------------------
+
+const SAVE_PATH: String = "user://save_data.cfg"
 
 const SKINS_DB: Dictionary = {
 	"default": {
@@ -62,7 +93,8 @@ var vibration_enabled: bool = true
 
 func _ready() -> void:
 	load_game()
-	CloudManager.authenticate_player()
+	if Engine.has_singleton("CloudManager"):
+		CloudManager.authenticate_player()
 	current_level = unlocked_level
 
 func save_game() -> void:
@@ -107,17 +139,22 @@ func complete_level():
 	if current_level > unlocked_level:
 		unlocked_level = current_level
 		save_game()
-		CloudManager.save_to_cloud()
+		if Engine.has_singleton("CloudManager"):
+			CloudManager.save_to_cloud()
 
 func next_level() -> void:
 	load_level(current_level) 
 
 func load_level(level_number: int) -> void:
 	current_level = level_number
+	reset_run_state()
 	get_tree().change_scene_to_file("res://src/core_loop/levels/LevelRoot.tscn")
 
+func reset_run_state() -> void:
+	run_sparks_counter = 0
+	active_skills.clear()
+
 func is_level_exists(_level_number: int) -> bool:
-	# Вся игра теперь строится динамически из одного шаблона
 	return true
 
 func go_to_main_menu() -> void:
@@ -131,11 +168,22 @@ func get_equipped_skin_color() -> Color:
 func add_sparks(amount: int) -> void:
 	sparks += amount
 	sparks_changed.emit(sparks)
+	
+	run_sparks_counter += amount
+	if run_sparks_counter >= 50:
+		run_sparks_counter -= 50
+		skill_choice_triggered.emit()
+		
 	save_game()
+
+func apply_skill(skill_id: String) -> void:
+	if not active_skills.has(skill_id):
+		active_skills.append(skill_id)
 
 func reset_progress() -> void:
 	unlocked_level = 1
 	current_level = 1
 	sparks = 0
 	save_game()
-	CloudManager.save_to_cloud()
+	if Engine.has_singleton("CloudManager"):
+		CloudManager.save_to_cloud()

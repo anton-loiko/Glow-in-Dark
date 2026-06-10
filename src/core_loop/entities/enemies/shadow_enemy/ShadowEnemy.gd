@@ -41,7 +41,6 @@ func _physics_process(delta: float) -> void:
 	var player_light_health = player.get("current_light_health") if player.get("current_light_health") != null else 0.5
 	var current_radius = player_light_health * MAX_LIGHT_RADIUS
 	
-	# Определение состояния AI на основе света
 	if current_radius > 100.0:
 		current_state = State.FLEE
 	elif current_radius < 40.0:
@@ -49,13 +48,14 @@ func _physics_process(delta: float) -> void:
 	else:
 		current_state = State.WANDER
 		
-	# Получение урона от света, если враг внутри радиуса
 	if dist_to_player < current_radius:
-		# Чем больше радиус, тем быстрее сгорает враг
 		var burn_rate = (current_radius / 100.0) * 80.0 
+		
+		if GameManager.active_skills.has("shadow_burn"):
+			burn_rate *= GameManager.SKILL_SHADOW_BURN_MULT 
+			
 		health -= burn_rate * delta
 		
-		# Мерцание при получении урона
 		modulate = Color(1.2, 0.8, 0.2) if Engine.get_frames_drawn() % 4 < 2 else Color.WHITE
 		
 		if health <= 0:
@@ -64,7 +64,6 @@ func _physics_process(delta: float) -> void:
 	else:
 		_update_visuals()
 
-	# Выполнение движения
 	match current_state:
 		State.WANDER:
 			_wander(delta)
@@ -101,7 +100,6 @@ func _die() -> void:
 	if spark_scene:
 		var spark = spark_scene.instantiate()
 		spark.global_position = global_position
-		# Используем call_deferred, так как спавн происходит во время просчета физики
 		get_parent().call_deferred("add_child", spark)
 	queue_free()
 

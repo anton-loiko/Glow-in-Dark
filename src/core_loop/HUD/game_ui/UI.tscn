@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="2_qu8t6"]
 [ext_resource type="Shader" uid="uid://vppnsrwh72jk" path="res://src/core_loop/HUD/game_ui/vignette.gdshader" id="3_b7x4a"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
+[ext_resource type="PackedScene" uid="uid://cbghl0e51v5ai" path="res://src/core_loop/HUD/skill_choice/SkillChoicePanel.tscn" id="5_tyhax"]
 
 [sub_resource type="Gradient" id="Gradient_ll0sn"]
 offsets = PackedFloat32Array(0.015625, 1)
@@ -231,6 +232,8 @@ texture = SubResource("GradientTexture2D_tyhax")
 [node name="Tip" parent="Virtual Joystick/Base" index="0"]
 self_modulate = Color(1, 1, 1, 0)
 texture_filter = 1
+
+[node name="SkillChoicePanel" parent="." unique_id=1315848274 instance=ExtResource("5_tyhax")]
 
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]

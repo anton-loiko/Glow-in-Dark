@@ -7,15 +7,34 @@ const SPARK_VALUE: int = 1
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var particles: CPUParticles2D = $CPUParticles2D
 
+var is_collected: bool = false
+var player_ref: Node2D
+
 func _ready() -> void:
 	if animated_sprite:
 		animated_sprite.play()
 	
 	if not body_entered.is_connected(_on_body_entered):
 		body_entered.connect(_on_body_entered)
+		
+	player_ref = get_tree().get_first_node_in_group("Player")
+	if not player_ref:
+		player_ref = get_parent().find_child("Player", true, false)
+
+func _process(delta: float) -> void:
+	if is_collected or not player_ref or not is_instance_valid(player_ref):
+		return
+		
+	if GameManager.active_skills.has("magnet"):
+		if global_position.distance_to(player_ref.global_position) < GameManager.SKILL_MAGNET_RADIUS:
+			var dir = (player_ref.global_position - global_position).normalized()
+			global_position += dir * GameManager.SKILL_MAGNET_SPEED * delta
 
 func _on_body_entered(body: Node2D) -> void:
+	if is_collected: return
+	
 	if body.is_in_group("Player") or body.name == "Player":
+		is_collected = true
 		set_deferred("monitoring", false)
 		
 		GameManager.add_sparks(SPARK_VALUE)

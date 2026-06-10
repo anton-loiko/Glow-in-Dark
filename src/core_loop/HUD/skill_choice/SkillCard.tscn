@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://ti7r04px1eyq"]
+
+[ext_resource type="Script" uid="uid://ccgly6nc7lu3j" path="res://src/core_loop/HUD/skill_choice/SkillCard.gd" id="1_sgue3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_sgue3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ijfpi"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bsqs5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h1v50"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nu3k7"]
+
+[node name="SkillCard" type="Button" unique_id=929470089]
+custom_minimum_size = Vector2(80, 120)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -190.0
+offset_bottom = -360.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(115, 50)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_sgue3")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_ijfpi")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_bsqs5")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_h1v50")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_nu3k7")
+script = ExtResource("1_sgue3")
+
+[node name="BgColor" type="ColorRect" parent="." unique_id=202381506]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 120.0
+mouse_filter = 2
+color = Color(4.813075e-08, 0.18040392, 0.18196407, 1)
+
+[node name="IconRect" type="TextureRect" parent="." unique_id=952762478]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 0
+offset_left = 16.0
+offset_top = 20.0
+offset_right = 64.0
+offset_bottom = 68.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="." unique_id=527891219]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 8
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 12
+text = "Tet"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Highlight" type="ReferenceRect" parent="." unique_id=1095516921]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 120.0
+mouse_filter = 2
+border_color = Color(1, 1, 1, 1)
+border_width = 3.0
+editor_only = false
