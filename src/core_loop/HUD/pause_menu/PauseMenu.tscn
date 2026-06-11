@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://8cdhe1e1ky7f"]
 
 [ext_resource type="Script" uid="uid://et23mvpk6c7" path="res://src/core_loop/HUD/pause_menu/PauseMenu.gd" id="1_sj1v7"]
+[ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="2_nm7f5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sj1v7"]
 bg_color = Color(0.29917735, 0.69475806, 0.41369233, 1)
@@ -63,67 +64,65 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.78431374)
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1860211336]
+[node name="SafeAreaContainer" parent="." unique_id=362836226 instance=ExtResource("2_nm7f5")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="SafeAreaContainer" unique_id=1860211336]
+layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
-[node name="Layout" type="VBoxContainer" parent="MarginContainer" unique_id=1764917037]
+[node name="Layout" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer" unique_id=1764917037]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="MarginContainer/Layout" unique_id=961240274]
+[node name="Title" type="Label" parent="SafeAreaContainer/MarginContainer/Layout" unique_id=961240274]
 layout_mode = 2
 text = "PAUSE"
 horizontal_alignment = 1
 
-[node name="SkillsSection" type="VBoxContainer" parent="MarginContainer/Layout" unique_id=346379471]
+[node name="SkillsSection" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout" unique_id=346379471]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="SkillsTitle" type="Label" parent="MarginContainer/Layout/SkillsSection" unique_id=979495628]
+[node name="SkillsTitle" type="Label" parent="SafeAreaContainer/MarginContainer/Layout/SkillsSection" unique_id=979495628]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Active skills"
 horizontal_alignment = 1
 
-[node name="SkillsGrid" type="GridContainer" parent="MarginContainer/Layout/SkillsSection" unique_id=2001933455]
+[node name="SkillsGrid" type="GridContainer" parent="SafeAreaContainer/MarginContainer/Layout/SkillsSection" unique_id=2001933455]
 unique_name_in_owner = true
 layout_mode = 2
 columns = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/Layout" unique_id=40263581]
+[node name="VBoxContainer" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout" unique_id=40263581]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="StatsContainer" type="VBoxContainer" parent="MarginContainer/Layout/VBoxContainer" unique_id=1073464638]
+[node name="StatsContainer" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer" unique_id=1073464638]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="LevelLabel" type="Label" parent="MarginContainer/Layout/VBoxContainer/StatsContainer" unique_id=1901328712]
+[node name="LevelLabel" type="Label" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/StatsContainer" unique_id=1901328712]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="SparksLabel" type="Label" parent="MarginContainer/Layout/VBoxContainer/StatsContainer" unique_id=224251975]
+[node name="SparksLabel" type="Label" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/StatsContainer" unique_id=224251975]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/Layout/VBoxContainer" unique_id=1711587921]
+[node name="HBoxContainer" type="HBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer" unique_id=1711587921]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/separation = 10
 
-[node name="ResumeButton" type="Button" parent="MarginContainer/Layout/VBoxContainer/HBoxContainer" unique_id=779369120]
+[node name="ResumeButton" type="Button" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/HBoxContainer" unique_id=779369120]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
@@ -137,7 +136,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_sj1v7")
 theme_override_styles/focus = SubResource("StyleBoxFlat_sj1v7")
 text = "Resume"
 
-[node name="MenuButton" type="Button" parent="MarginContainer/Layout/VBoxContainer/HBoxContainer" unique_id=975287031]
+[node name="MenuButton" type="Button" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/HBoxContainer" unique_id=975287031]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
