@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://diqaeekswt55k" path="res://src/core_loop/HUD/game_ui/UIControl.gd" id="1_dj8aq"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://addons/virtual_joystick/virtual_joystick_scene.tscn" id="2_qu8t6"]
 [ext_resource type="Shader" uid="uid://vppnsrwh72jk" path="res://src/core_loop/HUD/game_ui/vignette.gdshader" id="3_b7x4a"]
+[ext_resource type="PackedScene" uid="uid://c30gc56g10e24" path="res://src/meta_loop/common/currency/soft/SoftCurrency.tscn" id="3_eek5f"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
 [ext_resource type="PackedScene" uid="uid://cbghl0e51v5ai" path="res://src/core_loop/HUD/skill_choice/SkillChoicePanel.tscn" id="5_tyhax"]
 
@@ -93,8 +94,13 @@ texture_progress = SubResource("GradientTexture2D_75u2n")
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="SoftCurrency" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1273246873 instance=ExtResource("3_eek5f")]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="SparksLabel" type="Label" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=299155964]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0

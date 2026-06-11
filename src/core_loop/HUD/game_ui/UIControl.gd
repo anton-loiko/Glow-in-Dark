@@ -8,6 +8,7 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var lose_panel: Panel = %LosePanel
 @onready var win_panel: Panel = %WinPanel
 @onready var sparks_label: Label = %SparksLabel
+@onready var soft_currency: SoftCurrency = %SoftCurrency
 @onready var reward_label: Label = %WinPanel/VBoxContainer/RewardLabel
 @onready var next_button: Button = %WinPanel/VBoxContainer/NextLevelButton
 @onready var revive_button: Button = %LosePanel/VBoxContainer/ReviveButton
@@ -15,20 +16,22 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 
 @onready var vignette_rect: ColorRect = %VignetteRect
 
-var sparks_at_level_start: int = 0
+var sparks_at_level: int = 0
 var is_danger_mode: bool = false
 var current_light: float = 1.0
+var counter_to_show_skill_choice: int = 0
 
 func _ready() -> void:
 	virtual_joystick.show()
 	
-	sparks_at_level_start = GameManager.sparks
-	sparks_label.text = "Sparks: " + str(GameManager.sparks)
+	#sparks_label.text = "Sparks: " + str(sparks_at_level_start)
+	soft_currency.set_amount(sparks_at_level)
 	
 	AdManager.reward_earned.connect(_on_reward_earned)
-	GameManager.sparks_changed.connect(_on_sparks_changed)
+	GameManager.sparks_picked_up.connect(_on_sparks_picked_up)
+	GameManager.skill_choosen.connect(_on_skill_choosen)
 	
-	progress_bar.max_value = 1.0 
+	progress_bar.max_value = 1.0
 	progress_bar.step = 0.01
 	progress_bar.tint_progress = Color.WHITE
 	
@@ -45,12 +48,12 @@ func _process(delta: float) -> void:
 	
 	# Непрерывная пульсация, если света меньше 25%
 	if is_danger_mode:
-		var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) / 2.0 
+		var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) / 2.0
 		vignette_rect.material.set_shader_parameter("intensity", 0.4 + (pulse * 0.6))
 	else:
 		# Плавное затухание виньетки, если игрок восстановил свет (но не перебиваем вспышку урона)
 		var current_intensity = vignette_rect.material.get_shader_parameter("intensity")
-		if current_intensity > 0.0 and current_intensity < 0.9: 
+		if current_intensity > 0.0 and current_intensity < 0.9:
 			vignette_rect.material.set_shader_parameter("intensity", lerpf(current_intensity, 0.0, 5.0 * delta))
 
 func _on_player_light_changed(new_value: float) -> void:
@@ -80,6 +83,7 @@ func _set_vignette_intensity(val: float) -> void:
 		vignette_rect.material.set_shader_parameter("intensity", val)
 
 func show_game_over() -> void:
+	GameManager.add_sparks(sparks_at_level)
 	get_tree().paused = true
 	virtual_joystick.hide()
 	lose_panel.show()
@@ -89,8 +93,10 @@ func show_game_over() -> void:
 func show_win_screen() -> void:
 	get_tree().paused = true
 	virtual_joystick.hide()
-	var collected = GameManager.sparks - sparks_at_level_start
-	reward_label.text = "Collected sparks: " + str(collected)
+	
+	GameManager.add_sparks(sparks_at_level)
+	reward_label.text = "+" + str(sparks_at_level) + " sparks"
+	
 	win_panel.show()
 	lose_panel.hide()
 
@@ -105,15 +111,28 @@ func _on_reward_earned() -> void:
 	virtual_joystick.show()
 	get_tree().paused = false
 
-func _on_sparks_changed(new_amount: int) -> void:
-	sparks_label.text = "Sparks: " + str(new_amount)
+func _on_skill_choosen(skill_id: String) -> void:
+	var price = GameManager.SKILLS_DB[skill_id].price_sparks
 	
+	sparks_at_level -= price
+	soft_currency.set_amount(sparks_at_level)
+	
+func _on_sparks_picked_up(amount: int) -> void:
+	sparks_at_level += amount
+	counter_to_show_skill_choice += 1
+	
+	soft_currency.set_amount(sparks_at_level)
+	
+	if sparks_at_level >=  GameManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
+		GameManager.skill_choice_triggered.emit()
+		counter_to_show_skill_choice = 0
+
 	sparks_label.pivot_offset = sparks_label.size / 2.0
 	
 	var tween = create_tween().set_parallel(true)
 	
 	sparks_label.scale = Vector2(1.4, 1.4)
-	sparks_label.modulate = Color(0.8, 0.2, 1.0) 
+	sparks_label.modulate = Color(0.8, 0.2, 1.0)
 	
 	tween.tween_property(sparks_label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	tween.tween_property(sparks_label, "modulate", Color.WHITE, 0.3)
@@ -124,6 +143,8 @@ func _on_next_level_button_pressed() -> void:
 	GameManager.next_level()
 
 func _on_revive_button_pressed() -> void:
+	GameManager.withdraw_sparks(sparks_at_level)
+
 	AudioManager.play_sfx(CLICK_SFX)
 	revive_button.disabled = true
 	AdManager.show_rewarded_ad()

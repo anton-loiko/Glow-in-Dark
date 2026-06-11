@@ -37,7 +37,9 @@ func _on_body_entered(body: Node2D) -> void:
 		is_collected = true
 		set_deferred("monitoring", false)
 		
-		GameManager.add_sparks(SPARK_VALUE)
+		#GameManager.add_sparks(SPARK_VALUE)
+		GameManager.sparks_picked_up.emit(SPARK_VALUE)
+		
 		if AudioManager.has_method("play_sfx"):
 			AudioManager.play_sfx(PICKUP_SFX)
 		
