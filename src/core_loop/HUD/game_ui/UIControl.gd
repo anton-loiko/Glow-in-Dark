@@ -7,7 +7,6 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var progress_bar: TextureProgressBar = %TextureProgressBar
 @onready var lose_panel: Panel = %LosePanel
 @onready var win_panel: Panel = %WinPanel
-@onready var sparks_label: Label = %SparksLabel
 @onready var soft_currency: SoftCurrency = %SoftCurrency
 @onready var reward_label: Label = %WinPanel/VBoxContainer/RewardLabel
 @onready var next_button: Button = %WinPanel/VBoxContainer/NextLevelButton
@@ -15,6 +14,8 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var virtual_joystick: VirtualJoystick = %"Virtual Joystick"
 
 @onready var vignette_rect: ColorRect = %VignetteRect
+@onready var pause_button: Button = %PauseButton
+@onready var pause_menu: PauseMenu = %PauseMenu
 
 var sparks_at_level: int = 0
 var is_danger_mode: bool = false
@@ -24,14 +25,14 @@ var counter_to_show_skill_choice: int = 0
 func _ready() -> void:
 	virtual_joystick.show()
 	
-	#sparks_label.text = "Sparks: " + str(sparks_at_level_start)
 	soft_currency.set_amount(sparks_at_level)
 	
 	AdManager.reward_earned.connect(_on_reward_earned)
 	GameManager.sparks_picked_up.connect(_on_sparks_picked_up)
-	GameManager.skill_choosen.connect(_on_skill_choosen)
-	
-	progress_bar.max_value = 1.0
+	GameManager.skill_applied.connect(_on_skill_applied)
+	pause_button.pressed.connect(_on_pause_button_pressed)
+
+	progress_bar.max_value = 1.0 
 	progress_bar.step = 0.01
 	progress_bar.tint_progress = Color.WHITE
 	
@@ -48,12 +49,12 @@ func _process(delta: float) -> void:
 	
 	# Непрерывная пульсация, если света меньше 25%
 	if is_danger_mode:
-		var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) / 2.0
+		var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) / 2.0 
 		vignette_rect.material.set_shader_parameter("intensity", 0.4 + (pulse * 0.6))
 	else:
 		# Плавное затухание виньетки, если игрок восстановил свет (но не перебиваем вспышку урона)
 		var current_intensity = vignette_rect.material.get_shader_parameter("intensity")
-		if current_intensity > 0.0 and current_intensity < 0.9:
+		if current_intensity > 0.0 and current_intensity < 0.9: 
 			vignette_rect.material.set_shader_parameter("intensity", lerpf(current_intensity, 0.0, 5.0 * delta))
 
 func _on_player_light_changed(new_value: float) -> void:
@@ -111,7 +112,7 @@ func _on_reward_earned() -> void:
 	virtual_joystick.show()
 	get_tree().paused = false
 
-func _on_skill_choosen(skill_id: String) -> void:
+func _on_skill_applied(skill_id: String) -> void:
 	var price = GameManager.SKILLS_DB[skill_id].price_sparks
 	
 	sparks_at_level -= price
@@ -126,16 +127,17 @@ func _on_sparks_picked_up(amount: int) -> void:
 	if sparks_at_level >=  GameManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
 		GameManager.skill_choice_triggered.emit()
 		counter_to_show_skill_choice = 0
-
-	sparks_label.pivot_offset = sparks_label.size / 2.0
+	
+	var currency_label = soft_currency.get_node("%Currency")
+	currency_label.pivot_offset = currency_label.size / 2.0
 	
 	var tween = create_tween().set_parallel(true)
 	
-	sparks_label.scale = Vector2(1.4, 1.4)
-	sparks_label.modulate = Color(0.8, 0.2, 1.0)
+	currency_label.scale = Vector2(1.4, 1.4)
+	currency_label.modulate = Color(0.8, 0.2, 1.0)
 	
-	tween.tween_property(sparks_label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
-	tween.tween_property(sparks_label, "modulate", Color.WHITE, 0.3)
+	tween.tween_property(currency_label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(currency_label, "modulate", Color.WHITE, 0.3)
 
 func _on_next_level_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
@@ -153,3 +155,7 @@ func _on_menu_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
 	get_tree().paused = false
 	GameManager.go_to_main_menu()
+
+func _on_pause_button_pressed() -> void:
+	AudioManager.play_sfx(CLICK_SFX)
+	pause_menu.open_pause()

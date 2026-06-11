@@ -5,7 +5,9 @@
 [ext_resource type="Shader" uid="uid://vppnsrwh72jk" path="res://src/core_loop/HUD/game_ui/vignette.gdshader" id="3_b7x4a"]
 [ext_resource type="PackedScene" uid="uid://c30gc56g10e24" path="res://src/meta_loop/common/currency/soft/SoftCurrency.tscn" id="3_eek5f"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
+[ext_resource type="Texture2D" uid="uid://drhtyahrjdcqh" path="res://src/assets/images/kenney_game_icons/White/2x/pause.png" id="4_swrer"]
 [ext_resource type="PackedScene" uid="uid://cbghl0e51v5ai" path="res://src/core_loop/HUD/skill_choice/SkillChoicePanel.tscn" id="5_tyhax"]
+[ext_resource type="PackedScene" uid="uid://8cdhe1e1ky7f" path="res://src/core_loop/HUD/pause_menu/PauseMenu.tscn" id="7_imqh4"]
 
 [sub_resource type="Gradient" id="Gradient_ll0sn"]
 offsets = PackedFloat32Array(0.015625, 1)
@@ -48,6 +50,8 @@ colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0)
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_tyhax"]
 gradient = SubResource("Gradient_b7x4a")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_imqh4"]
+
 [node name="UI" type="CanvasLayer" unique_id=1901153143]
 process_mode = 3
 metadata/_edit_vertical_guides_ = [0.0, 270.0]
@@ -75,14 +79,25 @@ theme_override_constants/margin_right = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="UIControl/SafeAreaContainer/HUD" unique_id=1120807376]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer" unique_id=1346013282]
+[node name="HFlowContainer" type="HFlowContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer" unique_id=1955598096]
 layout_mode = 2
+size_flags_vertical = 0
 
-[node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1091104082]
+[node name="SoftCurrency" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=1273246873 instance=ExtResource("3_eek5f")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=1050376698]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=1091104082]
 unique_name_in_owner = true
 texture_filter = 1
 layout_mode = 2
-size_flags_horizontal = 8
+size_flags_horizontal = 4
 size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
@@ -90,22 +105,13 @@ texture_under = SubResource("GradientTexture2D_dj8aq")
 texture_over = SubResource("GradientTexture2D_5en4g")
 texture_progress = SubResource("GradientTexture2D_75u2n")
 
-[node name="MarginContainer" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1050376698]
+[node name="MarginContainer3" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=81638177]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SoftCurrency" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=1273246873 instance=ExtResource("3_eek5f")]
-unique_name_in_owner = true
+[node name="PauseIconReservedPlace" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=540976798]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-
-[node name="SparksLabel" type="Label" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HBoxContainer" unique_id=299155964]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 0
-theme_override_colors/font_color = Color(1, 0.8862745, 0.0627451, 1)
-text = "Sparks: 0"
 
 [node name="LosePanel" type="Panel" parent="UIControl" unique_id=311640636]
 unique_name_in_owner = true
@@ -211,6 +217,7 @@ mouse_filter = 2
 [node name="Virtual Joystick" parent="." unique_id=1665255622 instance=ExtResource("2_qu8t6")]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.27450982)
+z_index = 1
 custom_minimum_size = Vector2(270, 480)
 anchors_preset = 15
 anchor_top = 0.0
@@ -240,6 +247,31 @@ self_modulate = Color(1, 1, 1, 0)
 texture_filter = 1
 
 [node name="SkillChoicePanel" parent="." unique_id=1315848274 instance=ExtResource("5_tyhax")]
+visible = false
+
+[node name="PauseButton" type="Button" parent="." unique_id=902404157]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(32, 32)
+offset_left = 228.0
+offset_right = 260.0
+offset_bottom = 32.0
+size_flags_horizontal = 8
+theme_override_colors/icon_normal_color = Color(0.80686986, 0.8068699, 0.80686986, 1)
+theme_override_colors/icon_focus_color = Color(0.80784315, 0.80784315, 0.80784315, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_imqh4")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_imqh4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_imqh4")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_imqh4")
+theme_override_styles/focus = SubResource("StyleBoxFlat_imqh4")
+icon = ExtResource("4_swrer")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="PauseMenu" parent="." unique_id=1424168572 instance=ExtResource("7_imqh4")]
+unique_name_in_owner = true
+visible = false
 
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]

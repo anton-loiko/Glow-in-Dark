@@ -6,11 +6,11 @@ const CHUNKS_PER_LEVEL_STEP: int = 2
 const CHUNK_SIZE_Y: float = 480.0
 
 const BASE_FUEL_CHANCE: float = 0.15
-const BASE_SPARK_CHANCE: float = 0.3
-const BASE_ENEMY_CHANCE: float = 0.1
+const BASE_SPARK_CHANCE: float = 0.65  # Увеличено с 0.3 (теперь 65% шанс спавна на точке)
+const BASE_ENEMY_CHANCE: float = 0.4  # Увеличено с 0.1 (теперь 40% шанс спавна на точке)
 
 # --- Настройки навыков ---
-const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 15
+const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 1 # 15
 const SKILL_MAGNET_RADIUS: float = 120.0
 const SKILL_MAGNET_SPEED: float = 200.0
 const SKILL_SHADOW_BURN_MULT: float = 2.5
@@ -21,8 +21,8 @@ func get_chunks_to_win() -> int:
 	return BASE_CHUNKS_TO_WIN + (current_level * CHUNKS_PER_LEVEL_STEP)
 
 func get_enemy_spawn_chance() -> float:
-	# Шанс врагов растет на 2% с каждым уровнем (максимум 60%)
-	return min(BASE_ENEMY_CHANCE + (current_level * 0.02), 0.6)
+	# Шанс врагов растет на 4% с каждым уровнем (максимум 85%)
+	return min(BASE_ENEMY_CHANCE + (current_level * 0.04), 0.85)
 
 func get_fuel_spawn_chance() -> float:
 	# Шанс топлива падает с ростом уровня (минимум 5%)
@@ -57,7 +57,7 @@ var SKILLS_DB: Dictionary = {
 signal sparks_picked_up(amount: int)
 signal sparks_changed(new_amount: int)
 signal skill_choice_triggered
-signal skill_choosen(skill_id: String)
+signal skill_applied(skill_id: String)
 
 var sparks: int = 0
 var active_skills: Array[String] = [] 
@@ -182,7 +182,7 @@ func withdraw_sparks(amount: int) -> void:
 	save_game()
 
 func apply_skill(skill_id: String) -> void:
-	skill_choosen.emit(skill_id)
+	skill_applied.emit(skill_id)
 	
 	if not active_skills.has(skill_id):
 		active_skills.append(skill_id)

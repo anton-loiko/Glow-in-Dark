@@ -48,15 +48,21 @@ func _physics_process(delta: float) -> void:
 	else:
 		current_state = State.WANDER
 		
+	# Логика сжигания от света игрока и навыка "ОГНЕННАЯ АУРА"
 	if dist_to_player < current_radius:
 		var burn_rate = (current_radius / 100.0) * 80.0 
+		var has_burn_skill = GameManager.active_skills.has("shadow_burn")
 		
-		if GameManager.active_skills.has("shadow_burn"):
+		if has_burn_skill:
 			burn_rate *= GameManager.SKILL_SHADOW_BURN_MULT 
 			
 		health -= burn_rate * delta
 		
-		modulate = Color(1.2, 0.8, 0.2) if Engine.get_frames_drawn() % 4 < 2 else Color.WHITE
+		# Визуальная отдача горения (красный цвет, если есть навык)
+		if Engine.get_frames_drawn() % 4 < 2:
+			modulate = Color(1.0, 0.2, 0.2) if has_burn_skill else Color(1.2, 0.8, 0.2)
+		else:
+			modulate = Color.WHITE
 		
 		if health <= 0:
 			_die()
