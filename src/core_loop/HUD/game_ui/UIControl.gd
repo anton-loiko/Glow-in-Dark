@@ -14,6 +14,9 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var virtual_joystick: VirtualJoystick = %"Virtual Joystick"
 
 @onready var vignette_rect: ColorRect = %VignetteRect
+
+@onready var safe_area_container: MarginContainer = %SafeAreaContainer
+@onready var pause_button_reserved_place: MarginContainer = %PauseIconReservedPlace
 @onready var pause_button: Button = %PauseButton
 @onready var pause_menu: PauseMenu = %PauseMenu
 
@@ -32,12 +35,19 @@ func _ready() -> void:
 	GameManager.skill_applied.connect(_on_skill_applied)
 	pause_button.pressed.connect(_on_pause_button_pressed)
 
-	progress_bar.max_value = 1.0 
+	progress_bar.max_value = 1.0
 	progress_bar.step = 0.01
 	progress_bar.tint_progress = Color.WHITE
 	
 	if vignette_rect and vignette_rect.material:
 		vignette_rect.material.set_shader_parameter("intensity", 0.0)
+	
+	await get_tree().process_frame
+	
+	var safe_area_container_top_margin: int = safe_area_container.get_theme_constant("margin_top")
+	var pause_button_reserved_place_pos: Vector2 = pause_button_reserved_place.position
+	
+	pause_button.position = Vector2(pause_button_reserved_place_pos.x + (pause_button.size.x / 2), pause_button_reserved_place_pos.y + safe_area_container_top_margin)
 
 func _process(delta: float) -> void:
 	if not vignette_rect or not vignette_rect.material or get_tree().paused:
@@ -49,12 +59,12 @@ func _process(delta: float) -> void:
 	
 	# Непрерывная пульсация, если света меньше 25%
 	if is_danger_mode:
-		var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) / 2.0 
+		var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) / 2.0
 		vignette_rect.material.set_shader_parameter("intensity", 0.4 + (pulse * 0.6))
 	else:
 		# Плавное затухание виньетки, если игрок восстановил свет (но не перебиваем вспышку урона)
 		var current_intensity = vignette_rect.material.get_shader_parameter("intensity")
-		if current_intensity > 0.0 and current_intensity < 0.9: 
+		if current_intensity > 0.0 and current_intensity < 0.9:
 			vignette_rect.material.set_shader_parameter("intensity", lerpf(current_intensity, 0.0, 5.0 * delta))
 
 func _on_player_light_changed(new_value: float) -> void:

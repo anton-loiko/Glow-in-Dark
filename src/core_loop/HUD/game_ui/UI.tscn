@@ -68,6 +68,7 @@ grow_vertical = 2
 script = ExtResource("1_dj8aq")
 
 [node name="SafeAreaContainer" parent="UIControl" unique_id=362836226 instance=ExtResource("3_gpq8j")]
+unique_name_in_owner = true
 layout_mode = 1
 
 [node name="HUD" type="MarginContainer" parent="UIControl/SafeAreaContainer" unique_id=1988987002]
@@ -110,6 +111,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="PauseIconReservedPlace" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=540976798]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 
