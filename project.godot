@@ -40,6 +40,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[editor]
+
+movie_writer/movie_file="/Users/admin/tech/code/games/mc_game/build/movie/mov.png"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg", "res://addons/virtual_joystick/plugin.cfg")

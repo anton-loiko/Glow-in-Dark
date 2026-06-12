@@ -248,9 +248,6 @@ texture = SubResource("GradientTexture2D_tyhax")
 self_modulate = Color(1, 1, 1, 0)
 texture_filter = 1
 
-[node name="SkillChoicePanel" parent="." unique_id=1315848274 instance=ExtResource("5_tyhax")]
-visible = false
-
 [node name="PauseButton" type="Button" parent="." unique_id=902404157]
 unique_name_in_owner = true
 texture_filter = 1
@@ -273,6 +270,9 @@ expand_icon = true
 
 [node name="PauseMenu" parent="." unique_id=1424168572 instance=ExtResource("7_imqh4")]
 unique_name_in_owner = true
+visible = false
+
+[node name="SkillChoicePanel" parent="." unique_id=1315848274 instance=ExtResource("5_tyhax")]
 visible = false
 
 [connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
