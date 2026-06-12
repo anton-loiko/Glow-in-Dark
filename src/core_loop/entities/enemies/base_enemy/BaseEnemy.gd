@@ -7,6 +7,13 @@ extends CharacterBody2D
 @export var spark_scene: PackedScene = preload("res://src/core_loop/entities/interactables/spark/Spark.tscn")
 @export var hit_sfx: AudioStream = preload("res://src/assets/audio/error_008.ogg")
 
+signal on_damage_tick(amount: int, global_pos: Vector2, is_lethal: bool)
+
+var accumulated_damage: float = 0.0
+var damage_number_timer: float = 0.0
+const DAMAGE_NUMBER_INTERVAL: float = 0.35
+var is_dead: bool = false # <-- Новый флаг защиты
+
 var health: float
 var player: Node2D
 
@@ -23,6 +30,9 @@ func _ready() -> void:
 	if not player:
 		player = get_parent().find_child("Player", true, false)
 		
+	if not on_damage_tick.is_connected(DamagePool.show_damage):
+		on_damage_tick.connect(DamagePool.show_damage)
+		
 	_enemy_ready()
 
 # Виртуальный метод для инициализации в дочерних классах
@@ -32,10 +42,29 @@ func _enemy_ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not player or not is_instance_valid(player):
 		_enemy_physics_process(delta)
+		_process_damage_numbers(delta)
 		return
 		
 	_handle_light_burn(delta)
 	_enemy_physics_process(delta)
+	_process_damage_numbers(delta)
+
+func _process_damage_numbers(delta: float) -> void:
+	if accumulated_damage > 0:
+		damage_number_timer += delta
+		if damage_number_timer >= DAMAGE_NUMBER_INTERVAL:
+			_emit_damage_number(false)
+
+func _emit_damage_number(is_lethal: bool) -> void:
+	if accumulated_damage <= 0:
+		return
+		
+	# Округляем урон вверх для красивых целых чисел
+	var display_amount = int(ceil(accumulated_damage))
+	on_damage_tick.emit(display_amount, global_position, is_lethal)
+	
+	accumulated_damage = 0.0
+	damage_number_timer = 0.0
 
 # Виртуальный метод для логики перемещения (State Machine) в дочерних классах
 func _enemy_physics_process(_delta: float) -> void:
@@ -67,8 +96,15 @@ func _update_visuals() -> void:
 	modulate = Color.WHITE
 
 func take_damage(amount: float) -> void:
+	if is_dead:
+		return
+		
 	health -= amount
+	accumulated_damage += amount
+	
 	if health <= 0:
+		is_dead = true
+		_emit_damage_number(true)
 		die()
 
 func die() -> void:

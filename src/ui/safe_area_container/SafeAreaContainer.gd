@@ -29,6 +29,10 @@ func _update_margins_for_safe_area() -> void:
 	
 	# Нижний отступ: (Общая высота) минус (Конец безопасной зоны по Y). Умножаем на масштаб.
 	var margin_bottom: int = roundi((screen_size.y - (safe_area.position.y + safe_area.size.y)) * scale_y)
+	print("save area left: ", margin_left)
+	print("save area right: ", margin_right)
+	print("save area top: ", margin_top)
+	print("save area bottom: ", margin_bottom)
 	
 	# 5. Применяем вычисленные отступы к MarginContainer через переопределение темы.
 	#add_theme_constant_override("margin_left", margin_left)

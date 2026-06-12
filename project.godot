@@ -28,6 +28,7 @@ AdManager="*uid://bgiahtvfs3bjc"
 StoreManager="*uid://wkhdbx05icvs"
 LeaderboardManager="*uid://cuurm57rs6ekr"
 CloudManager="*uid://h3q8um1ptes4"
+DamagePool="*uid://bs4hm0f3uc8wy"
 
 [display]
 
