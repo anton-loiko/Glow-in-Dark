@@ -1,46 +1,39 @@
 class_name ShadowEnemy
-extends CharacterBody2D
+extends BaseEnemy
 
 enum State { WANDER, FLEE, ATTACK }
 
 const SPEED: float = 70.0
 const ATTACK_SPEED: float = 90.0
 const FLEE_SPEED: float = 80.0
-const LIGHT_DAMAGE: float = 0.2
-const MAX_LIGHT_RADIUS: float = 150.0 
-const HIT_SFX = preload("res://src/assets/audio/error_008.ogg")
-
-@export var spark_scene: PackedScene = preload("res://src/core_loop/entities/interactables/spark/Spark.tscn")
 
 var direction: Vector2
 var current_state: State = State.WANDER
-var player: Node2D
-var health: float = 100.0
 
-@onready var hitbox: Area2D = $Hitbox
-
-func _ready() -> void:
-	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+func _enemy_ready() -> void:
+	# Настраиваем базовые параметры, унаследованные от BaseEnemy
+	max_health = 100.0
+	base_damage = 0.2
+	max_light_radius = 150.0
+	hit_sfx = preload("res://src/assets/audio/error_008.ogg")
+	spark_scene = preload("res://src/core_loop/entities/interactables/spark/Spark.tscn")
+	
+	# Обязательно обновляем текущее здоровье после изменения max_health
+	health = max_health
 	
 	var dirs: Array[Vector2] = [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]
 	direction = dirs.pick_random()
-	
-	if not hitbox.body_entered.is_connected(_on_hitbox_body_entered):
-		hitbox.body_entered.connect(_on_hitbox_body_entered)
-		
-	player = get_tree().get_first_node_in_group("Player")
-	if not player:
-		player = get_parent().find_child("Player", true, false)
 
-func _physics_process(delta: float) -> void:
+func _enemy_physics_process(delta: float) -> void:
 	if not player or not is_instance_valid(player):
 		_wander(delta)
 		return
 		
 	var dist_to_player = global_position.distance_to(player.global_position)
 	var player_light_health = player.get("current_light_health") if player.get("current_light_health") != null else 0.5
-	var current_radius = player_light_health * MAX_LIGHT_RADIUS
+	var current_radius = player_light_health * max_light_radius
 	
+	# Логика принятия решений (State Machine)
 	if current_radius > 100.0:
 		current_state = State.FLEE
 	elif current_radius < 40.0:
@@ -48,28 +41,6 @@ func _physics_process(delta: float) -> void:
 	else:
 		current_state = State.WANDER
 		
-	# Логика сжигания от света игрока и навыка "ОГНЕННАЯ АУРА"
-	if dist_to_player < current_radius:
-		var burn_rate = (current_radius / 100.0) * 80.0 
-		var has_burn_skill = GameManager.active_skills.has("shadow_burn")
-		
-		if has_burn_skill:
-			burn_rate *= GameManager.SKILL_SHADOW_BURN_MULT 
-			
-		health -= burn_rate * delta
-		
-		# Визуальная отдача горения (красный цвет, если есть навык)
-		if Engine.get_frames_drawn() % 4 < 2:
-			modulate = Color(1.0, 0.2, 0.2) if has_burn_skill else Color(1.2, 0.8, 0.2)
-		else:
-			modulate = Color.WHITE
-		
-		if health <= 0:
-			_die()
-			return
-	else:
-		_update_visuals()
-
 	match current_state:
 		State.WANDER:
 			_wander(delta)
@@ -102,18 +73,6 @@ func _attack(_delta: float) -> void:
 	velocity = dir_to_player * ATTACK_SPEED
 	move_and_slide()
 
-func _die() -> void:
-	if spark_scene:
-		var spark = spark_scene.instantiate()
-		spark.global_position = global_position
-		get_parent().call_deferred("add_child", spark)
-	queue_free()
-
-func _on_hitbox_body_entered(body: Node2D) -> void:
-	if body.is_in_group("Player") or body.name == "Player":
-		if body.has_method("take_damage"):
-			var damage_dealt = body.take_damage(LIGHT_DAMAGE)
-			if damage_dealt:
-				if AudioManager.has_method("play_sfx"):
-					AudioManager.play_sfx(HIT_SFX)
-				direction = (global_position - body.global_position).normalized()
+func _on_player_hit(body: Node2D) -> void:
+	# Уникальная реакция Теневого Врага на успешный удар — отскок в противоположную сторону
+	direction = (global_position - body.global_position).normalized()

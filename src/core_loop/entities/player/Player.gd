@@ -4,6 +4,8 @@ extends CharacterBody2D
 signal light_changed(new_value: float)
 signal died
 
+enum State { IDLE, MOVE, DEAD }
+
 const SPEED: float = 80.0
 const ACCELERATION: float = 15.0
 const FRICTION: float = 20.0
@@ -12,7 +14,7 @@ const MIN_LIGHT_SCALE: float = 0.0
 const LIGHT_FADE_RATE: float = 0.01 
 const DANGER_THRESHOLD: float = 0.25
 
-var is_dead: bool = false
+var current_state: State = State.IDLE
 var current_light_health: float = MAX_LIGHT_SCALE
 
 var extra_light_scale: float = 1.0
@@ -25,7 +27,8 @@ var impact_shake_intensity: float = 0.0
 @onready var animatedSprite: AnimatedSprite2D = $AnimatedSprite2D
 
 func _ready() -> void:
-	animatedSprite.play('idle')
+	current_state = State.IDLE
+	animatedSprite.play("idle")
 	
 	current_light_health = MAX_LIGHT_SCALE
 	light_changed.emit(current_light_health)
@@ -38,7 +41,8 @@ func _ready() -> void:
 		trail_particles.modulate = skin_color
 
 func _process(delta: float) -> void:
-	if is_dead: return
+	if current_state == State.DEAD: 
+		return
 	
 	current_light_health -= LIGHT_FADE_RATE * delta
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
@@ -60,38 +64,53 @@ func _process(delta: float) -> void:
 		die()
 
 func _physics_process(delta: float) -> void:
-	if is_dead:
-		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
-		move_and_slide()
-		return
-	
-	# TODO: Rewrite to state machine
-	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if input_direction != Vector2.ZERO:
-		animatedSprite.flip_h = false
-
-		if input_direction.y > 0: # Down
-			animatedSprite.play('move_down')
-		elif input_direction.y < 0: # UP
-			animatedSprite.play('move_up')
-		elif input_direction.x > 0: # Right
-			animatedSprite.play('move_right')
-		elif input_direction.x < 0: # Left
-			animatedSprite.flip_h = true
-			animatedSprite.play('move_right')
-		
-		velocity = velocity.lerp(input_direction * SPEED, ACCELERATION * delta)
-	else:
-		# Включаем idle только если мы уже не находимся в этом состоянии
-		if animatedSprite.animation != &"idle":
-			animatedSprite.play(&"idle")
-		
-		velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
+	match current_state:
+		State.IDLE:
+			_state_idle(delta)
+		State.MOVE:
+			_state_move(delta)
+		State.DEAD:
+			_state_dead(delta)
 
 	move_and_slide()
 
+func _state_idle(delta: float) -> void:
+	if animatedSprite.animation != &"idle":
+		animatedSprite.play(&"idle")
+		
+	velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
+	
+	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if input_direction != Vector2.ZERO:
+		current_state = State.MOVE
+
+func _state_move(delta: float) -> void:
+	var input_direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	
+	if input_direction == Vector2.ZERO:
+		current_state = State.IDLE
+		return
+
+	animatedSprite.flip_h = false
+
+	if input_direction.y > 0:
+		animatedSprite.play("move_down")
+	elif input_direction.y < 0:
+		animatedSprite.play("move_up")
+	elif input_direction.x > 0:
+		animatedSprite.play("move_right")
+	elif input_direction.x < 0:
+		animatedSprite.flip_h = true
+		animatedSprite.play("move_right")
+	
+	velocity = velocity.lerp(input_direction * SPEED, ACCELERATION * delta)
+
+func _state_dead(delta: float) -> void:
+	velocity = velocity.lerp(Vector2.ZERO, FRICTION * delta)
+
 func add_light(amount: float) -> void:
-	if is_dead: return
+	if current_state == State.DEAD: 
+		return
 
 	current_light_health += amount
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)
@@ -107,7 +126,7 @@ func add_light(amount: float) -> void:
 	impact_shake_intensity = 3.0
 
 func take_damage(amount: float) -> bool:
-	if is_dead: 
+	if current_state == State.DEAD: 
 		return false
 		
 	var actual_damage = amount
@@ -126,7 +145,10 @@ func take_damage(amount: float) -> bool:
 	return true
 
 func die() -> void:
-	is_dead = true
+	if current_state == State.DEAD:
+		return
+		
+	current_state = State.DEAD
 	camera.offset = Vector2.ZERO
 	animatedSprite.play("die")
 	
@@ -159,6 +181,7 @@ func call_delay_die_callback():
 	died.emit()
 
 func revive() -> void:
+	current_state = State.IDLE
 	animatedSprite.play("idle")
 	animatedSprite.scale = Vector2(1.0, 1.0)
 	
@@ -167,7 +190,6 @@ func revive() -> void:
 		trail_particles.amount_ratio = 1.0
 		trail_particles.emitting = true
 	
-	is_dead = false
 	current_light_health = 0.5
 	light_changed.emit(current_light_health)
 		
