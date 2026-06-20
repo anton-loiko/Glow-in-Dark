@@ -10,7 +10,7 @@ const BASE_SPARK_CHANCE: float = 0.65  # Увеличено с 0.3 (теперь
 const BASE_ENEMY_CHANCE: float = 0.4  # Увеличено с 0.1 (теперь 40% шанс спавна на точке)
 
 # --- Настройки навыков ---
-const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 1 # 15
+const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 15
 const SKILL_MAGNET_RADIUS: float = 120.0
 const SKILL_MAGNET_SPEED: float = 200.0
 const SKILL_SHADOW_BURN_MULT: float = 2.5

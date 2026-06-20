@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bnp12rkd1f71i"]
 
-[ext_resource type="Script" uid="uid://bevpd6a37c24p" path="res://src/core_loop/HUD/game_ui/DamageNumber.gd" id="1_recxi"]
+[ext_resource type="Script" uid="uid://bevpd6a37c24p" path="res://src/core_loop/HUD/game_ui/damage_number/DamageNumber.gd" id="1_recxi"]
 
 [node name="DamageNumber" type="Node2D" unique_id=1439394603]
 script = ExtResource("1_recxi")

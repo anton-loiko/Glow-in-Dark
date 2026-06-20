@@ -5,39 +5,12 @@
 [ext_resource type="Shader" uid="uid://vppnsrwh72jk" path="res://src/core_loop/HUD/game_ui/vignette.gdshader" id="3_b7x4a"]
 [ext_resource type="PackedScene" uid="uid://c30gc56g10e24" path="res://src/meta_loop/common/currency/soft/SoftCurrency.tscn" id="3_eek5f"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
-[ext_resource type="Texture2D" uid="uid://drhtyahrjdcqh" path="res://src/assets/images/kenney_game_icons/White/2x/pause.png" id="4_swrer"]
+[ext_resource type="Texture2D" uid="uid://diglij342f5td" path="res://src/assets/images/sprites/HUD/Fuel_progress_bar.png" id="4_d1cbg"]
+[ext_resource type="StyleBox" uid="uid://ccr0gdcp1l4xn" path="res://src/ui/resources/ui_box_style_box_texture.tres" id="5_btyi8"]
+[ext_resource type="PackedScene" uid="uid://bkqb8lx6f6bvi" path="res://src/core_loop/HUD/game_ui/lose_panel/LosePanel.tscn" id="5_ii0w5"]
 [ext_resource type="PackedScene" uid="uid://cbghl0e51v5ai" path="res://src/core_loop/HUD/skill_choice/SkillChoicePanel.tscn" id="5_tyhax"]
+[ext_resource type="Texture2D" uid="uid://dhggql5wghd46" path="res://src/assets/images/sprites/HUD/buttons/icons/Pause_btn.png" id="7_d1cbg"]
 [ext_resource type="PackedScene" uid="uid://8cdhe1e1ky7f" path="res://src/core_loop/HUD/pause_menu/PauseMenu.tscn" id="7_imqh4"]
-
-[sub_resource type="Gradient" id="Gradient_ll0sn"]
-offsets = PackedFloat32Array(0.015625, 1)
-colors = PackedColorArray(0.49411765, 0.49411765, 0.49411765, 1, 0.4955091, 0.4955091, 0.4955091, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_dj8aq"]
-gradient = SubResource("Gradient_ll0sn")
-width = 100
-height = 10
-
-[sub_resource type="Gradient" id="Gradient_ro3t7"]
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_5en4g"]
-gradient = SubResource("Gradient_ro3t7")
-width = 2
-height = 10
-
-[sub_resource type="Gradient" id="Gradient_ua6yw"]
-colors = PackedColorArray(0.6835208, 0.5984089, 0.19823518, 1, 1, 1, 0.08235294, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_75u2n"]
-gradient = SubResource("Gradient_ua6yw")
-width = 100
-height = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qu8t6"]
-bg_color = Color(1, 0.3274344, 0.38764626, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eiyve"]
-bg_color = Color(9.62615e-08, 0.7008574, 0.5731082, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tyhax"]
 shader = ExtResource("3_b7x4a")
@@ -97,14 +70,14 @@ size_flags_horizontal = 3
 [node name="TextureProgressBar" type="TextureProgressBar" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=1091104082]
 unique_name_in_owner = true
 texture_filter = 1
+custom_minimum_size = Vector2(96, 16)
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 6
 size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
-texture_under = SubResource("GradientTexture2D_dj8aq")
-texture_over = SubResource("GradientTexture2D_5en4g")
-texture_progress = SubResource("GradientTexture2D_75u2n")
+nine_patch_stretch = true
+texture_progress = ExtResource("4_d1cbg")
 
 [node name="MarginContainer3" type="MarginContainer" parent="UIControl/SafeAreaContainer/HUD/VBoxContainer/HFlowContainer" unique_id=81638177]
 layout_mode = 2
@@ -115,48 +88,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 
-[node name="LosePanel" type="Panel" parent="UIControl" unique_id=311640636]
+[node name="LosePanel" parent="UIControl" unique_id=810669109 instance=ExtResource("5_ii0w5")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_qu8t6")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/LosePanel" unique_id=1681306540]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -43.0
-offset_top = -29.0
-offset_right = 43.0
-offset_bottom = 29.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 8
-
-[node name="Label" type="Label" parent="UIControl/LosePanel/VBoxContainer" unique_id=223904571]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.00018197033, 0.04126285, 0.25682852, 1)
-theme_override_font_sizes/font_size = 26
-text = "Свет погас"
-horizontal_alignment = 1
-
-[node name="ReviveButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=1816540424]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Смотреть рекламу (+50% света)"
-
-[node name="MenuButton" type="Button" parent="UIControl/LosePanel/VBoxContainer" unique_id=300988848]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Меню"
 
 [node name="WinPanel" type="Panel" parent="UIControl" unique_id=1266359883]
 unique_name_in_owner = true
@@ -167,7 +102,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_eiyve")
+theme_override_styles/panel = ExtResource("5_btyi8")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UIControl/WinPanel" unique_id=1899551391]
 layout_mode = 1
@@ -234,8 +169,7 @@ size_flags_vertical = 3
 clampzone_size = 20.0
 joystick_mode = 1
 
-[node name="Base" parent="Virtual Joystick" index="0"]
-texture_filter = 1
+[node name="Base" parent="Virtual Joystick" index="0" unique_id=921249141]
 anchors_preset = 7
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -244,9 +178,8 @@ offset_bottom = 0.0
 grow_vertical = 0
 texture = SubResource("GradientTexture2D_tyhax")
 
-[node name="Tip" parent="Virtual Joystick/Base" index="0"]
+[node name="Tip" parent="Virtual Joystick/Base" index="0" unique_id=111753317]
 self_modulate = Color(1, 1, 1, 0)
-texture_filter = 1
 
 [node name="PauseButton" type="Button" parent="." unique_id=902404157]
 unique_name_in_owner = true
@@ -258,12 +191,13 @@ offset_bottom = 32.0
 size_flags_horizontal = 8
 theme_override_colors/icon_normal_color = Color(0.80686986, 0.8068699, 0.80686986, 1)
 theme_override_colors/icon_focus_color = Color(0.80784315, 0.80784315, 0.80784315, 1)
+theme_override_colors/icon_pressed_color = Color(0.096204735, 0.09620475, 0.096204735, 1)
 theme_override_styles/normal = SubResource("StyleBoxFlat_imqh4")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_imqh4")
 theme_override_styles/hover = SubResource("StyleBoxFlat_imqh4")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_imqh4")
 theme_override_styles/focus = SubResource("StyleBoxFlat_imqh4")
-icon = ExtResource("4_swrer")
+icon = ExtResource("7_d1cbg")
 flat = true
 icon_alignment = 1
 expand_icon = true
@@ -275,8 +209,6 @@ visible = false
 [node name="SkillChoicePanel" parent="." unique_id=1315848274 instance=ExtResource("5_tyhax")]
 visible = false
 
-[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/ReviveButton" to="UIControl" method="_on_revive_button_pressed"]
-[connection signal="pressed" from="UIControl/LosePanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]
 [connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
 

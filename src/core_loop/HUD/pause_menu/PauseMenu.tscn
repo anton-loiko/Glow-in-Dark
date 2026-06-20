@@ -2,48 +2,9 @@
 
 [ext_resource type="Script" uid="uid://et23mvpk6c7" path="res://src/core_loop/HUD/pause_menu/PauseMenu.gd" id="1_sj1v7"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="2_nm7f5"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sj1v7"]
-bg_color = Color(0.29917735, 0.69475806, 0.41369233, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nm7f5"]
-bg_color = Color(0.65567476, 0, 0.20069453, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inphr"]
-bg_color = Color(0.65567476, 0, 0.20069453, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pn1ic"]
-bg_color = Color(0.65567476, 0, 0.20069453, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_64x0u"]
-bg_color = Color(0.65567476, 0, 0.20069453, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3nh2o"]
-bg_color = Color(0.65567476, 0, 0.20069453, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+[ext_resource type="Theme" uid="uid://psev8gt0mgdk" path="res://src/ui/resources/base_button_theme.tres" id="3_inphr"]
+[ext_resource type="FontFile" uid="uid://gvjvho1b2mw3" path="res://src/assets/fonts/Kenney/Kenney Mini Square.ttf" id="3_pn1ic"]
+[ext_resource type="FontFile" uid="uid://bd31g3qnocnqb" path="res://src/assets/fonts/Kenney/Kenney Mini Square Mono.ttf" id="4_64x0u"]
 
 [node name="PauseMenu" type="Control" unique_id=1424168572]
 process_mode = 3
@@ -80,6 +41,8 @@ theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="SafeAreaContainer/MarginContainer/Layout" unique_id=961240274]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_pn1ic")
+theme_override_font_sizes/font_size = 22
 text = "PAUSE"
 horizontal_alignment = 1
 
@@ -89,6 +52,7 @@ size_flags_vertical = 3
 
 [node name="SkillsTitle" type="Label" parent="SafeAreaContainer/MarginContainer/Layout/SkillsSection" unique_id=979495628]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("4_64x0u")
 theme_override_font_sizes/font_size = 8
 text = "Active skills"
 horizontal_alignment = 1
@@ -116,36 +80,28 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer" unique_id=1711587921]
+[node name="VBoxContainer" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer" unique_id=109740688]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/separation = 10
 
-[node name="ResumeButton" type="Button" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/HBoxContainer" unique_id=779369120]
+[node name="ResumeButton" type="Button" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/VBoxContainer" unique_id=779369120]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_sj1v7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_sj1v7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_sj1v7")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_sj1v7")
-theme_override_styles/focus = SubResource("StyleBoxFlat_sj1v7")
+theme = ExtResource("3_inphr")
+theme_override_font_sizes/font_size = 14
 text = "Resume"
 
-[node name="MenuButton" type="Button" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/HBoxContainer" unique_id=975287031]
+[node name="MenuButton" type="Button" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/VBoxContainer" unique_id=975287031]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
-theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_nm7f5")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_inphr")
-theme_override_styles/hover = SubResource("StyleBoxFlat_pn1ic")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_64x0u")
-theme_override_styles/focus = SubResource("StyleBoxFlat_3nh2o")
+theme = ExtResource("3_inphr")
+theme_override_font_sizes/font_size = 10
 text = "Main menu"

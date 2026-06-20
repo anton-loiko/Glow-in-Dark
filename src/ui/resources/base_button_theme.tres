@@ -1,0 +1,18 @@
+[gd_resource type="Theme" format=3 uid="uid://psev8gt0mgdk"]
+
+[ext_resource type="FontFile" uid="uid://gvjvho1b2mw3" path="res://src/assets/fonts/Kenney/Kenney Mini Square.ttf" id="1_56ma2"]
+[ext_resource type="StyleBox" uid="uid://dvynfnd872iux" path="res://src/ui/resources/base_button_disabled_style_box_texture.tres" id="2_5pqu3"]
+[ext_resource type="StyleBox" uid="uid://dsc7v5h681ejk" path="res://src/ui/resources/base_button_normal_style_box_texture.tres" id="3_xnjb1"]
+[ext_resource type="StyleBox" uid="uid://bc1m25l8mso6y" path="res://src/ui/resources/base_button_pressed_style_box_texture.tres" id="4_s3k0s"]
+
+[resource]
+Button/constants/h_separation = 4
+Button/constants/outline_size = 0
+Button/font_sizes/font_size = 18
+Button/fonts/font = ExtResource("1_56ma2")
+Button/styles/disabled = ExtResource("2_5pqu3")
+Button/styles/focus = ExtResource("3_xnjb1")
+Button/styles/hover = ExtResource("3_xnjb1")
+Button/styles/hover_pressed = ExtResource("4_s3k0s")
+Button/styles/normal = ExtResource("3_xnjb1")
+Button/styles/pressed = ExtResource("4_s3k0s")

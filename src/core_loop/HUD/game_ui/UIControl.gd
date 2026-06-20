@@ -10,7 +10,6 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var soft_currency: SoftCurrency = %SoftCurrency
 @onready var reward_label: Label = %WinPanel/VBoxContainer/RewardLabel
 @onready var next_button: Button = %WinPanel/VBoxContainer/NextLevelButton
-@onready var revive_button: Button = %LosePanel/VBoxContainer/ReviveButton
 @onready var virtual_joystick: VirtualJoystick = %"Virtual Joystick"
 
 @onready var vignette_rect: ColorRect = %VignetteRect
@@ -27,6 +26,8 @@ var counter_to_show_skill_choice: int = 0
 
 func _ready() -> void:
 	virtual_joystick.show()
+	pause_button.show()
+
 	
 	soft_currency.set_amount(sparks_at_level)
 	
@@ -97,19 +98,24 @@ func show_game_over() -> void:
 	GameManager.add_sparks(sparks_at_level)
 	get_tree().paused = true
 	virtual_joystick.hide()
+	pause_button.hide()
 	lose_panel.show()
 	AudioManager.play_sfx(GAME_OVER_SFX)
 	win_panel.hide()
 
+
 func show_win_screen() -> void:
 	get_tree().paused = true
 	virtual_joystick.hide()
-	
+	pause_button.hide()
+
 	GameManager.add_sparks(sparks_at_level)
 	reward_label.text = "+" + str(sparks_at_level) + " sparks"
 	
 	win_panel.show()
 	lose_panel.hide()
+	
+	
 
 func _on_reward_earned() -> void:
 	var players = get_tree().get_nodes_in_group("player")
@@ -117,9 +123,9 @@ func _on_reward_earned() -> void:
 	if players.size() > 0 and players[0].has_method("revive"):
 		players[0].revive()
 	
-	revive_button.hide()
 	lose_panel.hide()
 	virtual_joystick.show()
+	pause_button.show()
 	get_tree().paused = false
 
 func _on_skill_applied(skill_id: String) -> void:
@@ -154,12 +160,6 @@ func _on_next_level_button_pressed() -> void:
 	get_tree().paused = false
 	GameManager.next_level()
 
-func _on_revive_button_pressed() -> void:
-	GameManager.withdraw_sparks(sparks_at_level)
-
-	AudioManager.play_sfx(CLICK_SFX)
-	revive_button.disabled = true
-	AdManager.show_rewarded_ad()
 
 func _on_menu_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)

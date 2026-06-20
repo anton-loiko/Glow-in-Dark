@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://rv5bet3pnbag"]
+
+[ext_resource type="Theme" uid="uid://dhgdisiq63h72" path="res://src/ui/close_button/close_button_theme.tres" id="1_dirny"]
+
+[node name="CloseButton" type="Button" unique_id=1697786775]
+texture_filter = 1
+size_flags_vertical = 8
+theme = ExtResource("1_dirny")
+icon_alignment = 1

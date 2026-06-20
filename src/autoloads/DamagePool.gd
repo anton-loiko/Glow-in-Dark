@@ -1,7 +1,7 @@
 extends Node
 
 const POOL_SIZE: int = 40
-var damage_number_scene: PackedScene = preload("res://src/core_loop/HUD/game_ui/DamageNumber.tscn")
+var damage_number_scene: PackedScene = preload("res://src/core_loop/HUD/game_ui/damage_number/DamageNumber.tscn")
 var pool: Array[Node2D] = []
 var world_container: Node = null
 

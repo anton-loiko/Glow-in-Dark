@@ -6,8 +6,10 @@
 [ext_resource type="Texture2D" uid="uid://b2j71xct5pnpg" path="res://src/core_loop/entities/player/new_atlas_texture.tres" id="3_6myxe"]
 [ext_resource type="Texture2D" uid="uid://cflv3blmnxnb1" path="res://src/assets/images/modern_rpg_icon_pack/13-materials/icon_49.png" id="5_o5kc1"]
 [ext_resource type="Texture2D" uid="uid://cyyca53rrpf50" path="res://src/assets/images/sprites/player/default/Player_default_move_down.png" id="5_w7tlw"]
+[ext_resource type="Texture2D" uid="uid://btva128yaqh27" path="res://src/assets/images/sprites/player/default/Player_default_absorb.png" id="6_5form"]
 [ext_resource type="Texture2D" uid="uid://d0nmkrgb4ejip" path="res://src/assets/images/sprites/player/default/Player_default_move_right.png" id="6_jmna5"]
 [ext_resource type="Texture2D" uid="uid://w3s3t5xl8yyt" path="res://src/assets/images/sprites/player/default/Player_default_move_up.png" id="6_vbqp7"]
+[ext_resource type="Texture2D" uid="uid://brnwj8dwh44bi" path="res://src/assets/images/sprites/player/default/Player_default_death.png" id="7_ltgq8"]
 
 [sub_resource type="Gradient" id="Gradient_3py4g"]
 colors = PackedColorArray(1, 1, 0.83137256, 1, 1, 1, 1, 0)
@@ -41,6 +43,30 @@ region = Rect2(16, 16, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_nrgm2"]
 atlas = ExtResource("6_jmna5")
 region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ib6jl"]
+atlas = ExtResource("6_5form")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_14nx6"]
+atlas = ExtResource("6_5form")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ue7mm"]
+atlas = ExtResource("7_ltgq8")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a3l2x"]
+atlas = ExtResource("7_ltgq8")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oja8a"]
+atlas = ExtResource("7_ltgq8")
+region = Rect2(128, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x4e8v"]
+atlas = ExtResource("7_ltgq8")
+region = Rect2(192, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w7tlw"]
 atlas = ExtResource("3_1vsc1")
@@ -95,6 +121,29 @@ animations = [{
 }],
 "loop": false,
 "name": &"die",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ib6jl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_14nx6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ue7mm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a3l2x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oja8a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x4e8v")
+}],
+"loop": false,
+"name": &"die_2",
 "speed": 3.0
 }, {
 "frames": [{
@@ -179,7 +228,9 @@ texture_filter = 1
 material = ExtResource("2_175b4")
 position = Vector2(0, -2)
 sprite_frames = SubResource("SpriteFrames_o5kc1")
-animation = &"idle"
+animation = &"die_2"
+frame = 5
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=524020536]
 shape = SubResource("CircleShape2D_u8vuu")
