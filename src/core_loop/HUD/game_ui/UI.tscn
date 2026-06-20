@@ -6,9 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://c30gc56g10e24" path="res://src/meta_loop/common/currency/soft/SoftCurrency.tscn" id="3_eek5f"]
 [ext_resource type="PackedScene" uid="uid://01b0t07bfanv" path="res://src/ui/safe_area_container/SafeAreaContainer.tscn" id="3_gpq8j"]
 [ext_resource type="Texture2D" uid="uid://diglij342f5td" path="res://src/assets/images/sprites/HUD/Fuel_progress_bar.png" id="4_d1cbg"]
-[ext_resource type="StyleBox" uid="uid://ccr0gdcp1l4xn" path="res://src/ui/resources/ui_box_style_box_texture.tres" id="5_btyi8"]
 [ext_resource type="PackedScene" uid="uid://bkqb8lx6f6bvi" path="res://src/core_loop/HUD/game_ui/lose_panel/LosePanel.tscn" id="5_ii0w5"]
 [ext_resource type="PackedScene" uid="uid://cbghl0e51v5ai" path="res://src/core_loop/HUD/skill_choice/SkillChoicePanel.tscn" id="5_tyhax"]
+[ext_resource type="PackedScene" uid="uid://cbrfva2pnkmav" path="res://src/core_loop/HUD/game_ui/win_panel/WinPanel.tscn" id="6_btyi8"]
 [ext_resource type="Texture2D" uid="uid://dhggql5wghd46" path="res://src/assets/images/sprites/HUD/buttons/icons/Pause_btn.png" id="7_d1cbg"]
 [ext_resource type="PackedScene" uid="uid://8cdhe1e1ky7f" path="res://src/core_loop/HUD/pause_menu/PauseMenu.tscn" id="7_imqh4"]
 
@@ -93,52 +93,10 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
-[node name="WinPanel" type="Panel" parent="UIControl" unique_id=1266359883]
+[node name="WinPanel" parent="UIControl" unique_id=1823750774 instance=ExtResource("6_btyi8")]
 unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = ExtResource("5_btyi8")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/WinPanel" unique_id=1899551391]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -72.0
-offset_top = -40.5
-offset_right = 72.0
-offset_bottom = 40.5
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 8
-
-[node name="TitleLabel" type="Label" parent="UIControl/WinPanel/VBoxContainer" unique_id=940988051]
-layout_mode = 2
-text = "Уровень пройден"
-horizontal_alignment = 1
-
-[node name="RewardLabel" type="Label" parent="UIControl/WinPanel/VBoxContainer" unique_id=734472606]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Собрано искр: 0"
-horizontal_alignment = 1
-
-[node name="NextLevelButton" type="Button" parent="UIControl/WinPanel/VBoxContainer" unique_id=821252769]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Дальше"
-
-[node name="MenuButton" type="Button" parent="UIControl/WinPanel/VBoxContainer" unique_id=1935173201]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Меню"
+layout_mode = 0
+anchors_preset = 0
 
 [node name="VignetteRect" type="ColorRect" parent="UIControl" unique_id=353424898]
 unique_name_in_owner = true
@@ -208,8 +166,5 @@ visible = false
 
 [node name="SkillChoicePanel" parent="." unique_id=1315848274 instance=ExtResource("5_tyhax")]
 visible = false
-
-[connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/NextLevelButton" to="UIControl" method="_on_next_level_button_pressed"]
-[connection signal="pressed" from="UIControl/WinPanel/VBoxContainer/MenuButton" to="UIControl" method="_on_menu_button_pressed"]
 
 [editable path="Virtual Joystick"]

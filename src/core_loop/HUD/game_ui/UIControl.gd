@@ -96,6 +96,9 @@ func _set_vignette_intensity(val: float) -> void:
 
 func show_game_over() -> void:
 	GameManager.add_sparks(sparks_at_level)
+	lose_panel.rewarded = sparks_at_level
+	soft_currency.set_amount(sparks_at_level)
+
 	get_tree().paused = true
 	virtual_joystick.hide()
 	pause_button.hide()
@@ -103,8 +106,10 @@ func show_game_over() -> void:
 	AudioManager.play_sfx(GAME_OVER_SFX)
 	win_panel.hide()
 
-
 func show_win_screen() -> void:
+	win_panel.rewarded = sparks_at_level
+	soft_currency.set_amount(sparks_at_level)
+
 	get_tree().paused = true
 	virtual_joystick.hide()
 	pause_button.hide()
@@ -114,8 +119,6 @@ func show_win_screen() -> void:
 	
 	win_panel.show()
 	lose_panel.hide()
-	
-	
 
 func _on_reward_earned() -> void:
 	var players = get_tree().get_nodes_in_group("player")
@@ -159,7 +162,6 @@ func _on_next_level_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)
 	get_tree().paused = false
 	GameManager.next_level()
-
 
 func _on_menu_button_pressed() -> void:
 	AudioManager.play_sfx(CLICK_SFX)

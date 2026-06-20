@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://cbrfva2pnkmav"]
+
+[ext_resource type="Script" uid="uid://t84te0me1de3" path="res://src/core_loop/HUD/game_ui/win_panel/WinPanel.gd" id="2_hhn52"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lmeb2"]
+bg_color = Color(0.2784314, 0.5058824, 0.14901961, 0.45490196)
+
+[node name="WinPanel" type="Panel" unique_id=1823750774]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_lmeb2")
+script = ExtResource("2_hhn52")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1871773413]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -40.5
+offset_right = 72.0
+offset_bottom = 40.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=193391843]
+layout_mode = 2
+text = "Уровень пройден"
+horizontal_alignment = 1
+
+[node name="RewardLabel" type="Label" parent="VBoxContainer" unique_id=1915595973]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Собрано искр: 0"
+horizontal_alignment = 1
+
+[node name="NextLevelButton" type="Button" parent="VBoxContainer" unique_id=1706565103]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Дальше"
+
+[node name="MenuButton" type="Button" parent="VBoxContainer" unique_id=2135672862]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Меню"
