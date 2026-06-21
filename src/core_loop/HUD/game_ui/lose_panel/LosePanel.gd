@@ -12,7 +12,6 @@ const CLICK_SFX = preload("res://src/assets/audio/click_001.ogg")
 @onready var cooldown_rogress: TextureProgressBar = %CooldownProgress
 @onready var cooldown_label: Label = %Cooldown
 @onready var revive_label: Label = %Revive
-@onready var rewards_count_label: Label = %RewardsCount
 @onready var rewards: VBoxContainer = %RewardsContainer
 @onready var soft_currency: SoftCurrency = %SoftCurrency
 

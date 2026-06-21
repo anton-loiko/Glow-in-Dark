@@ -97,6 +97,10 @@ layout_mode = 1
 unique_name_in_owner = true
 layout_mode = 0
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="VignetteRect" type="ColorRect" parent="UIControl" unique_id=353424898]
 unique_name_in_owner = true

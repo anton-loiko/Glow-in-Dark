@@ -1,11 +1,18 @@
 [gd_scene format=3 uid="uid://cbrfva2pnkmav"]
 
+[ext_resource type="FontFile" uid="uid://dgcxo5ps2puxy" path="res://src/assets/fonts/Kenney/Kenney Future.ttf" id="2_b1mi5"]
 [ext_resource type="Script" uid="uid://t84te0me1de3" path="res://src/core_loop/HUD/game_ui/win_panel/WinPanel.gd" id="2_hhn52"]
+[ext_resource type="Theme" uid="uid://psev8gt0mgdk" path="res://src/ui/resources/base_button_theme.tres" id="2_jiubi"]
+[ext_resource type="FontFile" uid="uid://8t5dttygvlhv" path="res://src/assets/fonts/Kenney/Kenney Future Narrow.ttf" id="3_efx5i"]
+[ext_resource type="PackedScene" uid="uid://c30gc56g10e24" path="res://src/meta_loop/common/currency/soft/SoftCurrency.tscn" id="4_iu5fm"]
+[ext_resource type="Texture2D" uid="uid://bpqd3ibgjxepv" path="res://src/assets/images/kenney_game_icons/White/2x/movie.png" id="6_iu5fm"]
+[ext_resource type="FontFile" uid="uid://bd31g3qnocnqb" path="res://src/assets/fonts/Kenney/Kenney Mini Square Mono.ttf" id="7_wbgkj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lmeb2"]
 bg_color = Color(0.2784314, 0.5058824, 0.14901961, 0.45490196)
 
 [node name="WinPanel" type="Panel" unique_id=1823750774]
+self_modulate = Color(0.27935672, 0.27935675, 0.2793567, 0.6509804)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -16,36 +23,117 @@ script = ExtResource("2_hhn52")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1871773413]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -72.0
-offset_top = -40.5
-offset_right = 72.0
-offset_bottom = 40.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 20
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=193391843]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer" unique_id=1166262967]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-text = "Уровень пройден"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=8157164]
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer" unique_id=510341440]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_fonts/font = ExtResource("2_b1mi5")
+theme_override_font_sizes/font_size = 19
+text = "Chapter complete"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Rewards" type="Label" parent="VBoxContainer/VBoxContainer" unique_id=1616611637]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_efx5i")
+text = "Rewards"
 horizontal_alignment = 1
 
-[node name="RewardLabel" type="Label" parent="VBoxContainer" unique_id=1915595973]
+[node name="SoftCurrency" parent="VBoxContainer/VBoxContainer" unique_id=1273246873 instance=ExtResource("4_iu5fm")]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+
+[node name="RewardsContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=2137742186]
+visible = false
+layout_mode = 2
+size_flags_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="HiddenLeaveButton" type="Button" parent="." unique_id=1271892061]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+flat = true
+
+[node name="MarginContainer" type="MarginContainer" parent="HiddenLeaveButton" unique_id=547601846]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_bottom = 60
+
+[node name="RewardButton" type="Button" parent="HiddenLeaveButton/MarginContainer" unique_id=117323061]
+unique_name_in_owner = true
+z_index = 5
+texture_filter = 1
+custom_minimum_size = Vector2(80, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+theme = ExtResource("2_jiubi")
+theme_override_constants/icon_max_width = 16
+theme_override_constants/align_to_largest_stylebox = 7
 theme_override_font_sizes/font_size = 12
-text = "Собрано искр: 0"
+icon = ExtResource("6_iu5fm")
+icon_alignment = 1
+
+[node name="Label" type="Label" parent="HiddenLeaveButton/MarginContainer/RewardButton" unique_id=1979981679]
+layout_mode = 1
+offset_left = -4.0
+offset_top = 6.0
+offset_right = 42.0
+offset_bottom = 36.0
+rotation = -0.32491735
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("7_wbgkj")
+theme_override_font_sizes/font_size = 10
+text = "x2"
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="NextLevelButton" type="Button" parent="VBoxContainer" unique_id=1706565103]
-layout_mode = 2
+[node name="LeaveButton" type="Button" parent="HiddenLeaveButton" unique_id=2080404795]
+texture_filter = 1
+custom_minimum_size = Vector2(32, 43.48)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -22.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+size_flags_vertical = 10
+theme = ExtResource("2_jiubi")
+theme_override_colors/font_color = Color(0.8745098, 0.8745098, 0.8745098, 0.4862745)
 theme_override_font_sizes/font_size = 12
-text = "Дальше"
-
-[node name="MenuButton" type="Button" parent="VBoxContainer" unique_id=2135672862]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Меню"
+text = "Tap anywhere to continue"
+flat = true
+icon_alignment = 1
+expand_icon = true

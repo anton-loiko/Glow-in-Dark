@@ -19,6 +19,7 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var pause_button: Button = %PauseButton
 @onready var pause_menu: PauseMenu = %PauseMenu
 
+var is_won = false
 var sparks_at_level: int = 0
 var is_danger_mode: bool = false
 var current_light: float = 1.0
@@ -107,13 +108,15 @@ func show_game_over() -> void:
 	win_panel.hide()
 
 func show_win_screen() -> void:
+	is_won = true
+	
 	win_panel.rewarded = sparks_at_level
 	soft_currency.set_amount(sparks_at_level)
-
+	
 	get_tree().paused = true
 	virtual_joystick.hide()
 	pause_button.hide()
-
+	
 	GameManager.add_sparks(sparks_at_level)
 	reward_label.text = "+" + str(sparks_at_level) + " sparks"
 	
@@ -121,6 +124,9 @@ func show_win_screen() -> void:
 	lose_panel.hide()
 
 func _on_reward_earned() -> void:
+	if is_won:
+		return
+	
 	var players = get_tree().get_nodes_in_group("player")
 	
 	if players.size() > 0 and players[0].has_method("revive"):
