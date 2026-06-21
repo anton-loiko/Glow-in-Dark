@@ -66,20 +66,6 @@ columns = 4
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="StatsContainer" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer" unique_id=1073464638]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="LevelLabel" type="Label" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/StatsContainer" unique_id=1901328712]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="SparksLabel" type="Label" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer/StatsContainer" unique_id=224251975]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 1
-
 [node name="VBoxContainer" type="VBoxContainer" parent="SafeAreaContainer/MarginContainer/Layout/VBoxContainer" unique_id=109740688]
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2

@@ -1,8 +1,7 @@
 extends Control
 class_name PauseMenu
 
-@onready var level_label: Label = %LevelLabel
-@onready var sparks_label: Label = %SparksLabel
+
 @onready var skills_grid: GridContainer = %SkillsGrid
 @onready var resume_button: Button = %ResumeButton
 @onready var menu_button: Button = %MenuButton
@@ -27,10 +26,6 @@ func open_pause() -> void:
 	show()
 
 func _update_stats_and_skills() -> void:
-	# Обновление общих статов забега
-	level_label.text = "Текущий уровень: " + str(GameManager.current_level)
-	sparks_label.text = "Всего искр: " + str(GameManager.sparks)
-	
 	# Очистка старых иконок навыков
 	for child in skills_grid.get_children():
 		child.queue_free()

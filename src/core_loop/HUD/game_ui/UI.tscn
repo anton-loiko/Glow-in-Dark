@@ -76,6 +76,7 @@ size_flags_horizontal = 6
 size_flags_vertical = 4
 max_value = 1.0
 step = 0.01
+value = 1.0
 nine_patch_stretch = true
 texture_progress = ExtResource("4_d1cbg")
 
@@ -95,12 +96,8 @@ layout_mode = 1
 
 [node name="WinPanel" parent="UIControl" unique_id=1823750774 instance=ExtResource("6_btyi8")]
 unique_name_in_owner = true
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-grow_horizontal = 1
-grow_vertical = 1
+visible = false
+layout_mode = 1
 
 [node name="VignetteRect" type="ColorRect" parent="UIControl" unique_id=353424898]
 unique_name_in_owner = true
