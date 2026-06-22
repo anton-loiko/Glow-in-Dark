@@ -10,7 +10,7 @@ const BASE_SPARK_CHANCE: float = 0.65  # Увеличено с 0.3 (теперь
 const BASE_ENEMY_CHANCE: float = 0.4  # Увеличено с 0.1 (теперь 40% шанс спавна на точке)
 
 # --- Настройки навыков ---
-const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 15
+const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 1 # 15
 const SKILL_MAGNET_RADIUS: float = 120.0
 const SKILL_MAGNET_SPEED: float = 200.0
 const SKILL_SHADOW_BURN_MULT: float = 2.5
@@ -60,7 +60,7 @@ signal skill_choice_triggered
 signal skill_applied(skill_id: String)
 
 var sparks: int = 0
-var active_skills: Array[String] = [] 
+var active_skills: Dictionary = {}
 # ------------------------------
 
 const SAVE_PATH: String = "user://save_data.cfg"
@@ -156,7 +156,8 @@ func load_level(level_number: int) -> void:
 	get_tree().change_scene_to_file("res://src/core_loop/levels/LevelRoot.tscn")
 
 func reset_run_state() -> void:
-	active_skills.clear()
+	#active_skills.clear()
+	active_skills = {}
 
 func is_level_exists(_level_number: int) -> bool:
 	return true
@@ -184,8 +185,14 @@ func withdraw_sparks(amount: int) -> void:
 func apply_skill(skill_id: String) -> void:
 	skill_applied.emit(skill_id)
 	
-	if not active_skills.has(skill_id):
-		active_skills.append(skill_id)
+	if  active_skills.has(skill_id):
+		var cur = active_skills[skill_id]
+		cur.count += 1
+		active_skills[skill_id] = cur
+	else:
+		active_skills[skill_id] = {
+			"count": 1,
+		}
 
 func reset_progress() -> void:
 	unlocked_level = 1

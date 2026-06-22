@@ -16,5 +16,7 @@ func _on_sparks_changed(new_amount: int) -> void:
 func set_amount(new_amount: int) -> void:
 	if new_amount > 9999:
 		currency.text = "+9999"
+	elif new_amount <= 0:
+		currency.text = "0"
 	else:
 		currency.text = str(new_amount)

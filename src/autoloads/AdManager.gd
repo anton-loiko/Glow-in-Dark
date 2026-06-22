@@ -39,7 +39,7 @@ func _load_all_ads() -> void:
 func show_rewarded_ad() -> void:
 	# FIXME: Probably it should be for "Foreced AD", not for rewarded.
 	#if GameManager.has_no_ads:
-		#reward_earned.emit(1)
+		#reward_earned.emit()
 		#return
 		
 	if admob and is_rewarded_loaded:
@@ -84,4 +84,4 @@ func _on_rewarded_ad_failed_to_load(err) -> void:
 	
 func _on_rewarded_user_earned_reward(reward_type, amount) -> void:
 	print("[_on_rewarded_user_earned_reward]::[reward_type]::::", reward_type)
-	reward_earned.emit(amount)
+	reward_earned.emit()

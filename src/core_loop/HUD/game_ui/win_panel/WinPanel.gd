@@ -29,6 +29,9 @@ func _on_reward_button_pressed() -> void:
 	AdManager.show_rewarded_ad()
 
 func _on_reward_earned() -> void:
+	if not visible:
+		return
+
 	# Add reward x2, first x1 was add when game finihsed
 	# Here just second part after reward
 	GameManager.add_sparks(rewarded)

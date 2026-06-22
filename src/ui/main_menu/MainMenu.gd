@@ -49,7 +49,6 @@ func _on_reward_earned() -> void:
 	# Мгновенно синхронизируем с Firebase, чтобы не потерять награду
 	CloudManager.save_to_cloud()
 
-
 func _show_panelManager_screen():
 	panel_manager.show()
 	preloading_screen.hide()

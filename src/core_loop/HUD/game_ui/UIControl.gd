@@ -8,8 +8,6 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var lose_panel: Panel = %LosePanel
 @onready var win_panel: Panel = %WinPanel
 @onready var soft_currency: SoftCurrency = %SoftCurrency
-@onready var reward_label: Label = %WinPanel/VBoxContainer/RewardLabel
-@onready var next_button: Button = %WinPanel/VBoxContainer/NextLevelButton
 @onready var virtual_joystick: VirtualJoystick = %"Virtual Joystick"
 
 @onready var vignette_rect: ColorRect = %VignetteRect
@@ -20,6 +18,8 @@ const GAME_OVER_SFX = preload("res://src/assets/audio/lose_powerUp10.ogg")
 @onready var pause_menu: PauseMenu = %PauseMenu
 
 var is_won = false
+var is_die = false
+# TODO: Refactor: creator Levelroot state - one state for current level match.
 var sparks_at_level: int = 0
 var is_danger_mode: bool = false
 var current_light: float = 1.0
@@ -96,6 +96,8 @@ func _set_vignette_intensity(val: float) -> void:
 		vignette_rect.material.set_shader_parameter("intensity", val)
 
 func show_game_over() -> void:
+	is_die = true
+
 	GameManager.add_sparks(sparks_at_level)
 	lose_panel.rewarded = sparks_at_level
 	soft_currency.set_amount(sparks_at_level)
@@ -118,13 +120,12 @@ func show_win_screen() -> void:
 	pause_button.hide()
 	
 	GameManager.add_sparks(sparks_at_level)
-	reward_label.text = "+" + str(sparks_at_level) + " sparks"
 	
 	win_panel.show()
 	lose_panel.hide()
 
 func _on_reward_earned() -> void:
-	if is_won:
+	if is_won or not is_die:
 		return
 	
 	var players = get_tree().get_nodes_in_group("player")
