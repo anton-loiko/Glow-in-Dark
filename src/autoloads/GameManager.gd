@@ -39,18 +39,21 @@ var SKILLS_DB: Dictionary = {
 		"icon": "res://src/assets/images/skills/skill_magnet.png", 
 		"bg_color": Color(0.281, 0.353, 0.676, 0.75), # Синий (Утилиты)
 		"price_sparks": 1,
+		"max": 1,
 	},
 	"light_shield": {
 		"title": "+"+str(SKILL_SHIELD_DAMAGE_REDUCTION)+" REDUCTION",
 		"icon": "res://src/assets/images/skills/skill_shield.png",
 		"bg_color": Color(0.957, 0.773, 0.031, 0.749), # Желтый (Свет/Защита)
 		"price_sparks": 1,
+		"max": -1,
 	},
 	"shadow_burn": {
 		"title": "+"+ str(SKILL_SHADOW_BURN_MULT)+" BURN",
 		"icon": "res://src/assets/images/skills/skill_fire.png",
 		"bg_color": Color(0.605, 0.049, 0.057, 0.75),
 		"price_sparks": 1,
+		"max": 2,
 	}
 }
 
@@ -157,6 +160,7 @@ func load_level(level_number: int) -> void:
 
 func reset_run_state() -> void:
 	#active_skills.clear()
+	# TODO: move to special Level_state manager.s
 	active_skills = {}
 
 func is_level_exists(_level_number: int) -> bool:

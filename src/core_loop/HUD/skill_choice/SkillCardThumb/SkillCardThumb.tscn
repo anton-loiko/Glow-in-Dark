@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://bw7dl74h8vhls"]
+
+[ext_resource type="Script" uid="uid://br6t670gjlv40" path="res://src/core_loop/HUD/skill_choice/SkillCardThumb/SkillCardThumb.gd" id="1_tt6uf"]
+[ext_resource type="Texture2D" uid="uid://fwkuljsd2rmc" path="res://src/assets/images/sprites/UI/skills/skill_card_base.png" id="2_kgy18"]
+
+[node name="SkillCardThumb" type="Control" unique_id=1513655747]
+texture_filter = 1
+custom_minimum_size = Vector2(28, 40)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 28.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_tt6uf")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1633818478]
+layout_mode = 1
+offset_right = 28.0
+offset_bottom = 39.0
+theme_override_constants/separation = 0
+
+[node name="Skill" type="TextureRect" parent="VBoxContainer" unique_id=1010272740]
+texture_filter = 1
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 2
+texture = ExtResource("2_kgy18")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Icon" type="TextureRect" parent="VBoxContainer/Skill" unique_id=1950219552]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -7.0
+offset_top = -7.0
+offset_right = 7.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LabelCount" type="Label" parent="VBoxContainer/Skill/Icon" unique_id=182233852]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 4
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="StarsContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=688316303]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StarsContainer" unique_id=984535996]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 4
+text = "0/2"
+horizontal_alignment = 1
+vertical_alignment = 1

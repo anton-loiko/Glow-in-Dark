@@ -6,6 +6,8 @@ class_name PauseMenu
 @onready var resume_button: Button = %ResumeButton
 @onready var menu_button: Button = %MenuButton
 
+const SKILL_CARD_THUMB := preload("res://src/core_loop/HUD/skill_choice/SkillCardThumb/SkillCardThumb.tscn")
+
 func _ready() -> void:
 	hide()
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -37,31 +39,14 @@ func _update_stats_and_skills() -> void:
 			var skill_data = GameManager.SKILLS_DB[skill_id]
 			var active_skill = GameManager.active_skills[skill_id]
 			
-			# Создаем простую цветную текстуру-иконку для отображения в строке
-			# TODO: Перенести в отдельную сцену, а тут ее использовать
-			var tex_rect = TextureRect.new()
-			tex_rect.custom_minimum_size = Vector2(24, 24)
-			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			var skill_card_thumb: SkillsCardThumb = SKILL_CARD_THUMB.instantiate()
+			skills_grid.add_child(skill_card_thumb)
 			
-			if ResourceLoader.exists(skill_data["icon"]):
-				tex_rect.texture = load(skill_data["icon"])
-			
-			
-			var s_label_count = Label.new()
-			s_label_count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			s_label_count.text = "x" + str(active_skill.count)
-			
-			var v_box = VBoxContainer.new()
-			v_box.size_flags_horizontal = Control.SIZE_FILL
-			v_box.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-			
-			v_box.add_child(tex_rect)
-			v_box.add_child(s_label_count)
-			
-			# Подкрашиваем иконку в цвет категории для быстрого считывания UX
-			#tex_rect.modulate = skill_data["bg_color"]
-			skills_grid.add_child(v_box)
+			if skill_card_thumb.has_method('setup') and skill_data and active_skill:
+				skill_card_thumb.setup(skill_data, active_skill)
+			else:
+				print("[skill_data]:::::", skill_data)
+				print("[active_skill]:::", active_skill)
 
 func _on_resume_pressed() -> void:
 	hide()

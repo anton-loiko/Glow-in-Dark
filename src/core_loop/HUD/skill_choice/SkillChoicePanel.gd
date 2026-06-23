@@ -50,7 +50,6 @@ func _generate_cards() -> void:
 	var available_skills: Array = GameManager.SKILLS_DB.keys()
 	available_skills.shuffle()
 	
-	# Берем ровно 3 (или меньше, если в базе их мало)
 	var selected_skills: Array = available_skills.slice(0, 3)
 	
 	# Создаем инстансы карточек
