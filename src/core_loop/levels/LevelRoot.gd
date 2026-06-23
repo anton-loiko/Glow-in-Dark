@@ -26,6 +26,10 @@ func _ready() -> void:
 		print("[ERROR]:::: Level Template not found")
 		GameManager.go_to_main_menu()
 
+func _exit_tree() -> void:
+	GameManager.reset_run_state()
+	print("LevelRoot unmounted from the active scene tree.")
+
 func _setup_camera_limits(level: Node, player: Node) -> void:
 	if not player or not player.has_node("Camera2D"):
 		return
