@@ -175,4 +175,3 @@ process_mode = 3
 texture_filter = 1
 position = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_af53c")
-animation = &"planet"

@@ -35,8 +35,8 @@ func _update_stats_and_skills() -> void:
 	var active_skills_ids: Array = GameManager.active_skills.keys()
 	# Отображение уже выбранных навыков
 	for skill_id in active_skills_ids:
-		if GameManager.SKILLS_DB.has(skill_id):
-			var skill_data = GameManager.SKILLS_DB[skill_id]
+		if SkillsManager.SKILLS_DB.has(skill_id):
+			var skill_data = SkillsManager.SKILLS_DB[skill_id]
 			var active_skill = GameManager.active_skills[skill_id]
 			
 			var skill_card_thumb: SkillsCardThumb = SKILL_CARD_THUMB.instantiate()

@@ -80,7 +80,7 @@ func _handle_light_burn(delta: float) -> void:
 		var has_burn_skill = GameManager.active_skills.has("shadow_burn")
 		
 		if has_burn_skill:
-			burn_rate *= GameManager.SKILL_SHADOW_BURN_MULT 
+			burn_rate *= SkillsManager.SKILL_SHADOW_BURN_MULT 
 			
 		take_damage(burn_rate * delta)
 		

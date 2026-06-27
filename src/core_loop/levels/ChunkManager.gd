@@ -12,7 +12,7 @@ var is_finished: bool = false
 var chunks_to_win: int = 0
 
 func _ready() -> void:
-	chunks_to_win = GameManager.get_chunks_to_win()
+	chunks_to_win = GameBalanceManager.get_chunks_to_win()
 	_find_player()
 	
 	# Спавним первые чанки заранее
@@ -29,7 +29,7 @@ func _process(_delta: float) -> void:
 		return
 		
 	# Игрок движется вниз (Y увеличивается). Проверяем нижнюю границу.
-	if player.global_position.y > next_spawn_y - (GameManager.CHUNK_SIZE_Y * 1.5):
+	if player.global_position.y > next_spawn_y - (GameBalanceManager.CHUNK_SIZE_Y * 1.5):
 		_spawn_random_chunk()
 		_clear_old_chunks()
 
@@ -49,7 +49,7 @@ func _spawn_random_chunk() -> void:
 	add_child(chunk_instance)
 	spawned_chunks.append(chunk_instance)
 	
-	next_spawn_y += GameManager.CHUNK_SIZE_Y
+	next_spawn_y += GameBalanceManager.CHUNK_SIZE_Y
 	chunks_spawned += 1
 
 func _spawn_exit() -> void:
@@ -64,6 +64,6 @@ func _clear_old_chunks() -> void:
 	# Удаляем чанки, которые остались далеко вверху
 	if spawned_chunks.size() > 4:
 		var old_chunk: Node2D = spawned_chunks[0]
-		if old_chunk.global_position.y < player.global_position.y - (GameManager.CHUNK_SIZE_Y * 2):
+		if old_chunk.global_position.y < player.global_position.y - (GameBalanceManager.CHUNK_SIZE_Y * 2):
 			spawned_chunks.pop_front()
 			old_chunk.queue_free()

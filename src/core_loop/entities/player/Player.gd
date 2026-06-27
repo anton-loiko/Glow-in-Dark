@@ -132,7 +132,7 @@ func take_damage(amount: float) -> bool:
 	var actual_damage = amount
 	# Применение навыка "ЩИТ СВЕТА"
 	if GameManager.active_skills.has("light_shield"):
-		actual_damage *= GameManager.SKILL_SHIELD_DAMAGE_REDUCTION
+		actual_damage *= SkillsManager.SKILL_SHIELD_DAMAGE_REDUCTION
 		
 	current_light_health -= actual_damage
 	current_light_health = clampf(current_light_health, MIN_LIGHT_SCALE, MAX_LIGHT_SCALE)

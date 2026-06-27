@@ -58,5 +58,5 @@ func _show_panelManager_screen():
 func _show_preloading_screen():
 	panel_manager.hide()
 	preloading_screen.show()
-	loader.play('planet')
+	loader.play('default')
 	screenColor.color = Color("0a0f18")

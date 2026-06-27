@@ -47,7 +47,7 @@ func _generate_cards() -> void:
 		child.queue_free()
 
 	# Получаем все доступные ID навыков и перемешиваем их
-	var available_skills: Array = GameManager.SKILLS_DB.keys()
+	var available_skills: Array = SkillsManager.SKILLS_DB.keys()
 	available_skills.shuffle()
 	
 	var selected_skills: Array = available_skills.slice(0, 3)
@@ -57,7 +57,7 @@ func _generate_cards() -> void:
 		
 		var card: SkillCard = skill_card_scene.instantiate() as SkillCard
 		cards_container.add_child(card)
-		card.setup(skill_id, GameManager.SKILLS_DB[skill_id])
+		card.setup(skill_id, SkillsManager.SKILLS_DB[skill_id])
 		card.card_selected.connect(_on_card_selected)
 
 func _on_card_selected(skill_id: String) -> void:

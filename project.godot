@@ -22,7 +22,9 @@ boot_splash/image="uid://81ffxjynrwpg"
 [autoload]
 
 Firebase="*uid://cvb26atjckwlq"
+GameBalanceManager="*uid://5ggpehv2731g"
 GameManager="*uid://djfsslhpvdsue"
+SkillsManager="*uid://bxy20p3y7k6cv"
 AudioManager="*uid://hy5665oy5ce"
 AdManager="*uid://bgiahtvfs3bjc"
 StoreManager="*uid://wkhdbx05icvs"

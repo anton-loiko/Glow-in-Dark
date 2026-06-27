@@ -139,7 +139,7 @@ func _on_reward_earned() -> void:
 	get_tree().paused = false
 
 func _on_skill_applied(skill_id: String) -> void:
-	var price = GameManager.SKILLS_DB[skill_id].price_sparks
+	var price = SkillsManager.SKILLS_DB[skill_id].price_sparks
 	
 	sparks_at_level -= price
 	soft_currency.set_amount(sparks_at_level)
@@ -150,7 +150,7 @@ func _on_sparks_picked_up(amount: int) -> void:
 	
 	soft_currency.set_amount(sparks_at_level)
 	
-	if sparks_at_level >=  GameManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
+	if sparks_at_level >=  SkillsManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
 		GameManager.skill_choice_triggered.emit()
 		counter_to_show_skill_choice = 0
 	

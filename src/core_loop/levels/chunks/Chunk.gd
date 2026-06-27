@@ -14,19 +14,19 @@ func _populate_chunk() -> void:
 		var r: float = randf()
 		
 		# Спавн врага (наивысший приоритет, иначе будет легко)
-		if r <= GameManager.get_enemy_spawn_chance() and enemy_scene:
+		if r <= GameBalanceManager.get_enemy_spawn_chance() and enemy_scene:
 			_spawn_entity(enemy_scene, point.position)
 			continue
 			
 		r = randf()
 		# Спавн топлива
-		if r <= GameManager.get_fuel_spawn_chance() and fuel_scene:
+		if r <= GameBalanceManager.get_fuel_spawn_chance() and fuel_scene:
 			_spawn_entity(fuel_scene, point.position)
 			continue
 			
 		r = randf()
 		# Спавн искры
-		if r <= GameManager.get_spark_spawn_chance() and spark_scene:
+		if r <= GameBalanceManager.get_spark_spawn_chance() and spark_scene:
 			_spawn_entity(spark_scene, point.position)
 
 func _spawn_entity(scene: PackedScene, local_pos: Vector2) -> void:

@@ -26,9 +26,9 @@ func _process(delta: float) -> void:
 		return
 		
 	if GameManager.active_skills.has("magnet"):
-		if global_position.distance_to(player_ref.global_position) < GameManager.SKILL_MAGNET_RADIUS:
+		if global_position.distance_to(player_ref.global_position) < SkillsManager.SKILL_MAGNET_RADIUS:
 			var dir = (player_ref.global_position - global_position).normalized()
-			global_position += dir * GameManager.SKILL_MAGNET_SPEED * delta
+			global_position += dir * SkillsManager.SKILL_MAGNET_SPEED * delta
 
 func _on_body_entered(body: Node2D) -> void:
 	if is_collected: return
