@@ -83,5 +83,5 @@ func _on_rewarded_ad_failed_to_load(err) -> void:
 	ad_failed.emit()
 	
 func _on_rewarded_user_earned_reward(reward_type, amount) -> void:
-	print("[_on_rewarded_user_earned_reward]::[reward_type]::::", reward_type)
+	print("[_on_rewarded_user_earned_reward]::[reward_type]::::", reward_type, "::[amount]:: ", amount)
 	reward_earned.emit()
