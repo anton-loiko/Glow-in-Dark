@@ -150,7 +150,7 @@ func _on_sparks_picked_up(amount: int) -> void:
 	
 	soft_currency.set_amount(sparks_at_level)
 	
-	if sparks_at_level >=  SkillsManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
+	if counter_to_show_skill_choice >=  SkillsManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
 		EventBus.skill_choice_triggered.emit()
 		counter_to_show_skill_choice = 0
 	

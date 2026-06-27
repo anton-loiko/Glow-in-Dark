@@ -1,7 +1,7 @@
 extends Node
 
 # --- Настройки навыков ---
-const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 2 # 15
+const SKILL_CHOICE_TRIGGERED_TRASHHOLD  = 3 # 15
 const SKILL_MAGNET_RADIUS: float = 120.0
 const SKILL_MAGNET_SPEED: float = 200.0
 const SKILL_SHADOW_BURN_MULT: float = 2.5
