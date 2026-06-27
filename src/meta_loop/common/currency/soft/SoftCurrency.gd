@@ -7,7 +7,7 @@ extends Panel
 func _ready() -> void:
 
 	if not is_core_loop:
-		GameManager.sparks_changed.connect(_on_sparks_changed)
+		EventBus.sparks_changed.connect(_on_sparks_changed)
 		_on_sparks_changed(GameManager.sparks)
 
 func _on_sparks_changed(new_amount: int) -> void:

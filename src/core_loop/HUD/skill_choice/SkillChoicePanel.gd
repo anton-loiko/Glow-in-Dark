@@ -27,7 +27,7 @@ func _ready() -> void:
 	refresh_button.pressed.connect(_on_refresh_button_pressed)
 	reward_button.pressed.connect(_on_reward_button_pressed)
 	visibility_changed.connect(_on_visibility_changed)
-	GameManager.skill_choice_triggered.connect(_on_skill_choice_triggered)
+	EventBus.skill_choice_triggered.connect(_on_skill_choice_triggered)
 	AdManager.reward_earned.connect(_on_reward_earned)
 
 func disbale_refresh_button() -> void:

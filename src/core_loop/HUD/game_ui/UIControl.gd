@@ -33,8 +33,8 @@ func _ready() -> void:
 	soft_currency.set_amount(sparks_at_level)
 	
 	AdManager.reward_earned.connect(_on_reward_earned)
-	GameManager.sparks_picked_up.connect(_on_sparks_picked_up)
-	GameManager.skill_applied.connect(_on_skill_applied)
+	EventBus.sparks_picked_up.connect(_on_sparks_picked_up)
+	EventBus.skill_applied.connect(_on_skill_applied)
 	pause_button.pressed.connect(_on_pause_button_pressed)
 
 	progress_bar.max_value = 1.0
@@ -151,7 +151,7 @@ func _on_sparks_picked_up(amount: int) -> void:
 	soft_currency.set_amount(sparks_at_level)
 	
 	if sparks_at_level >=  SkillsManager.SKILL_CHOICE_TRIGGERED_TRASHHOLD:
-		GameManager.skill_choice_triggered.emit()
+		EventBus.skill_choice_triggered.emit()
 		counter_to_show_skill_choice = 0
 	
 	var currency_label = soft_currency.get_node("%Currency")

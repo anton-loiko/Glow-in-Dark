@@ -21,6 +21,7 @@ boot_splash/image="uid://81ffxjynrwpg"
 
 [autoload]
 
+EventBus="*uid://bo706m6ji856k"
 Firebase="*uid://cvb26atjckwlq"
 GameBalanceManager="*uid://5ggpehv2731g"
 GameManager="*uid://djfsslhpvdsue"

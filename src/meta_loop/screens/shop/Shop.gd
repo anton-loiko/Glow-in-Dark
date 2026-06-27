@@ -34,7 +34,7 @@ func update_shop_buttons() -> void:
 	# Мы просто передаем: ID скина, саму кнопку, красивое имя, строку с ценой
 	_update_skin_button("blue_flame", buy_skin_button, "Синее пламя", "$1.99")
 	
-	var purple_price = str(GameManager.SKINS_DB["purple_magic"]["price_sparks"]) + " Искр"
+	var purple_price = str(StoreManager.SKINS_DB["purple_magic"]["price_sparks"]) + " Искр"
 	_update_skin_button("purple_magic", buy_purple_skin_button, "Фиолетовая магия", purple_price)
 
 func _update_skin_button(skin_id: String, button: Button, display_name: String, price_text: String) -> void:
@@ -105,7 +105,7 @@ func _on_buy_purple_skin_button_pressed() -> void:
 		update_shop_buttons()
 	else:
 		# Скин не куплен, пытаемся провести транзакцию
-		var price = GameManager.SKINS_DB["purple_magic"]["price_sparks"]
+		var price = StoreManager.SKINS_DB["purple_magic"]["price_sparks"]
 		
 		# Проверяем, хватает ли денег на балансе
 		if GameManager.sparks >= price:

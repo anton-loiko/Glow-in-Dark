@@ -1,42 +1,16 @@
 extends Node
 
-signal sparks_picked_up(amount: int)
-signal sparks_changed(new_amount: int)
-signal skill_choice_triggered
-signal skill_applied(skill_id: String)
+const SAVE_PATH: String = "user://save_data.cfg"
 
 var sparks: int = 0
 var active_skills: Dictionary = {}
-# ------------------------------
 
-const SAVE_PATH: String = "user://save_data.cfg"
-
-const SKINS_DB: Dictionary = {
-	"default": {
-		"color": Color(1.0, 1.0, 1.0),
-		"price_usd": 0.0,
-		"price_sparks": 0,
-		"condition": "start"
-	},
-	"blue_flame": {
-		"color": Color(0.3, 0.6, 1.0),
-		"price_usd": 1.99,
-		"price_sparks": 0,
-		"condition": "store_usd" 
-	},
-	"purple_magic": {
-		"color": Color(0.8, 0.2, 1.0), 
-		"price_usd": 0.0,
-		"price_sparks": 150,
-		"condition": "store_sparks" 
-	}
-}
-
-var has_no_ads: bool = false
 var current_level: int = 1
 var unlocked_level: int = 1
+
 var owned_skins: Array = ["default"]
 var equipped_skin: String = "default"
+var has_no_ads: bool = false
 
 var sound_enabled: bool = true
 var music_enabled: bool = true
@@ -113,24 +87,24 @@ func go_to_main_menu() -> void:
 	get_tree().change_scene_to_file("res://src/ui/main_menu/MainMenu.tscn")
 
 func get_equipped_skin_color() -> Color:
-	if SKINS_DB.has(equipped_skin):
-		return SKINS_DB[equipped_skin]["color"]
-	return SKINS_DB["default"]["color"]
+	if StoreManager.SKINS_DB.has(equipped_skin):
+		return StoreManager.SKINS_DB[equipped_skin]["color"]
+	return StoreManager.SKINS_DB["default"]["color"]
 
 func add_sparks(amount: int) -> void:
 	sparks += amount
-	sparks_changed.emit(sparks)
+	EventBus.sparks_changed.emit(sparks)
 	
 	save_game()
 
 func withdraw_sparks(amount: int) -> void:
 	sparks -= amount
-	sparks_changed.emit(sparks)
+	EventBus.sparks_changed.emit(sparks)
 	
 	save_game()
 
 func apply_skill(skill_id: String) -> void:
-	skill_applied.emit(skill_id)
+	EventBus.skill_applied.emit(skill_id)
 	
 	if  active_skills.has(skill_id):
 		var cur = active_skills[skill_id]
