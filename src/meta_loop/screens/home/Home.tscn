@@ -60,7 +60,7 @@ width = 250
 height = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hv5m"]
-bg_color = Color(1, 1, 1, 0.05882353)
+bg_color = Color(1, 1, 1, 0.15686275)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
