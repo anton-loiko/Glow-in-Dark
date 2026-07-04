@@ -8,26 +8,22 @@
 [ext_resource type="PackedScene" uid="uid://dcf0r3mgki81l" path="res://src/meta_loop/screens/skills/Skills.tscn" id="3_rhda7"]
 [ext_resource type="PackedScene" uid="uid://cloftxqgnvs1d" path="res://src/meta_loop/screens/home/Home.tscn" id="3_tfshb"]
 [ext_resource type="PackedScene" uid="uid://bu11lhgnesc6q" path="res://src/meta_loop/panel_manager/tab_button/TabButton.tscn" id="8_8es5f"]
-[ext_resource type="Texture2D" uid="uid://dk0ovi2824iqq" path="res://src/assets/images/modern_rpg_icon_pack/14-dungeon-objects/icon_25.png" id="9_gigbh"]
-[ext_resource type="Texture2D" uid="uid://bn515thwgtaxh" path="res://src/assets/images/modern_rpg_icon_pack/15-status-effects/icon_47.png" id="9_oep7p"]
-[ext_resource type="Texture2D" uid="uid://m0h3ypbfwfj4" path="res://src/assets/images/modern_rpg_icon_pack/16-runes-enchantments/icon_54.png" id="10_21uob"]
-[ext_resource type="Texture2D" uid="uid://cdllgb02f053c" path="res://src/assets/images/modern_rpg_icon_pack/02-armor/icon_00.png" id="12_dkh74"]
-[ext_resource type="Texture2D" uid="uid://bnphe21vtwsl0" path="res://src/assets/images/modern_rpg_icon_pack/11-fish-loot/fish-loot_sheet.png" id="13_dkh74"]
+[ext_resource type="Texture2D" uid="uid://crwai3nka7yqj" path="res://src/assets/images/sprites/UI/navigation/32/icon_shop_chest_v2_32.png" id="9_dkh74"]
+[ext_resource type="Texture2D" uid="uid://btiaycbuwcscu" path="res://src/assets/images/sprites/UI/navigation/32/icon_skills_v2_32.png" id="10_dkh74"]
+[ext_resource type="Texture2D" uid="uid://dae32d0261ywi" path="res://src/assets/images/sprites/UI/navigation/32/icon_gear_v2_32.png" id="12_dkh74"]
+[ext_resource type="Texture2D" uid="uid://dj0yxsht4oki7" path="res://src/assets/images/sprites/UI/navigation/icon_explore_portal.png" id="13_84rqj"]
+[ext_resource type="Texture2D" uid="uid://du571nbcqj0nt" path="res://src/assets/images/sprites/UI/navigation/32/icon_base_v2_32.png" id="13_dkh74"]
 [ext_resource type="FontFile" uid="uid://bpswjd8kym2yf" path="res://src/assets/fonts/Kenney/Kenney Pixel.ttf" id="14_dkh74"]
-
-[sub_resource type="ButtonGroup" id="ButtonGroup_dkh74"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_84rqj"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_eagnp"]
-
 [sub_resource type="ButtonGroup" id="ButtonGroup_2r2a7"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_eagnp"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_38ak3"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_84rqj"]
-atlas = ExtResource("13_dkh74")
-region = Rect2(131, 124, 26, 28)
+[sub_resource type="ButtonGroup" id="ButtonGroup_8pym0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dkh74"]
 bg_color = Color(0.14901961, 0.14901961, 0.14901961, 1)
@@ -154,37 +150,39 @@ theme_override_constants/separation = 0
 [node name="ShopButton" parent="VBoxContainer/HBoxContainer" unique_id=547368414 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_dkh74")
-default_text = "Shop"
-default_icon = ExtResource("9_gigbh")
-
-[node name="SkillsButton" parent="VBoxContainer/HBoxContainer" unique_id=1713732010 instance=ExtResource("8_8es5f")]
-unique_name_in_owner = true
-layout_mode = 2
 button_group = SubResource("ButtonGroup_84rqj")
-default_text = "Skills"
-default_icon = ExtResource("10_21uob")
+default_text = "Shop"
+default_icon = ExtResource("9_dkh74")
 
 [node name="HomeButton" parent="VBoxContainer/HBoxContainer" unique_id=1887777274 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
-button_group = SubResource("ButtonGroup_eagnp")
+button_group = SubResource("ButtonGroup_2r2a7")
 default_text = "Explore"
-default_icon = ExtResource("9_oep7p")
+default_icon = ExtResource("13_dkh74")
+
+[node name="SkillsButton" parent="VBoxContainer/HBoxContainer" unique_id=1713732010 instance=ExtResource("8_8es5f")]
+unique_name_in_owner = true
+layout_mode = 2
+button_group = SubResource("ButtonGroup_eagnp")
+default_text = "Skills"
+default_icon = ExtResource("10_dkh74")
 
 [node name="GearButton" parent="VBoxContainer/HBoxContainer" unique_id=652734299 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-button_group = SubResource("ButtonGroup_2r2a7")
+button_group = SubResource("ButtonGroup_38ak3")
 default_text = "Gear"
 default_icon = ExtResource("12_dkh74")
 
 [node name="BaseButton" parent="VBoxContainer/HBoxContainer" unique_id=1685699081 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-button_group = SubResource("ButtonGroup_38ak3")
+button_group = SubResource("ButtonGroup_8pym0")
 default_text = "Ranked"
-default_icon = SubResource("AtlasTexture_84rqj")
+default_icon = ExtResource("13_84rqj")
 
 [node name="DisableDescription" type="Label" parent="." unique_id=1725893970]
 unique_name_in_owner = true

@@ -45,7 +45,7 @@ window/handheld/orientation=1
 
 [editor]
 
-movie_writer/movie_file="/Users/admin/tech/code/games/mc_game/build/movie/mov.png"
+movie_writer/movie_file="/Users/admin/tech/code/games/mc_game/build/movie/movie.avi"
 
 [editor_plugins]
 

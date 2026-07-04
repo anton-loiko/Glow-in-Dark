@@ -6,30 +6,39 @@ signal purchase_failed(reason: String)
 
 # Список товаров (ID, которые ты потом зарегистрируешь в App Store / Google Play)
 const ITEM_NO_ADS = "com.forwardmobile.lightinthedark.no_ads"
-const ITEM_BLUE_SKIN = "com.forwardmobile.lightinthedark.blue_skin"
-
+const ITEM_FIRE_SKIN = "com.forwardmobile.lightinthedark.fire_skin"
+const ITEM_PINK_FLAME = "com.forwardmobile.lightinthedark.pink_flame"
 
 const SKINS_DB: Dictionary = {
 	"default": {
-		"color": Color(1.0, 1.0, 1.0),
+		"name": "Циановый огонек",
+		"color": Color(0.0, 1.0, 1.0),
 		"price_usd": 0.0,
 		"price_sparks": 0,
 		"condition": "start"
 	},
-	"blue_flame": {
-		"color": Color(0.3, 0.6, 1.0),
+	"fire_skin": {
+		"name": "Скин Огонь",
+		"color": Color(1.0, 0.5, 0.0),
 		"price_usd": 1.99,
 		"price_sparks": 0,
 		"condition": "store_usd" 
 	},
-	"purple_magic": {
+	"magnet_skin": {
+		"name": "Скин Магнит",
 		"color": Color(0.8, 0.2, 1.0), 
 		"price_usd": 0.0,
 		"price_sparks": 150,
 		"condition": "store_sparks" 
+	},
+	"pink_flame": {
+		"name": "Розовое пламя",
+		"color": Color(1.0, 0.07, 0.57), 
+		"price_usd": 2.99,
+		"price_sparks": 0,
+		"condition": "store_usd" 
 	}
 }
-
 
 func buy_item(item_id: String) -> void:
 	var chance = randf()
