@@ -17,9 +17,9 @@
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_84rqj"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_2r2a7"]
-
 [sub_resource type="ButtonGroup" id="ButtonGroup_eagnp"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_2r2a7"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_38ak3"]
 
@@ -154,6 +154,14 @@ button_group = SubResource("ButtonGroup_84rqj")
 default_text = "Shop"
 default_icon = ExtResource("9_dkh74")
 
+[node name="SkillsButton" parent="VBoxContainer/HBoxContainer" unique_id=1713732010 instance=ExtResource("8_8es5f")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+button_group = SubResource("ButtonGroup_eagnp")
+default_text = "Skills"
+default_icon = ExtResource("10_dkh74")
+
 [node name="HomeButton" parent="VBoxContainer/HBoxContainer" unique_id=1887777274 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
 layout_mode = 2
@@ -161,16 +169,8 @@ button_group = SubResource("ButtonGroup_2r2a7")
 default_text = "Explore"
 default_icon = ExtResource("13_dkh74")
 
-[node name="SkillsButton" parent="VBoxContainer/HBoxContainer" unique_id=1713732010 instance=ExtResource("8_8es5f")]
-unique_name_in_owner = true
-layout_mode = 2
-button_group = SubResource("ButtonGroup_eagnp")
-default_text = "Skills"
-default_icon = ExtResource("10_dkh74")
-
 [node name="GearButton" parent="VBoxContainer/HBoxContainer" unique_id=652734299 instance=ExtResource("8_8es5f")]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 button_group = SubResource("ButtonGroup_38ak3")
 default_text = "Gear"
