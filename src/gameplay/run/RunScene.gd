@@ -42,6 +42,9 @@ func on_screen_enter(_params: Dictionary) -> void:
 	waves.setup(run, enemies, pickups, streamer, player, camera)
 	skills.setup(player, enemies, pickups, camera, run)
 	DamagePool.bind_world(fx_layer)
+	var particles: ParticleFx = ParticleFx.new()
+	particles.light_color = skin.light_color if skin != null else UITokens.LIGHT_500
+	fx_layer.add_child(particles)
 	if PerfOverlay.is_allowed():
 		var overlay: PerfOverlay = PerfOverlay.new()
 		overlay.enemies = enemies

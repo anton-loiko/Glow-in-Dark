@@ -131,8 +131,8 @@ func _build_trail() -> void:
 	particles.initial_velocity_min = 8.0
 	particles.initial_velocity_max = 22.0
 	particles.gravity = Vector3.ZERO
-	particles.scale_min = 1.5
-	particles.scale_max = 3.0
+	particles.scale_min = 0.12
+	particles.scale_max = 0.24
 	var fade: Gradient = Gradient.new()
 	fade.set_color(0, Color(1, 1, 1, 0.9))
 	fade.set_color(1, Color(1, 1, 1, 0))
@@ -140,6 +140,7 @@ func _build_trail() -> void:
 	ramp.gradient = fade
 	particles.color_ramp = ramp
 	trail.process_material = particles
+	trail.texture = preload("res://src/assets/vfx/ember.png")
 	trail.local_coords = false
 
 

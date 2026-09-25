@@ -20,6 +20,11 @@ var _prop_rects: Array[Rect2] = []
 var _glow: Node2D
 var _glow_points: PackedVector2Array = PackedVector2Array()
 var _glow_color: Color
+const MAX_GLOW: int = 6
+const EMBER_TEX: Texture2D = preload("res://src/assets/vfx/ember.png")
+var _glow_sprites: Array[Sprite2D] = []
+var _fireflies: CPUParticles2D
+static var _biolum_textures: Array[Texture2D] = []
 
 
 ## Hi-res ассеты мира (tools/art/gen_sprites.lua): серый альбедо + normal map, цвет главы — modulate.
@@ -78,6 +83,28 @@ func _init() -> void:
 	_glow.material = unshaded
 	_glow.draw.connect(_draw_glow)
 	add_child(_glow)
+	# Биолюминесценция: грибы и руны (спрайты цвета главы, не красный и не янтарный) + медленные светлячки.
+	for i: int in MAX_GLOW:
+		var sprite: Sprite2D = Sprite2D.new()
+		sprite.use_parent_material = true
+		sprite.visible = false
+		_glow.add_child(sprite)
+		_glow_sprites.append(sprite)
+	_fireflies = CPUParticles2D.new()
+	_fireflies.use_parent_material = true
+	_fireflies.amount = 4
+	_fireflies.lifetime = 6.0
+	_fireflies.preprocess = 6.0
+	_fireflies.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_fireflies.direction = Vector2.UP
+	_fireflies.spread = 180.0
+	_fireflies.gravity = Vector2.ZERO
+	_fireflies.initial_velocity_min = 3.0
+	_fireflies.initial_velocity_max = 10.0
+	_fireflies.scale_amount_min = 0.12
+	_fireflies.scale_amount_max = 0.2
+	_fireflies.texture = EMBER_TEX
+	_glow.add_child(_fireflies)
 
 
 func _ready() -> void:
@@ -127,8 +154,9 @@ func build(cell: Vector2i, p_size: float, run_seed: int, chapter: ChapterDef, wo
 		body.process_mode = Node.PROCESS_MODE_INHERIT if placed else Node.PROCESS_MODE_DISABLED
 
 	_glow_points.clear()
-	for i: int in rng.randi_range(2, 6):
+	for i: int in rng.randi_range(2, MAX_GLOW):
 		_glow_points.append(Vector2(rng.randf() * size, rng.randf() * size))
+	_place_biolum(rng)
 
 	fuel_markers.clear()
 	if rng.randf() < float(world_cfg.get("fuel_marker_chance", 0.35)):
@@ -186,7 +214,31 @@ func _draw() -> void:
 				draw_texture_rect(_floor_textures[_tile_variant[i]], rect, false, Color(c.r * TEXTURE_TINT_GAIN, c.g * TEXTURE_TINT_GAIN, c.b * TEXTURE_TINT_GAIN, 1.0))
 
 
+func _place_biolum(rng: RandomNumberGenerator) -> void:
+	if _biolum_textures.is_empty():
+		for file: String in ["biolum_mushrooms_1", "biolum_mushrooms_2", "biolum_rune"]:
+			var path: String = "res://src/assets/world/common/%s.png" % file
+			if ResourceLoader.exists(path):
+				_biolum_textures.append(load(path) as Texture2D)
+	for i: int in _glow_sprites.size():
+		var sprite: Sprite2D = _glow_sprites[i]
+		sprite.visible = i < _glow_points.size() and not _biolum_textures.is_empty()
+		if not sprite.visible:
+			continue
+		sprite.texture = _biolum_textures[rng.randi_range(0, _biolum_textures.size() - 1)]
+		sprite.position = _glow_points[i]
+		sprite.scale = Vector2.ONE * rng.randf_range(0.45, 0.7)
+		sprite.modulate = Color(_glow_color, 0.85)
+	_fireflies.emission_rect_extents = Vector2(size, size) * 0.5
+	_fireflies.position = Vector2(size, size) * 0.5
+	var fly: Color = _glow_color.lightened(0.4)
+	var fade: Gradient = Gradient.new()
+	fade.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
+	fade.colors = PackedColorArray([Color(fly, 0.0), Color(fly, 0.9), Color(fly, 0.0)])
+	_fireflies.color_ramp = fade
+
+
 func _draw_glow() -> void:
 	for point: Vector2 in _glow_points:
-		_glow.draw_circle(point, 7.0, Color(_glow_color, 0.18))
-		_glow.draw_circle(point, 2.5, Color(_glow_color, 0.85))
+		_glow.draw_circle(point, 16.0, Color(_glow_color, 0.08))
+		_glow.draw_circle(point, 9.0, Color(_glow_color, 0.1))

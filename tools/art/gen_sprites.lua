@@ -422,6 +422,59 @@ local function chest(kind, open)
   end
 end
 
+
+-- ---------------------------------------------------------------- VFX и биолюминесценция (unshaded, белые под modulate)
+-- Уголёк: мягкое ядро с ореолом. Пепел: рваная хлопья. Искра: четырёхлучевая звезда.
+local function ember(x, y, f)
+  local r = len(x - 16, y - 16)
+  local a = smoothstep(16, 2, r)
+  local core = smoothstep(6, 0, r)
+  local v = 0.75 + 0.25 * core
+  return 0.5 - a, { albedo = { v, v, v }, dome = 1, normal_strength = 0 } -- альфа = мягкий спад
+end
+
+local function ash(x, y, f)
+  local d = sd_ellipse(x, y, 16, 16, 11, 7) + (fbm(x / 3, y / 3, 101) - 0.5) * 8
+  local v = 0.55 + (fbm(x / 2, y / 2, 103) - 0.5) * 0.3
+  return d, { albedo = { v, v, v }, dome = 3, normal_strength = 0 }
+end
+
+local function spark_star(x, y, f)
+  local dx, dy = math.abs(x - 16), math.abs(y - 16)
+  local d = math.min(dx * 3.2 + dy, dy * 3.2 + dx) - 14
+  local core = smoothstep(5, 0, len(dx, dy))
+  local v = 0.85 + 0.15 * core
+  return d, { albedo = { v, v, v }, dome = 1, normal_strength = 0 }
+end
+
+-- Грибы биолюминесценции: 2–3 шляпки на ножках, светятся шляпки (цвет главы — modulate, не красный/янтарный).
+local function mushrooms(seed)
+  return function(x, y, f)
+    local d, glow = 99, 0
+    for i = 0, 2 do
+      local mx = 20 + i * 12 + (hash(i, 1, seed) - 0.5) * 6
+      local h = 18 + hash(i, 2, seed) * 16
+      local cap_r = 7 + hash(i, 3, seed) * 5
+      local stem = math.max(math.abs(x - mx) - 1.6, math.abs(y - (60 - h * 0.5)) - h * 0.5)
+      local cap = math.max(sd_ellipse(x, y, mx, 60 - h, cap_r, cap_r * 0.6), y - (60 - h + 1))
+      d = math.min(d, stem, cap)
+      if cap < 0 then glow = 1 end
+    end
+    local v = glow > 0 and 1.0 or 0.55
+    return d, { albedo = { v, v, v }, dome = 3, normal_strength = 0 }
+  end
+end
+
+-- Руна: светящийся знак на камне (кольцо + засечки).
+local function rune(x, y, f)
+  local r = len(x - 24, y - 24)
+  local ring = math.abs(r - 15) - 1.8
+  local bar = math.max(math.abs(x - 24) - 1.6, math.abs(y - 24) - 11)
+  local tick = math.max(math.abs(y - 16) - 1.6, math.abs(x - 24) - 7)
+  local d = math.min(ring, bar, tick)
+  return d, { albedo = { 1, 1, 1 }, dome = 2, normal_strength = 0 }
+end
+
 -- ---------------------------------------------------------------- запуск
 local only = ONLY
 local function want(name) return only == nil or only == name end
@@ -451,6 +504,14 @@ if want("chests") then
     save_asset("src/assets/chests", "chest_" .. kind .. "_closed", 320, 240, 1, chest(kind, false), false, true)
     save_asset("src/assets/chests", "chest_" .. kind .. "_open", 320, 240, 1, chest(kind, true), false, true)
   end
+end
+if want("vfx") then
+  save_asset("src/assets/vfx", "ember", 32, 32, 1, ember, false, true)
+  save_asset("src/assets/vfx", "ash", 32, 32, 1, ash, false, true)
+  save_asset("src/assets/vfx", "spark", 32, 32, 1, spark_star, false, true)
+  save_asset("src/assets/world/common", "biolum_mushrooms_1", 64, 64, 1, mushrooms(111), false, true)
+  save_asset("src/assets/world/common", "biolum_mushrooms_2", 64, 64, 1, mushrooms(131), false, true)
+  save_asset("src/assets/world/common", "biolum_rune", 48, 48, 1, rune, false, true)
 end
 if want("hero") then
   save_asset("src/assets/hero", "hero_body", 170, 170, 1, hero_body, false)
