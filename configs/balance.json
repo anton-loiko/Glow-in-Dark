@@ -105,5 +105,13 @@
     "flicker_from_pct": 0.9,
     "time_ramp_in_ms": 120,
     "time_ramp_out_ms": 300
+  },
+  "supernova": {
+    "_doc": "«Сверхновая» (Art Direction §02): каждый навык добавляет видимый слой на Огоньке — по силуэту видно билд.",
+    "halo_from_skills": 2,
+    "levels_per_orbit": 3,
+    "max_orbits": 8,
+    "flame_from_levels": 10,
+    "flame_full_levels": 24
   }
 }
