@@ -9,6 +9,18 @@ var pulse: float = 0.0 ## вспышка кристалла на каждое в
 
 var _level: int = 0
 var _diorama: HubDiorama
+## Свет хаба окрашен скином (Meta DS §03: «скин перекрашивает весь кадр»); смена — плавно за 600 мс.
+var hub_color: Color = UITokens.LIGHT_500
+
+
+static func skin_color() -> Color:
+	var skin: SkinDef = ConfigDB.get_skin(GameManager.profile.skin_equipped)
+	return skin.light_color if skin != null else UITokens.LIGHT_500
+
+
+func _on_skin_equipped(_id: StringName) -> void:
+	var t: Tween = UIMotion.tween(self)
+	t.tween_property(self, ^"hub_color", skin_color(), 0.6)
 
 ## Hi-res ассеты (tools/art/gen_sprites.lua, свет запечён): постамент 160×80pt, кристалл 48×80pt × 12 кадров вращения.
 const ART_DIR: String = "res://src/assets/beacon/"
@@ -35,6 +47,8 @@ func flash_rune() -> void:
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	clip_contents = true
+	hub_color = skin_color()
+	EventBus.skin_equipped.connect(_on_skin_equipped)
 	_diorama = HubDiorama.new()
 	if _diorama.setup(chapter_id):
 		_diorama.show_behind_parent = true
@@ -68,11 +82,11 @@ func _draw() -> void:
 	var light_r: float = float(hub_light[clampi(tier(), 0, hub_light.size() - 1)]) * size.x
 	if _diorama != null:
 		_diorama.anchor_point = base + Vector2(0, -10)
-		_diorama.set_light(maxf(40.0, light_r), 1.0 if tier() >= 10 else 0.0, breath)
+		_diorama.set_light(maxf(40.0, light_r), 1.0 if tier() >= 10 else 0.0, breath, hub_color)
 	# Свет Хаба: радиус = прогресс.
 	for i: int in 8:
 		var k: float = 1.0 - i / 8.0
-		draw_circle(base + Vector2(0, -60), maxf(24.0, light_r) * k, Color(UITokens.LIGHT_500, 0.025 + 0.01 * breath))
+		draw_circle(base + Vector2(0, -60), maxf(24.0, light_r) * k, Color(hub_color, 0.025 + 0.01 * breath))
 	if tier() == 0:
 		for i: int in 4:
 			var eye: Vector2 = base + Vector2.from_angle(PI + i * PI / 3.5 + 0.2) * Vector2(150, 90)

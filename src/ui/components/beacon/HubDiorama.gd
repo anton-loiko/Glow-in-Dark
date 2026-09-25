@@ -27,9 +27,10 @@ func setup(chapter_id: int) -> bool:
 	return true
 
 
-func set_light(radius_px: float, day_mix: float, breath: float) -> void:
+func set_light(radius_px: float, day_mix: float, breath: float, color: Color = UITokens.LIGHT_500) -> void:
 	if _mat == null:
 		return
+	_mat.set_shader_parameter(&"warm", color)
 	_mat.set_shader_parameter(&"center_px", anchor_point)
 	_mat.set_shader_parameter(&"radius_px", radius_px)
 	_mat.set_shader_parameter(&"day_mix", day_mix)
