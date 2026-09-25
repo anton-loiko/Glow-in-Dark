@@ -30,6 +30,7 @@ lifetime = 0.6
 
 [node name="Light" type="PointLight2D" parent="."]
 energy = 2.0
+height = 90.0
 shadow_enabled = true
 shadow_filter = 1
 shadow_filter_smooth = 2.0

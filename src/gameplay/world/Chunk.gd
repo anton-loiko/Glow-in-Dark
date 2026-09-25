@@ -22,7 +22,39 @@ var _glow_points: PackedVector2Array = PackedVector2Array()
 var _glow_color: Color
 
 
+## Hi-res ассеты мира (tools/art/gen_sprites.lua): серый альбедо + normal map, цвет главы — modulate.
+static var _floor_textures: Array[CanvasTexture] = []
+static var _prop_textures: Array[CanvasTexture] = []
+## Альбедо текстур ~0.45 серого — множитель приближает яркость к палитре главы (окружение ≤ 60% яркости врагов в свете).
+const TEXTURE_TINT_GAIN: float = 1.6
+var _tile_variant: PackedByteArray = PackedByteArray()
+
+
+static func _canvas_texture(base: String) -> CanvasTexture:
+	if not ResourceLoader.exists(base + ".png"):
+		return null
+	var tex: CanvasTexture = CanvasTexture.new()
+	tex.diffuse_texture = load(base + ".png")
+	if ResourceLoader.exists(base + "_n.png"):
+		tex.normal_texture = load(base + "_n.png")
+	return tex
+
+
+static func _load_world_textures() -> void:
+	if not _floor_textures.is_empty():
+		return
+	for i: int in range(1, 5):
+		var tex: CanvasTexture = _canvas_texture("res://src/assets/world/common/floor_%d" % i)
+		if tex != null:
+			_floor_textures.append(tex)
+	for file: String in ["prop_slab", "prop_rubble"]:
+		var tex: CanvasTexture = _canvas_texture("res://src/assets/world/common/" + file)
+		if tex != null:
+			_prop_textures.append(tex)
+
+
 func _init() -> void:
+	_load_world_textures()
 	z_index = -10
 	for i: int in MAX_PROPS:
 		var body: StaticBody2D = StaticBody2D.new()
@@ -67,8 +99,10 @@ func build(cell: Vector2i, p_size: float, run_seed: int, chapter: ChapterDef, wo
 	_floor_alt = chapter.palette_color("floor_alt", _floor_color.darkened(0.1))
 	_glow_color = chapter.palette_color("biolum", Color("#5FB3A1"))
 	_tiles.resize(TILE_COUNT * TILE_COUNT)
+	_tile_variant.resize(TILE_COUNT * TILE_COUNT)
 	for i: int in _tiles.size():
 		_tiles[i] = _floor_color.lerp(_floor_alt, rng.randf())
+		_tile_variant[i] = rng.randi_range(0, maxi(0, _floor_textures.size() - 1))
 
 	var prop_range: Array = world_cfg.get("props_per_chunk", [1, 4])
 	var prop_count: int = rng.randi_range(int(prop_range[0]), mini(int(prop_range[1]), MAX_PROPS))
@@ -85,7 +119,7 @@ func build(cell: Vector2i, p_size: float, run_seed: int, chapter: ChapterDef, wo
 				var rect: Rect2 = Rect2(position + local - extent, extent * 2.0)
 				if rect.grow(safe_radius).has_point(Vector2.ZERO) or _overlaps(rect):
 					continue
-				_place_prop(body, local, extent, prop_color)
+				_place_prop(body, local, extent, prop_color, rng.randi_range(0, 1))
 				_prop_rects.append(rect)
 				placed = true
 				break
@@ -119,7 +153,7 @@ func _overlaps(rect: Rect2) -> bool:
 	return false
 
 
-func _place_prop(body: StaticBody2D, local: Vector2, extent: Vector2, color: Color) -> void:
+func _place_prop(body: StaticBody2D, local: Vector2, extent: Vector2, color: Color, variant: int = 0) -> void:
 	body.position = local
 	var shape: CollisionShape2D = body.get_child(0) as CollisionShape2D
 	(shape.shape as RectangleShape2D).size = extent * 2.0
@@ -131,17 +165,25 @@ func _place_prop(body: StaticBody2D, local: Vector2, extent: Vector2, color: Col
 	var poly: Polygon2D = body.get_child(2) as Polygon2D
 	poly.polygon = outline
 	poly.color = color
+	if not _prop_textures.is_empty():
+		var tex: CanvasTexture = _prop_textures[variant % _prop_textures.size()]
+		poly.texture = tex
+		var px: Vector2 = Vector2(256, 256)
+		poly.uv = PackedVector2Array([Vector2.ZERO, Vector2(px.x, 0), px, Vector2(0, px.y)])
+		poly.color = Color(color.r * TEXTURE_TINT_GAIN, color.g * TEXTURE_TINT_GAIN, color.b * TEXTURE_TINT_GAIN, 1.0)
 
 
 func _draw() -> void:
 	var tile: float = size / TILE_COUNT
 	for y: int in TILE_COUNT:
 		for x: int in TILE_COUNT:
-			draw_rect(Rect2(Vector2(x, y) * tile, Vector2(tile, tile)), _tiles[y * TILE_COUNT + x])
-	var seam: Color = _floor_color.darkened(0.25)
-	for i: int in TILE_COUNT + 1:
-		draw_line(Vector2(i * tile, 0), Vector2(i * tile, size), seam, 1.0)
-		draw_line(Vector2(0, i * tile), Vector2(size, i * tile), seam, 1.0)
+			var i: int = y * TILE_COUNT + x
+			var rect: Rect2 = Rect2(Vector2(x, y) * tile, Vector2(tile, tile))
+			if _floor_textures.is_empty():
+				draw_rect(rect, _tiles[i])
+			else:
+				var c: Color = _tiles[i]
+				draw_texture_rect(_floor_textures[_tile_variant[i]], rect, false, Color(c.r * TEXTURE_TINT_GAIN, c.g * TEXTURE_TINT_GAIN, c.b * TEXTURE_TINT_GAIN, 1.0))
 
 
 func _draw_glow() -> void:

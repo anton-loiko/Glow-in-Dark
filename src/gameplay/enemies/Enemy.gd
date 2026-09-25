@@ -14,6 +14,8 @@ const EYE_GLINT: Color = Color("#FFE0E6")
 const CRACK: Color = Color("#FFC86B")
 const HOT: Color = Color("#FFF1D0")
 const ELITE_RIM: Color = Color("#B07CFF")
+const FROST: Color = Color("#8FA3C0")
+const FROST_TIP: Color = Color("#E6EEF8")
 
 var def: EnemyDef
 var is_elite: bool = false
@@ -416,6 +418,8 @@ func _draw() -> void:
 				_draw_cracks(r)
 		if is_elite:
 			draw_arc(Vector2.ZERO, r + 1.0, 0.0, TAU, 32, ELITE_RIM, 2.0)
+	if _freeze_left > 0.0 and is_alive():
+		_draw_frost(r)
 	if state != State.DYING:
 		_draw_eyes(r, appear)
 
@@ -432,6 +436,17 @@ func _draw_body(center: Vector2, r: float, color: Color) -> void:
 		_:
 			draw_circle(center, r, color)
 			draw_circle(center, r * 0.55, Color(CORE, color.a))
+
+
+## Иней (Заморозка): холодная кромка и кристаллы льда, цвет cold — не голубой (голубой = деньги).
+func _draw_frost(r: float) -> void:
+	var a: float = clampf(_freeze_left / 0.3, 0.3, 1.0)
+	draw_arc(Vector2.ZERO, r * 1.02, 0.0, TAU, 32, Color(FROST, 0.55 * a), 2.5)
+	for i: int in 6:
+		var dir: Vector2 = Vector2.from_angle(TAU * i / 6.0 + 0.3)
+		var base: Vector2 = dir * r * 0.95
+		draw_line(base, base + dir * r * 0.28, Color(FROST_TIP, 0.8 * a), 2.0)
+		draw_line(base + dir * r * 0.14, base + dir * r * 0.14 + dir.rotated(0.8) * r * 0.12, Color(FROST_TIP, 0.6 * a), 1.5)
 
 
 func _draw_rim(r: float, strength: float) -> void:

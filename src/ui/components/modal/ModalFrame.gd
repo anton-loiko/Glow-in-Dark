@@ -6,6 +6,8 @@ extends Control
 
 signal closed
 
+const BLUR_SHADER: Shader = preload("res://src/ui/theme/shaders/modal_blur.gdshader")
+
 var content: VBoxContainer
 var closable: bool = true
 var _panel: PanelContainer
@@ -17,6 +19,10 @@ func build(title: String, p_closable: bool = true, eyebrow: String = "") -> VBox
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var dim: ColorRect = ColorRect.new()
 	dim.color = Color(UITokens.INK_900, 0.7)
+	# DS §02: фон модала — размытие 12 + затемнение 70% (шейдер; без поддержки экранной текстуры — просто затемнение).
+	var blur: ShaderMaterial = ShaderMaterial.new()
+	blur.shader = BLUR_SHADER
+	dim.material = blur
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	dim.gui_input.connect(_on_dim_input)
 	add_child(dim)

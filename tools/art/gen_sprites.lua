@@ -48,7 +48,8 @@ local function render(w, h, frames, shape)
         local d, e = shape(x + 0.5, y + 0.5, f)
         local a = clamp(0.5 - d, 0, 1)
         local hh = 0
-        if d < 0 then hh = math.sqrt(clamp(-d / (e.dome or 20), 0, 1)) + (e.relief or 0) * 0.35 end
+        if e.height_override ~= nil then hh = e.height_override
+        elseif d < 0 then hh = math.sqrt(clamp(-d / (e.dome or 20), 0, 1)) + (e.relief or 0) * 0.35 end
         height[y * w + x] = hh
         cells[y * w + x] = { a = a, e = e }
       end
@@ -233,6 +234,61 @@ local function hero_eyes(kind)
   end
 end
 
+
+-- ---------------------------------------------------------------- мир (тонируется цветом главы через modulate)
+-- Бесшовная брусчатка: ячейки Вороного на торе (координаты по модулю размера), камни — купола, швы — низины,
+-- лужи — гладкие тёмные пятна. Серый альбедо ~0.4–0.6: цвет пола задаёт палитра главы.
+local function voronoi_tile(size, cells, seed)
+  local pts = {}
+  for i = 1, cells do pts[i] = { hash(i, 1, seed) * size, hash(i, 2, seed) * size } end
+  return function(x, y)
+    local d1, d2, id = 1e9, 1e9, 0
+    for i = 1, cells do
+      for ox = -1, 1 do
+        for oy = -1, 1 do
+          local dx, dy = x - (pts[i][1] + ox * size), y - (pts[i][2] + oy * size)
+          local d = dx * dx + dy * dy
+          if d < d1 then d2 = d1 d1 = d id = i elseif d < d2 then d2 = d end
+        end
+      end
+    end
+    return math.sqrt(d2) - math.sqrt(d1), id
+  end
+end
+
+local function floor_tile(seed)
+  local size = 128
+  local vor = voronoi_tile(size, 14, seed)
+  return function(x, y, f)
+    local edge, id = vor(x, y)
+    local stone = smoothstep(1.5, 7, edge)
+    local tone = 0.42 + hash(id, 7, seed) * 0.16 + (fbm(x / 6, y / 6, seed + 3) - 0.5) * 0.12
+    local puddle = smoothstep(0.62, 0.7, fbm(x / 40 + seed, y / 40, seed + 9))
+    local v = lerp(0.18, tone, stone)
+    v = lerp(v, 0.14, puddle * 0.85)
+    local relief = stone * (0.6 + 0.4 * fbm(x / 5, y / 5, seed + 5)) * (1 - puddle)
+    return -1, { albedo = { v, v * 1.02, v * 1.06 }, relief = relief, dome = 1, normal_strength = 6, height_override = relief }
+  end
+end
+
+-- Проп «плита»: скошенные края, трещины; «обломки»: груда камней.
+local function prop_slab(x, y, f)
+  local size, m = 256, 10
+  local dx, dy = math.min(x, size - x), math.min(y, size - y)
+  local bevel = smoothstep(0, 22, math.min(dx, dy))
+  local crack = cracks_at(x, y, 61, 40)
+  local v = 0.38 + (fbm(x / 9, y / 9, 63) - 0.5) * 0.14 - crack * 0.18
+  return -1, { albedo = { v, v, v * 1.05 }, relief = bevel * (1 - crack * 0.6), normal_strength = 5, height_override = bevel * (1 - crack * 0.6) }
+end
+
+local rubble_vor = voronoi_tile(256, 9, 71)
+local function prop_rubble(x, y, f)
+  local edge, id = rubble_vor(x, y)
+  local rock = smoothstep(2, 16, edge)
+  local v = 0.30 + hash(id, 3, 71) * 0.18 + (fbm(x / 7, y / 7, 73) - 0.5) * 0.1
+  return -1, { albedo = { v, v, v * 1.04 }, relief = rock, normal_strength = 7, height_override = rock }
+end
+
 -- ---------------------------------------------------------------- запуск
 local only = ONLY
 local function want(name) return only == nil or only == name end
@@ -242,6 +298,11 @@ if want("enemies") then
   save_asset("src/assets/enemies/devourer", "devourer", 224, 224, 6, devourer, true)
   save_asset("src/assets/enemies/extinguisher", "extinguisher", 320, 320, 8, extinguisher, true)
   save_asset("src/assets/enemies/mourner", "mourner", 128, 128, 6, mourner, true)
+end
+if want("world") then
+  for i = 1, 4 do save_asset("src/assets/world/common", "floor_" .. i, 128, 128, 1, floor_tile(100 + i * 17), false) end
+  save_asset("src/assets/world/common", "prop_slab", 256, 256, 1, prop_slab, false)
+  save_asset("src/assets/world/common", "prop_rubble", 256, 256, 1, prop_rubble, false)
 end
 if want("hero") then
   save_asset("src/assets/hero", "hero_body", 170, 170, 1, hero_body, false)

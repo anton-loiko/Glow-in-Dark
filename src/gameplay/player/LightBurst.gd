@@ -20,6 +20,8 @@ var _ring_radius: float = 0.0
 var _ring_alpha: float = 0.0
 var _ring_color: Color = Color.WHITE
 var _last_burst_ms: int = -100000
+var _shockwave: ColorRect
+var _shockwave_mat: ShaderMaterial
 
 
 func setup(balance: Dictionary) -> void:
@@ -27,6 +29,22 @@ func setup(balance: Dictionary) -> void:
 	overshoot_ratio = float((balance.get("player", {}) as Dictionary).get("burst_overshoot", 0.08))
 	flash_rect.visible = false
 	z_index = 5
+	_build_shockwave()
+
+
+## Дисторсия ударной волны — полноэкранный слой под HUD, включается только на время волны.
+func _build_shockwave() -> void:
+	var layer: CanvasLayer = CanvasLayer.new()
+	layer.layer = 5
+	add_child(layer)
+	_shockwave = ColorRect.new()
+	_shockwave.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_shockwave.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_shockwave_mat = ShaderMaterial.new()
+	_shockwave_mat.shader = preload("res://src/gameplay/shaders/shockwave.gdshader")
+	_shockwave.material = _shockwave_mat
+	_shockwave.visible = false
+	layer.add_child(_shockwave)
 
 
 ## Взрыв в позиции игрока. damage_player = false всегда: Взрыв никогда не ранит Огонька.
@@ -60,11 +78,30 @@ func _run_sequence() -> void:
 	var overshoot: float = 1.0 + overshoot_ratio
 	var wave: Tween = create_tween().set_parallel(true)
 	wave.tween_method(_set_ring, 0.0, 1.0, float(cfg.get("ring_ms", 250)) / 1000.0)
+	_start_shockwave(no_flashes)
 	wave.tween_property(player, ^"radius_boost", overshoot, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	wave.chain().tween_property(player, ^"radius_boost", 1.0, (float(cfg.get("radius_ms", 500)) - 200.0) / 1000.0).set_trans(Tween.TRANS_SINE)
 	await wave.finished
 	# 900 мс: пепел оседает, искры магнитом к герою.
 	pickups.attract_all(get_viewport_rect().size.length())
+
+
+func _start_shockwave(no_flashes: bool) -> void:
+	var viewport: Vector2 = get_viewport_rect().size
+	var screen_pos: Vector2 = player.get_global_transform_with_canvas().origin
+	_shockwave_mat.set_shader_parameter(&"center", screen_pos / viewport)
+	_shockwave_mat.set_shader_parameter(&"aspect", viewport.x / viewport.y)
+	_shockwave_mat.set_shader_parameter(&"tint", player.visual.light_color)
+	_shockwave.visible = true
+	var strength: float = 0.012 if no_flashes else 0.028
+	var t: Tween = create_tween().set_parallel(true)
+	t.tween_method(_set_shockwave.bind(strength), 0.0, 1.0, 0.45)
+	t.chain().tween_callback(_shockwave.hide)
+
+
+func _set_shockwave(k: float, strength: float) -> void:
+	_shockwave_mat.set_shader_parameter(&"radius", k * 0.55)
+	_shockwave_mat.set_shader_parameter(&"strength", strength * (1.0 - k))
 
 
 func _flash(no_flashes: bool) -> void:
