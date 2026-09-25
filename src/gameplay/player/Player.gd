@@ -23,6 +23,9 @@ var friction: float = 16.0
 var px_per_light: float = 1.0
 ## Множитель радиуса от эффектов (перелёт Взрыва Света, Полнолуние Лунного и т.п.).
 var radius_boost: float = 1.0
+## Лунный Огонёк (D18): фазы радиуса и урона ауры; null у остальных скинов.
+var moon: MoonPhases
+var _base_light_energy: float = -1.0
 ## Свет, «съеденный» аурой Гасителя (1.0 — нет ауры). Выставляет EnemyManager каждый кадр.
 var aura_radius_mult: float = 1.0
 
@@ -37,6 +40,7 @@ func _ready() -> void:
 
 func setup(p_stats: StatBlock, balance: Dictionary, skin: SkinDef) -> void:
 	stats = p_stats
+	moon = MoonPhases.from_flags(skin.flags) if skin != null else null
 	var player_cfg: Dictionary = balance.get("player", {}) as Dictionary
 	move_speed = stats.move_speed
 	acceleration = float(player_cfg.get("acceleration", 12.0))
@@ -77,12 +81,18 @@ func _physics_process(delta: float) -> void:
 	visual.velocity = velocity
 	visual.danger = light_model.is_in_danger()
 	trail.emitting = state == State.MOVE
+	if moon != null:
+		moon.tick(delta)
+		if _base_light_energy < 0.0:
+			_base_light_energy = light_node.energy
+		light_node.energy = _base_light_energy * moon.light_energy_mult()
 	_shown_radius = lerpf(_shown_radius, target_radius(), minf(1.0, delta * 12.0))
 	_apply_radius()
 
 
 func target_radius() -> float:
-	var mult: float = (stats.light_radius_mult * stats.area_scale if stats != null else 1.0) * radius_boost * aura_radius_mult
+	var stat_mult: float = stats.light_radius_mult * stats.area_scale if stats != null else 1.0
+	var mult: float = stat_mult * radius_boost * aura_radius_mult * (moon.radius_mult(stat_mult) if moon != null else 1.0)
 	return light_model.current * px_per_light * mult
 
 

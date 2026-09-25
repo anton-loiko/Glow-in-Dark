@@ -262,7 +262,7 @@ func _tick(delta: float) -> void:
 func _apply_light_damage() -> void:
 	if player.is_dead():
 		return
-	var dmg: float = player.stats.aura_dps * _burn_tick
+	var dmg: float = player.stats.aura_dps * _burn_tick * (player.moon.aura_mult() if player.moon != null else 1.0)
 	for i: int in range(_active.size() - 1, -1, -1):
 		if i >= _active.size():
 			continue
