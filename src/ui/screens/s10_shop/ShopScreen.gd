@@ -260,8 +260,7 @@ func _draw_crystal_pile(icon: Control, tier: int) -> void:
 	var c: Vector2 = Vector2(icon.size.x * 0.5, icon.size.y - 6)
 	var count: int = [1, 2, 4, 7][clampi(tier, 0, 3)]
 	if tier >= 3:
-		for i: int in 4:
-			icon.draw_circle(c - Vector2(0, 20), 30.0 - i * 6, Color(UITokens.CRYSTAL_500, 0.06))
+		icon.draw_texture_rect(HeroGlyph.halo_texture(), Rect2(c - Vector2(34, 54), Vector2(68, 68)), false, Color(UITokens.CRYSTAL_500, 0.5))
 	for i: int in count:
 		var angle: float = (float(i) / maxf(1.0, count - 1) - 0.5) * 1.6 if count > 1 else 0.0
 		var h: float = 34.0 - absf(angle) * 10.0 + (4.0 if i % 2 == 0 else 0.0)

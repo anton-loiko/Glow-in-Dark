@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="root" width="256" height="256" viewBox="0 0 256 256">
+  <defs id="defs"><radialGradient id="nbody" cx="0.42" cy="0.62" r="0.7"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.55" stop-color="#E6E6E6"/><stop offset="1" stop-color="#A8A8A8"/></radialGradient></defs>
+  <path id="hero-body" d="M 128.0,50.8 C 152.3,86.0 192.0,118.0 192.0,156.4 A 64.0 64.0 0 1 1 64.0,156.4 C 64.0,118.0 103.7,86.0 128.0,50.8 Z" fill="url(#nbody)"/>
+  <path id="hero-highlight" d="M 88.3,137.2 Q 92.8,102.0 120.3,79.6" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="5.8" stroke-linecap="round" fill="none"/>
+</svg>

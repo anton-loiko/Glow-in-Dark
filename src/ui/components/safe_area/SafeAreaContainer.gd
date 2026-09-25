@@ -3,6 +3,9 @@ extends MarginContainer
 ## Безопасная зона устройства (вырез, Dynamic Island, home indicator) + боковые поля экрана.
 ## Отступы пересчитываются при изменении размера окна.
 
+const PREVIEW_TOP: int = 44
+const PREVIEW_BOTTOM: int = 34
+
 @export var side_margin: int = 0
 @export var extra_top: int = 8
 @export var extra_bottom: int = 8
@@ -27,6 +30,10 @@ func _update() -> void:
 		insets["top"] = roundi(safe.position.y * scale_factor.y)
 		insets["right"] = roundi((screen.x - safe.end.x) * scale_factor.x)
 		insets["bottom"] = roundi((screen.y - safe.end.y) * scale_factor.y)
+	else:
+		# Десктоп / редактор: зоны iPhone из DS (44pt сверху, 34pt home indicator) — превью совпадает с артбордами.
+		insets["top"] = PREVIEW_TOP
+		insets["bottom"] = PREVIEW_BOTTOM
 	add_theme_constant_override(&"margin_left", int(insets["left"]) + side_margin)
 	add_theme_constant_override(&"margin_right", int(insets["right"]) + side_margin)
 	add_theme_constant_override(&"margin_top", int(insets["top"]) + extra_top)

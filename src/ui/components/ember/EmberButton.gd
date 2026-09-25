@@ -41,16 +41,19 @@ func _gui_input(event: InputEvent) -> void:
 			pressed.emit()
 
 
+const SPHERE: Texture2D = preload("res://src/assets/brand/ember_sphere.png")
+
+
 func _draw() -> void:
 	var center: Vector2 = size * 0.5
 	var breath: float = TimeService.breath_phase() if glow_enabled else 0.0
 	var r: float = diameter * 0.5 * (1.0 + 0.04 * breath) * (0.96 if _pressed else 1.0)
 	if glow_enabled:
-		for i: int in 4:
-			draw_circle(center, r + 4.0 + i * 5.0, Color(UITokens.LIGHT_500, 0.08 + 0.04 * breath))
-	draw_circle(center + Vector2(0, 3), r, UITokens.LIGHT_900)
-	draw_circle(center, r, UITokens.LIGHT_500)
-	draw_circle(center - Vector2(0, r * 0.25), r * 0.7, Color(UITokens.LIGHT_300, 0.6))
+		var halo: float = r + 30.0 # G2 · 30/8
+		draw_texture_rect(HeroGlyph.halo_texture(), Rect2(center - Vector2.ONE * halo, Vector2.ONE * halo * 2.0), false, Color(UITokens.LIGHT_500, 0.55 + 0.25 * breath))
+	draw_circle(center + Vector2(0, 3), r, UITokens.LIGHT_900, true, -1.0, true)
+	# Объёмная сфера: блик light.300 сверху-слева → light.500 → light.700 к низу (текстура, без ступенек).
+	draw_texture_rect(SPHERE, Rect2(center - Vector2.ONE * r, Vector2.ONE * r * 2.0), false)
 	var font: Font = UIFonts.font(&"button")
 	var font_size: int = 15 if diameter >= UITokens.EMBER_HUB else 12
 	var text: String = tr("В БОЙ")

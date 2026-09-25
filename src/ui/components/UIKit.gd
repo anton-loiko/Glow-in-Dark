@@ -98,6 +98,21 @@ static func format_number(value: int) -> String:
 	return ("-" if value < 0 else "") + digits + out
 
 
+## Склонение по числу: формы уже переведены (tr), в каждой — «%d». EN: one / many.
+static func plural(n: int, one: String, few: String, many: String) -> String:
+	var form: String = many
+	if TranslationServer.get_locale().begins_with("ru"):
+		var n10: int = absi(n) % 10
+		var n100: int = absi(n) % 100
+		if n10 == 1 and n100 != 11:
+			form = one
+		elif n10 >= 2 and n10 <= 4 and (n100 < 12 or n100 > 14):
+			form = few
+	elif absi(n) == 1:
+		form = one
+	return form % n
+
+
 static func format_time(seconds: float) -> String:
 	var s: int = floori(seconds)
 	return "%02d:%02d" % [floori(s / 60.0), s % 60]

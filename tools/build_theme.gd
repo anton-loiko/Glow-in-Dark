@@ -23,8 +23,8 @@ func _init() -> void:
 	t.set_color(&"font_color", &"LabelBodyS", c["TEXT_SECONDARY"])
 	t.set_color(&"font_color", &"LabelMono", c["TEXT_MUTED"])
 
-	_button(t, &"ButtonPrimary", c["LIGHT_500"], c["LIGHT_900"], c["TEXT_ON_LIGHT"], fonts.call("font", &"button"), 16, c, true)
-	_button(t, &"ButtonCrystal", c["CRYSTAL_500"], c["CRYSTAL_700"], c["TEXT_ON_CRYSTAL"], fonts.call("font", &"button"), 15, c, false)
+	_button(t, &"ButtonPrimary", c["TEXT_ON_LIGHT"], fonts.call("font", &"button"), 16, c)
+	_button(t, &"ButtonCrystal", c["TEXT_ON_CRYSTAL"], fonts.call("font", &"button"), 15, c)
 	# Secondary: контур 1.5pt light.500, без свечения.
 	t.set_type_variation(&"ButtonSecondary", &"Button")
 	var sec: StyleBoxFlat = _box(Color(0, 0, 0, 0), c["R14"])
@@ -90,19 +90,15 @@ func _init() -> void:
 	quit()
 
 
-func _button(t: Theme, variation: StringName, fill: Color, base: Color, text: Color, font: Font, size: int, c: Dictionary, glow: bool) -> void:
+func _button(t: Theme, variation: StringName, text: Color, font: Font, size: int, c: Dictionary) -> void:
 	t.set_type_variation(variation, &"Button")
-	var normal: StyleBoxFlat = _box(fill, c["R14"])
-	normal.border_width_bottom = 4
-	normal.border_color = base
-	if glow:
-		normal.shadow_color = Color(fill, 0.35)
-		normal.shadow_size = 12
+	# Тело, цоколь и свечение рисует ButtonFace (градиент 300 → 500 → 700); здесь только поля контента.
+	var normal: StyleBoxEmpty = _empty()
 	_margins(normal, 18, 10)
-	var pressed: StyleBoxFlat = normal.duplicate()
-	pressed.border_width_bottom = 0
+	normal.content_margin_bottom += 4 # цоколь
+	var pressed: StyleBoxEmpty = normal.duplicate()
 	pressed.content_margin_top += 4
-	pressed.expand_margin_top = -4
+	pressed.content_margin_bottom -= 4
 	for state: StringName in [&"normal", &"hover", &"focus"]:
 		t.set_stylebox(state, variation, normal)
 	t.set_stylebox(&"pressed", variation, pressed)

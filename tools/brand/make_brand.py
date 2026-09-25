@@ -101,6 +101,25 @@ def main():
     write("android_fg.svg", svg(a, a, hero(216, 226, a * 0.14)))
     write("android_bg.svg", svg(a, a, f'<rect id="bg" width="{a}" height="{a}" fill="{INK_900}"/>\n  <circle id="bg-glow" cx="216" cy="230" r="230" fill="url(#glow)" opacity="0.35"/>'))
     write("android_mono.svg", svg(a, a, f'<path id="mono" d="{droplet(216, 226, a * 0.14)}" fill="#FFFFFF"/>'))
+    # Знак экрана S01: Огонёк с лицом на прозрачном фоне (свечение рисует экран), 256×256.
+    write("splash_mark.svg", svg(256, 256, hero(128, 150, 64).split("\n  ", 1)[1]))
+    # UI-Огонёк (HeroGlyph: S10, S12, S14, лента скинов): тело нейтральное — красится modulate цветом скина,
+    # ядро и лицо — отдельным слоем без окраски. Холст 256, капля r = 64 с центром (128, 150).
+    neutral = ('<defs id="defs"><radialGradient id="nbody" cx="0.42" cy="0.62" r="0.7">'
+               '<stop offset="0" stop-color="#FFFFFF"/><stop offset="0.55" stop-color="#E6E6E6"/>'
+               '<stop offset="1" stop-color="#A8A8A8"/></radialGradient></defs>')
+    body = (f'<path id="hero-body" d="{droplet(128, 150, 64)}" fill="url(#nbody)"/>\n  '
+            f'<path id="hero-highlight" d="M {128 - 0.62 * 64:.1f},{150 - 0.2 * 64:.1f} Q {128 - 0.55 * 64:.1f},{150 - 0.75 * 64:.1f} '
+            f'{128 - 0.12 * 64:.1f},{150 - 1.1 * 64:.1f}" stroke="#FFFFFF" stroke-opacity="0.7" stroke-width="5.8" stroke-linecap="round" fill="none"/>')
+    write("hero_ui_body.svg", f'<svg xmlns="http://www.w3.org/2000/svg" id="root" width="256" height="256" viewBox="0 0 256 256">\n  {neutral}\n  {body}\n</svg>\n')
+    face_parts = hero(128, 150, 64).split("\n  ")[2:3] + hero(128, 150, 64).split("\n  ")[4:]
+    write("hero_ui_face.svg", svg(256, 256, "\n  ".join(face_parts)))
+    # Ember «В БОЙ» (DS §02): объёмная сфера light.300 → 500 → 700, блик сверху-слева.
+    write("ember_sphere.svg", '<svg xmlns="http://www.w3.org/2000/svg" id="root" width="256" height="256" viewBox="0 0 256 256">\n  '
+          f'<defs id="defs"><radialGradient id="sphere" cx="0.38" cy="0.3" r="0.8">'
+          f'<stop offset="0" stop-color="#FFE3B0"/><stop offset="0.25" stop-color="{LIGHT_300}"/>'
+          f'<stop offset="0.65" stop-color="{LIGHT_500}"/><stop offset="1" stop-color="{LIGHT_700}"/></radialGradient></defs>\n  '
+          '<circle id="ember" cx="128" cy="128" r="127" fill="url(#sphere)"/>\n</svg>\n')
     # Boot splash 1080×1920: знак со свечением на 36% высоты, без текста (надпись рисует экран S01).
     write("splash.svg", svg(1080, 1920, f'<rect id="bg" width="1080" height="1920" fill="{INK_900}"/>\n  ' + hero(540, 1920 * 0.36, 120, face=False), glow_opacity=0.45))
 

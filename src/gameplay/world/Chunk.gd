@@ -36,7 +36,7 @@ const BIOME_PROPS: Dictionary = {
 	&"rusty_port": ["prop_crate", "prop_container"],
 }
 ## Альбедо текстур ~0.45 серого — множитель приближает яркость к палитре главы (окружение ≤ 60% яркости врагов в свете).
-const TEXTURE_TINT_GAIN: float = 1.6
+const TEXTURE_TINT_GAIN: float = 1.15 ## Art Direction: пол — приглушённая насыщенность, свет Огонька главный
 var _tile_variant: PackedByteArray = PackedByteArray()
 var _floor_textures: Array[CanvasTexture] = []
 var _prop_textures: Array[CanvasTexture] = []

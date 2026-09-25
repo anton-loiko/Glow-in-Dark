@@ -4,6 +4,7 @@ extends PanelContainer
 ## бейдж-таймер FOMO (24 ч от первого показа). Первый показ запускает таймер; по истечении карточка скрывается.
 
 var _timer_label: Label
+var _badge: PanelContainer
 var _buy: GlowButton
 var _tick_s: float = 0.0
 
@@ -22,7 +23,7 @@ func _ready() -> void:
 	hero.color = moon.light_color if moon != null else UITokens.CRYSTAL_300
 	hero.diameter = 44.0
 	hero.glow = UITokens.G2
-	hero.custom_minimum_size = Vector2(84, 96)
+	hero.custom_minimum_size = Vector2(72, 96)
 	row.add_child(hero)
 	var box: VBoxContainer = UIKit.vbox(UITokens.S1)
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -32,9 +33,23 @@ func _ready() -> void:
 	var once: Label = UIKit.mono(tr("Только один раз"), UITokens.GOLD_300)
 	once.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(once)
-	_timer_label = UIKit.mono("", UITokens.THREAT)
-	head.add_child(_timer_label)
-	box.add_child(UIKit.label(tr("Набор Первого Света"), &"h2"))
+	# Таймер оффера — красный бейдж r8 (DS §02 BADGES: таймер только у офферов).
+	var badge: PanelContainer = PanelContainer.new()
+	var badge_box: StyleBoxFlat = StyleBoxFlat.new()
+	badge_box.bg_color = UITokens.THREAT
+	badge_box.set_corner_radius_all(UITokens.R8)
+	badge_box.content_margin_left = 6
+	badge_box.content_margin_right = 6
+	badge_box.content_margin_top = 1
+	badge_box.content_margin_bottom = 1
+	badge.add_theme_stylebox_override(&"panel", badge_box)
+	_timer_label = UIKit.mono("", Color.WHITE)
+	badge.add_child(_timer_label)
+	head.add_child(badge)
+	_badge = badge
+	var title: Label = UIKit.label(tr("Набор Первого Света"), &"h2")
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(title)
 	var desc: Label = UIKit.label(tr("Лунный Огонёк · класс «Ритм» + 500 ◆"), &"body_s", UITokens.TEXT_SECONDARY)
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(desc)
@@ -58,6 +73,7 @@ func refresh() -> void:
 		return
 	var left: int = StoreManager.starter_pack_seconds_left()
 	_timer_label.text = "%02d:%02d:%02d" % [floori(left / 3600.0), floori((left % 3600) / 60.0), left % 60] if left > 0 else ""
+	_badge.visible = left > 0
 	var price: String = StoreManager.price_label(&"starter_pack")
 	_buy.set_label(price if not price.is_empty() else "…")
 	_buy.set_blocked(price.is_empty(), tr("Магазин недоступен"))

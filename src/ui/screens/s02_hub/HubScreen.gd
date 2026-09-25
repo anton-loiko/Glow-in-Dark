@@ -2,6 +2,8 @@ extends Control
 ## S02 · Хаб (DS S02, Meta DS §02): сверху вниз — статус · валюта · глава · Маяк · прогресс · CTA · навигация.
 ## Очередь после входа: кат-сцена тира/вехи (если не показана) → S14 новых Огоньков → сундуки из pending_rewards.
 
+const DAILY_CHEST: Texture2D = preload("res://src/assets/chests/chest_basic_closed.png")
+
 var _chapter_id: int = 1
 var _stage: BeaconStage
 var _cta: BeaconCTA
@@ -10,8 +12,9 @@ var _progress_title: Label
 var _progress_pct: Label
 var _tier_bar: Control
 var _total_bar: Control
-var _next_label: Label
-var _daily_button: GlowButton
+var _next_label: RichTextLabel
+var _daily: Button
+var _daily_dot: Control
 var _tab_bar: GlowTabBar
 var _cutscene: BeaconCutscene
 var _sparks_pill: CurrencyPill
@@ -30,27 +33,30 @@ func _ready() -> void:
 	top.add_child(_sparks_pill)
 	top.add_child(_pill(GameManager.CRYSTALS))
 
-	var chapter_row: HBoxContainer = UIKit.hbox(UITokens.S2, BoxContainer.ALIGNMENT_CENTER)
-	column.add_child(chapter_row)
-	chapter_row.add_child(UIKit.button("‹", GlowButton.Variant.QUIET, SceneRouter.go.bind(&"S04")))
+	# Глава: янтарная mono-метка + «Маяк» display (Meta DS §02 S02 v2); тап → S04.
 	var chapter: ChapterDef = ConfigDB.get_chapter(_chapter_id)
 	var chapter_title: Button = Button.new()
 	chapter_title.theme_type_variation = &"ButtonQuiet"
 	chapter_title.text = (tr("Глава %d · %s") % [chapter.id, tr(chapter.name_key)]).to_upper()
-	UIFonts.apply(chapter_title, &"label", UITokens.TEXT_MUTED)
+	chapter_title.custom_minimum_size.y = UITokens.TOUCH_MIN
+	UIFonts.apply(chapter_title, &"label", UITokens.LIGHT_500)
 	chapter_title.pressed.connect(SceneRouter.go.bind(&"S04"))
-	chapter_row.add_child(chapter_title)
-	chapter_row.add_child(UIKit.button("›", GlowButton.Variant.QUIET, SceneRouter.go.bind(&"S04")))
+	column.add_child(chapter_title)
+	var beacon_title: Label = UIKit.label(tr("Маяк"), &"display", UITokens.TEXT_PRIMARY, HORIZONTAL_ALIGNMENT_CENTER)
+	beacon_title.mouse_filter = Control.MOUSE_FILTER_STOP
+	beacon_title.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and (e as InputEventMouseButton).pressed:
+			SceneRouter.go(&"S04"))
+	column.add_child(beacon_title)
 
 	_stage = BeaconStage.new()
 	_stage.chapter_id = _chapter_id
 	_stage.custom_minimum_size = Vector2(0, 280)
 	_stage.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(_stage)
-	_daily_button = UIKit.button(tr("Дар дня"), GlowButton.Variant.QUIET, SceneRouter.open_modal.bind(&"S03"))
-	_daily_button.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_daily_button.position = Vector2(0, -56)
-	_stage.add_child(_daily_button)
+	# «Дар дня» — объект диорамы: сундук с красной точкой и подписью (Meta DS: диорама по бокам — S03).
+	_daily = _daily_prop()
+	_stage.add_child(_daily)
 	_stage.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	column.add_child(_build_progress())
@@ -174,8 +180,7 @@ func _refresh() -> void:
 	# Бюджет glow: CTA активна → Ember без свечения; Искр не хватает → Ember «дышит».
 	_tab_bar.ember.glow_enabled = _cta.state in [BeaconCTA.State.DISABLED, BeaconCTA.State.MAXED]
 	_gift.visible = _cta.state == BeaconCTA.State.DISABLED and StoreManager.free_gift_ready()
-	var available: bool = DailyGiftService.is_available(profile)
-	_daily_button.set_label(("● " if available else "") + tr("Дар дня"))
+	_daily_dot.visible = DailyGiftService.is_available(profile)
 	var level: int = BeaconService.level(profile, _chapter_id)
 	var per_tier: int = BeaconService.levels_per_tier()
 	_progress_pct.text = "%d%%" % level
@@ -186,16 +191,62 @@ func _refresh() -> void:
 		var next_tier: int = floori(float(level) / per_tier) + 1
 		var left: int = next_tier * per_tier - level
 		_progress_title.text = tr("До тира %d · ещё %d ур.") % [next_tier, left]
-		var parts: Array[String] = []
-		var buff_text: String = BeaconBuffText.buff(BeaconService.buff_for(next_tier))
-		if not buff_text.is_empty():
-			parts.append(buff_text)
-		var reward_text: String = BeaconBuffText.reward(BeaconService.reward_for(_chapter_id, next_tier))
-		if not reward_text.is_empty():
-			parts.append(reward_text)
-		_next_label.text = tr("Дальше: %s") % " · ".join(parts)
+		_next_label.text = _next_bbcode(next_tier * per_tier, BeaconService.buff_for(next_tier), BeaconService.reward_for(_chapter_id, next_tier))
 	_tier_bar.queue_redraw()
 	_total_bar.queue_redraw()
+
+
+## «На 60%: +10% дохода Искр · Розовое Пламя» — иконка и имя скина в его цвете (Meta DS §02 Прогресс).
+func _next_bbcode(pct: int, buff: Dictionary, reward: Dictionary) -> String:
+	var parts: Array[String] = []
+	var buff_text: String = BeaconBuffText.buff(buff)
+	if not buff_text.is_empty():
+		parts.append("[color=#%s]%s[/color]" % [UITokens.TEXT_PRIMARY.to_html(false), buff_text])
+	var icon: String = ""
+	var rest: Dictionary = reward.duplicate()
+	if rest.has("skin"):
+		var skin: SkinDef = ConfigDB.get_skin(StringName(str(rest["skin"])))
+		rest.erase("skin")
+		if skin != null:
+			var hex: String = skin.light_color.to_html(false)
+			icon = "[img=14x14 color=#%s]res://src/assets/brand/hero_ui_body.png[/img] " % hex
+			parts.append("[color=#%s]%s[/color]" % [hex, tr(SkinService.display_name(skin.id))])
+	var reward_text: String = BeaconBuffText.reward(rest)
+	if not reward_text.is_empty():
+		parts.append(reward_text)
+	return icon + (tr("На %d%%:") % pct) + " " + " · ".join(parts)
+
+
+func _daily_prop() -> Button:
+	var prop: Button = Button.new()
+	prop.flat = true
+	prop.focus_mode = Control.FOCUS_NONE
+	prop.custom_minimum_size = Vector2(88, 84)
+	prop.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	prop.position = Vector2(4, -92)
+	prop.pressed.connect(SceneRouter.open_modal.bind(&"S03"))
+	var box: VBoxContainer = UIKit.vbox(2, BoxContainer.ALIGNMENT_CENTER)
+	box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	prop.add_child(box)
+	var chest: TextureRect = TextureRect.new()
+	chest.texture = DAILY_CHEST
+	chest.custom_minimum_size = Vector2(56, 52)
+	chest.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	chest.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	chest.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	chest.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(chest)
+	box.add_child(UIKit.label(tr("Дар дня"), &"body_s", UITokens.TEXT_SECONDARY, HORIZONTAL_ALIGNMENT_CENTER))
+	# Красная точка — «есть что забрать», без цифры (DS §02 BADGES).
+	_daily_dot = Control.new()
+	_daily_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_daily_dot.position = Vector2(66, 8)
+	_daily_dot.draw.connect(func() -> void:
+		_daily_dot.draw_circle(Vector2.ZERO, 6.0, UITokens.INK_900)
+		_daily_dot.draw_circle(Vector2.ZERO, 4.5, UITokens.THREAT))
+	prop.add_child(_daily_dot)
+	return prop
 
 
 func _build_progress() -> Control:
@@ -205,7 +256,7 @@ func _build_progress() -> Control:
 	_progress_title = UIKit.label("", &"body_s", UITokens.TEXT_SECONDARY)
 	_progress_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(_progress_title)
-	_progress_pct = UIKit.label("", &"number", UITokens.LIGHT_500)
+	_progress_pct = UIKit.label("", &"h2", UITokens.LIGHT_500) # Unbounded 18
 	head.add_child(_progress_pct)
 	_tier_bar = Control.new()
 	_tier_bar.custom_minimum_size = Vector2(0, 10)
@@ -215,8 +266,15 @@ func _build_progress() -> Control:
 	_total_bar.custom_minimum_size = Vector2(0, 8)
 	_total_bar.draw.connect(_draw_total_bar)
 	box.add_child(_total_bar)
-	_next_label = UIKit.label("", &"body_s", UITokens.TEXT_MUTED)
+	_next_label = RichTextLabel.new()
+	_next_label.bbcode_enabled = true
+	_next_label.fit_content = true
+	_next_label.scroll_active = false
 	_next_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_next_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_next_label.add_theme_font_override(&"normal_font", UIFonts.font(&"body_s"))
+	_next_label.add_theme_font_size_override(&"normal_font_size", 13)
+	_next_label.add_theme_color_override(&"default_color", UITokens.TEXT_MUTED)
 	box.add_child(_next_label)
 	return box
 

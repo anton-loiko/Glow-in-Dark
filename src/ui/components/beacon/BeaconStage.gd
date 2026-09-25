@@ -84,9 +84,8 @@ func _draw() -> void:
 		_diorama.anchor_point = base + Vector2(0, -10)
 		_diorama.set_light(maxf(40.0, light_r), 1.0 if tier() >= 10 else 0.0, breath, hub_color)
 	# Свет Хаба: радиус = прогресс.
-	for i: int in 8:
-		var k: float = 1.0 - i / 8.0
-		draw_circle(base + Vector2(0, -60), maxf(24.0, light_r) * k, Color(hub_color, 0.025 + 0.01 * breath))
+	var glow_r: float = maxf(24.0, light_r)
+	draw_texture_rect(HeroGlyph.halo_texture(), Rect2(base + Vector2(0, -60) - Vector2.ONE * glow_r, Vector2.ONE * glow_r * 2.0), false, Color(hub_color, 0.3 + 0.1 * breath))
 	if tier() == 0:
 		for i: int in 4:
 			var eye: Vector2 = base + Vector2.from_angle(PI + i * PI / 3.5 + 0.2) * Vector2(150, 90)

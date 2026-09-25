@@ -12,6 +12,8 @@ var _items: Array[PlayerProfile.GearItem] = []
 var _chest: StringName = &"basic"
 var _stage: Control
 var _chest_box: Control
+var _chest_sprite: TextureRect
+var _seam: Control
 var _cards_root: Control
 var _cards: Array[Control] = []
 var _buttons: VBoxContainer
@@ -84,6 +86,18 @@ func _build() -> void:
 	_chest_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_chest_box.draw.connect(_draw_chest)
 	_stage.add_child(_chest_box)
+	# Спрайт — дочерний TextureRect: текстура из draw-сигнала чужого узла теряла альфу (серый квадрат).
+	_chest_sprite = TextureRect.new()
+	_chest_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_chest_sprite.stretch_mode = TextureRect.STRETCH_SCALE
+	_chest_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chest_sprite.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_chest_box.add_child(_chest_sprite)
+	_seam = Control.new()
+	_seam.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_seam.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_seam.draw.connect(_draw_seam)
+	_chest_box.add_child(_seam)
 	_cards_root = Control.new()
 	_cards_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cards_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -152,15 +166,12 @@ func _draw_chest() -> void:
 	var s: Vector2 = _chest_box.size
 	var o: Vector2 = Vector2(_shake_x, 0)
 	var tex: Texture2D = chest_texture(_chest, _lid_open)
+	_chest_sprite.texture = tex
+	_chest_sprite.position = o
+	_seam.queue_redraw()
 	if tex != null:
 		if _lid_open:
-			_chest_box.draw_circle(o + Vector2(s.x * 0.5, s.y * 0.42), s.x * 0.34, Color(_seam_color, 0.28))
-		_chest_box.draw_texture_rect(tex, Rect2(o, s), false)
-		if not _lid_open:
-			# Шов светится цветом лучшей редкости внутри (C2).
-			var lid_y: float = s.y * 0.467
-			_chest_box.draw_line(o + Vector2(s.x * 0.14, lid_y), o + Vector2(s.x * 0.86, lid_y), Color(_seam_color, 0.9), 3.0)
-			_chest_box.draw_line(o + Vector2(s.x * 0.14, lid_y), o + Vector2(s.x * 0.86, lid_y), Color(_seam_color, 0.3), 9.0)
+			_chest_box.draw_texture_rect(HeroGlyph.halo_texture(), Rect2(o + Vector2(s.x * 0.5, s.y * 0.42) - Vector2.ONE * s.x * 0.5, Vector2.ONE * s.x), false, Color(_seam_color, 0.6))
 		return
 	var body: Rect2 = Rect2(o + Vector2(0, s.y * 0.4), Vector2(s.x, s.y * 0.6))
 	var color: Color = UITokens.CRYSTAL_700 if _chest == &"premium" else (UITokens.EPIC if _chest == &"epic" else UITokens.GOLD_700)
@@ -174,6 +185,17 @@ func _draw_chest() -> void:
 		_chest_box.draw_rect(Rect2(o + Vector2(0, 0), Vector2(s.x, seam_y)), color.darkened(0.3))
 		_chest_box.draw_line(o + Vector2(0, seam_y), o + Vector2(s.x, seam_y), _seam_color, 3.0)
 	_chest_box.draw_rect(Rect2(o + Vector2(s.x * 0.5 - 10, seam_y - 8), Vector2(20, 22)), UITokens.GOLD_300)
+
+
+## Шов светится цветом лучшей редкости внутри (C2) — поверх спрайта.
+func _draw_seam() -> void:
+	if _lid_open or _chest_sprite.texture == null:
+		return
+	var s: Vector2 = _chest_box.size
+	var o: Vector2 = Vector2(_shake_x, 0)
+	var lid_y: float = s.y * 0.467
+	_seam.draw_line(o + Vector2(s.x * 0.14, lid_y), o + Vector2(s.x * 0.86, lid_y), Color(_seam_color, 0.3), 9.0)
+	_seam.draw_line(o + Vector2(s.x * 0.14, lid_y), o + Vector2(s.x * 0.86, lid_y), Color(_seam_color, 0.9), 3.0)
 
 
 # --- C4–C6 ---

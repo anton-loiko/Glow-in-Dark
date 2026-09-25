@@ -107,10 +107,11 @@ func _draw_tab(tab: Button, id: StringName) -> void:
 		tab.draw_style_box(box, Rect2(center - Vector2(24, 18), Vector2(48, 36)))
 	var color: Color = UITokens.LIGHT_500 if is_active else UITokens.TEXT_MUTED
 	_draw_icon(tab, id, center, color)
-	var font: Font = UIFonts.font(&"label")
+	# Подпись — Manrope 12 (DS §02 TAB BAR), влезает в зону 64pt даже для «Экипировка».
+	var font: Font = UIFonts.font(&"body_s")
 	var text: String = tr(LABELS[id])
-	var w: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, 10).x
-	tab.draw_string(font, Vector2(center.x - w * 0.5, 52), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, color)
+	var w: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_CENTER, -1, 12).x
+	tab.draw_string(font, Vector2(center.x - w * 0.5, 54), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, color)
 	if bool(_dots.get(id, false)):
 		tab.draw_circle(center + Vector2(14, -12), 4.0, UITokens.THREAT)
 

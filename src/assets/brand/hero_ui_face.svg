@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="root" width="256" height="256" viewBox="0 0 256 256">
+  <defs id="defs">
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFB547" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#E08A1E" stop-opacity="0.193"/>
+      <stop offset="1" stop-color="#E08A1E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="body" cx="0.42" cy="0.62" r="0.7">
+      <stop offset="0" stop-color="#FFD08A"/>
+      <stop offset="0.55" stop-color="#FFB547"/>
+      <stop offset="1" stop-color="#E08A1E"/>
+    </radialGradient>
+    <radialGradient id="core" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFDF5"/>
+      <stop offset="0.7" stop-color="#FFFDF5" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FFD08A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse id="hero-core" cx="128" cy="162.8" rx="35.2" ry="33.3" fill="url(#core)"/>
+  <ellipse id="hero-eye-l" cx="108.8" cy="157.7" rx="10.2" ry="12.8" fill="#07090F"/>
+  <circle id="hero-eye-l-shine" cx="112.4" cy="153.1" r="3.9" fill="#FFFDF5"/>
+  <ellipse id="hero-eye-r" cx="147.2" cy="157.7" rx="10.2" ry="12.8" fill="#07090F"/>
+  <circle id="hero-eye-r-shine" cx="150.8" cy="153.1" r="3.9" fill="#FFFDF5"/>
+</svg>

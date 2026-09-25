@@ -38,10 +38,10 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_tokens = UITokens.CATEGORY.get(_category(), UITokens.CATEGORY[&"utility"])
-	_meta = _add_label(Vector2(104, 12), 10, _tokens["300"])
-	_title = _add_label(Vector2(104, 28), 16, UITokens.TEXT_PRIMARY)
-	_effect = _add_label(Vector2(104, 78), 13, UITokens.TEXT_SECONDARY)
-	_details = _add_label(Vector2(12, SIZE.y + 4), 12, UITokens.TEXT_SECONDARY)
+	_meta = _add_label(Vector2(104, 12), 10, _tokens["300"], &"label")
+	_title = _add_label(Vector2(104, 26), 17, UITokens.TEXT_PRIMARY, &"h2")
+	_effect = _add_label(Vector2(104, 78), 13, UITokens.TEXT_SECONDARY, &"body_s")
+	_details = _add_label(Vector2(12, SIZE.y + 4), 12, UITokens.TEXT_SECONDARY, &"body_s")
 	_details.visible = false
 	_fill_texts()
 
@@ -135,11 +135,10 @@ func _fallback_entry() -> Dictionary:
 	return {}
 
 
-func _add_label(pos: Vector2, font_size: int, color: Color) -> Label:
+func _add_label(pos: Vector2, font_size: int, color: Color, style: StringName) -> Label:
 	var label: Label = Label.new()
 	label.position = pos
-	label.add_theme_font_size_override(&"font_size", font_size)
-	label.add_theme_color_override(&"font_color", color)
+	UIFonts.apply(label, style, color, font_size)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(label)
 	return label

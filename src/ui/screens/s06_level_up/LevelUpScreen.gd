@@ -12,8 +12,10 @@ var run: RunContext
 var _cards: Array[SkillCard] = []
 var _cards_box: VBoxContainer
 var _slots_label: Label
-var _reroll_button: Button
-var _take_all_button: Button
+var _reroll_button: GlowButton
+var _take_all_button: GlowButton
+var _actions: HBoxContainer
+var _slots: Control
 var _title: Label
 var _shown_at_ms: int = 0
 var _busy: bool = false
@@ -33,7 +35,7 @@ func on_screen_enter(_params: Dictionary) -> void:
 		SceneRouter.close_top()
 		return
 	FeedbackManager.cue(&"level_up")
-	_title.text = "УРОВЕНЬ %d" % run.player_level
+	_title.text = (tr("Уровень %d") % run.player_level).to_upper()
 	_show_offer(SkillsManager.draw_offer(run))
 
 
@@ -47,23 +49,24 @@ func _build() -> void:
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.add_theme_constant_override(&"separation", UITokens.S4)
 	add_child(column)
-	_title = _label("", 11, UITokens.SPARK)
+	_title = UIKit.mono("", UITokens.SPARK, HORIZONTAL_ALIGNMENT_CENTER)
 	column.add_child(_title)
-	column.add_child(_label("Выбери усиление", 24, UITokens.TEXT_PRIMARY))
+	column.add_child(UIKit.label(tr("Выбери усиление"), &"h1", UITokens.TEXT_PRIMARY, HORIZONTAL_ALIGNMENT_CENTER))
 	_cards_box = VBoxContainer.new()
 	_cards_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	_cards_box.add_theme_constant_override(&"separation", 12)
 	_cards_box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	column.add_child(_cards_box)
-	_slots_label = _label("", 11, UITokens.TEXT_MUTED)
-	column.add_child(_slots_label)
+	column.add_child(_collected_row())
 	var actions: HBoxContainer = HBoxContainer.new()
 	actions.alignment = BoxContainer.ALIGNMENT_CENTER
 	actions.add_theme_constant_override(&"separation", 12)
 	column.add_child(actions)
-	_reroll_button = _button(actions, _on_reroll_pressed)
-	_take_all_button = _button(actions, _on_take_all_pressed)
-	_take_all_button.text = "▶ Взять все три"
+	_actions = actions
+	_reroll_button = _button(actions, _on_reroll_pressed, GlowButton.Variant.SECONDARY)
+	_take_all_button = _button(actions, _on_take_all_pressed, GlowButton.Variant.SECONDARY)
+	_take_all_button.ad = true
+	_take_all_button.set_label(tr("Взять все три"))
 
 
 func _show_offer(offer: Array[SkillOffer]) -> void:
@@ -95,24 +98,81 @@ func _unlock_cards() -> void:
 func _refresh_controls() -> void:
 	var max_slots: int = int(SkillsManager.get_tuning().get("max_slots", 6))
 	var used: int = run.slots_used()
-	_slots_label.text = "ПОЛНЫЙ БИЛД" if used >= max_slots else "СОБРАНО %d/%d" % [used, max_slots]
+	_slots_label.text = tr("Полный билд") if used >= max_slots else tr("Собрано")
+	_slots.queue_redraw()
 	_take_all_button.visible = not run.take_all_used
 	if _take_all_button.visible:
-		_take_all_button.disabled = not AdManager.is_rewarded_ready(&"skill_take_all")
+		_take_all_button.set_blocked(not AdManager.is_rewarded_ready(&"skill_take_all"), tr("Реклама недоступна"))
 		AdManager.note_opportunity(&"skill_take_all")
+	# DS S06: 50 Искр → ▶ → 10 ◆ (кнопка становится Crystal).
 	match _reroll_cost_type():
 		&"sparks":
 			var cost: int = _reroll_cfg("sparks", 50)
-			_reroll_button.text = "Обновить · %d ●" % cost
-			_reroll_button.disabled = run.run_sparks < cost
+			_set_reroll(GlowButton.Variant.SECONDARY, false, tr("Обновить · %d ✦") % cost)
+			_reroll_button.set_blocked(run.run_sparks < cost, tr("Нужно %d ✦") % cost)
 		&"ad":
-			_reroll_button.text = "▶ Обновить"
-			_reroll_button.disabled = not AdManager.is_rewarded_ready(&"skill_reroll")
+			_set_reroll(GlowButton.Variant.SECONDARY, true, tr("Обновить"))
+			_reroll_button.set_blocked(not AdManager.is_rewarded_ready(&"skill_reroll"), tr("Реклама недоступна"))
 			AdManager.note_opportunity(&"skill_reroll")
 		_:
 			var crystals: int = _reroll_cfg("crystals", 10)
-			_reroll_button.text = "Обновить · %d ◆" % crystals
-			_reroll_button.disabled = not GameManager.can_afford(GameManager.CRYSTALS, crystals)
+			_set_reroll(GlowButton.Variant.CRYSTAL, false, tr("Обновить · %d ◆") % crystals)
+			_reroll_button.set_blocked(not GameManager.can_afford(GameManager.CRYSTALS, crystals), tr("Нужно %d ◆") % crystals)
+
+
+## Меняет вес кнопки «Обновить» пересозданием (вес задаётся при входе в дерево).
+func _set_reroll(variant: GlowButton.Variant, ad: bool, text: String) -> void:
+	if _reroll_button.variant != variant or _reroll_button.ad != ad:
+		var index: int = _reroll_button.get_index()
+		_reroll_button.queue_free()
+		_reroll_button = _button(_actions, _on_reroll_pressed, variant)
+		_reroll_button.ad = ad
+		_actions.move_child(_reroll_button, index)
+	_reroll_button.set_label(text)
+
+
+## «Собрано»: пилюля с 6 слотами — занятые обведены цветом категории навыка, свободные — пунктир (DS S06).
+func _collected_row() -> Control:
+	var pill: PanelContainer = PanelContainer.new()
+	var st: StyleBoxFlat = StyleBoxFlat.new()
+	st.bg_color = UITokens.INK_700
+	st.set_corner_radius_all(UITokens.R14)
+	st.content_margin_left = UITokens.S3
+	st.content_margin_right = UITokens.S3
+	st.content_margin_top = UITokens.S2
+	st.content_margin_bottom = UITokens.S2
+	pill.add_theme_stylebox_override(&"panel", st)
+	pill.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var row: HBoxContainer = UIKit.hbox(UITokens.S3)
+	pill.add_child(row)
+	_slots_label = UIKit.mono("", UITokens.TEXT_MUTED)
+	_slots_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(_slots_label)
+	_slots = Control.new()
+	_slots.custom_minimum_size = Vector2(6 * 26 - 4, 22)
+	_slots.draw.connect(_draw_slots)
+	row.add_child(_slots)
+	return pill
+
+
+func _draw_slots() -> void:
+	var ids: Array = run.skills.keys()
+	for i: int in 6:
+		var rect: Rect2 = Rect2(Vector2(i * 26, 0), Vector2(22, 22))
+		if i < ids.size():
+			var def: SkillDef = SkillsManager.get_def(StringName(str(ids[i])))
+			var cat: Dictionary = UITokens.CATEGORY.get(def.category if def != null else &"utility", UITokens.CATEGORY[&"utility"])
+			var box: StyleBoxFlat = StyleBoxFlat.new()
+			box.bg_color = cat["bg"]
+			box.border_color = cat["500"]
+			box.set_border_width_all(1)
+			box.set_corner_radius_all(6)
+			_slots.draw_style_box(box, rect)
+		else:
+			var pts: PackedVector2Array = ButtonFace.rounded_rect(rect, 6)
+			pts.append(pts[0])
+			for k: int in pts.size() - 1:
+				_slots.draw_dashed_line(pts[k], pts[k + 1], UITokens.LINE_STRONG, 1.0, 3.0)
 
 
 func _reroll_cost_type() -> StringName:
@@ -192,18 +252,8 @@ func _finish() -> void:
 	SceneRouter.close_top()
 
 
-func _label(text: String, font_size: int, color: Color) -> Label:
-	var label: Label = Label.new()
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override(&"font_size", font_size)
-	label.add_theme_color_override(&"font_color", color)
-	return label
-
-
-func _button(parent: Control, action: Callable) -> Button:
-	var button: Button = Button.new()
-	button.custom_minimum_size = Vector2(170, 48)
-	button.pressed.connect(action)
+func _button(parent: Control, action: Callable, variant: GlowButton.Variant) -> GlowButton:
+	var button: GlowButton = UIKit.button("", variant, action)
+	button.custom_minimum_size = Vector2(170, UITokens.BUTTON_H)
 	parent.add_child(button)
 	return button

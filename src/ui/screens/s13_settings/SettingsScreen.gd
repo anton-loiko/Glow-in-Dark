@@ -31,16 +31,9 @@ func _ready() -> void:
 	numbers.custom_minimum_size.y = 52
 	numbers.add_child(UIKit.label(tr("Цифры урона"), &"body"))
 	numbers.add_child(UIKit.spacer(false))
-	var group: ButtonGroup = ButtonGroup.new()
-	for i: int in 3:
-		var option: Button = Button.new()
-		option.theme_type_variation = &"ButtonSecondary"
-		option.toggle_mode = true
-		option.button_group = group
-		option.text = [tr("Выкл"), tr("Обычные"), tr("Крупные")][i]
-		option.button_pressed = settings.damage_numbers == i
-		option.pressed.connect(GameManager.set_setting.bind(&"damage_numbers", i))
-		numbers.add_child(option)
+	var segmented: Segmented = Segmented.new(PackedStringArray([tr("Выкл"), tr("Обычные"), tr("Крупные")]), settings.damage_numbers)
+	segmented.selected.connect(func(i: int) -> void: GameManager.set_setting(&"damage_numbers", i))
+	numbers.add_child(segmented)
 	column.add_child(numbers)
 
 	column.add_child(UIKit.mono(tr("Аккаунт")))
@@ -76,7 +69,7 @@ func _platform_name() -> String:
 			return "Game Center"
 		"play_games":
 			return "Play Games"
-	return "Game Center" if OS.get_name() == "iOS" else "Play Games"
+	return "Play Games" if OS.get_name() == "Android" else "Game Center" # V1 — iOS (D19)
 
 
 func _on_sync_state(_state: StringName) -> void:

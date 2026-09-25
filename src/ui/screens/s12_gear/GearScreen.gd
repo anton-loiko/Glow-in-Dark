@@ -16,7 +16,7 @@ var _doll: Control
 var _hero: HeroGlyph
 var _skins_row: HBoxContainer
 var _stats_row: HBoxContainer
-var _filter_row: HBoxContainer
+var _filter_row: Segmented
 var _merge_button: GlowButton
 var _inventory_title: Label
 var _grid: GridContainer
@@ -84,19 +84,13 @@ func _ready() -> void:
 	_merge_button.custom_minimum_size = Vector2(0, UITokens.TOUCH_MIN)
 	_merge_button.draw.connect(_draw_merge_badge)
 	inv_head.add_child(_merge_button)
-	_filter_row = UIKit.hbox(UITokens.S1)
-	body.add_child(_filter_row)
+	# Фильтр инвентаря — Segmented DS (подложка ink.600, активный сегмент line.strong).
+	var names: PackedStringArray = PackedStringArray()
 	for f: StringName in FILTERS:
-		var b: Button = Button.new()
-		b.theme_type_variation = &"ButtonQuiet"
-		b.toggle_mode = true
-		b.focus_mode = Control.FOCUS_NONE
-		b.text = tr("Все") if f == &"" else GearText.slot_name(f)
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.custom_minimum_size = Vector2(0, 36)
-		UIFonts.apply(b, &"label", UITokens.TEXT_MUTED)
-		b.pressed.connect(_set_filter.bind(f))
-		_filter_row.add_child(b)
+		names.append(tr("Все") if f == &"" else GearText.slot_name(f))
+	_filter_row = Segmented.new(names, 0)
+	_filter_row.selected.connect(func(i: int) -> void: _set_filter(FILTERS[i]))
+	body.add_child(_filter_row)
 	_grid = GridContainer.new()
 	_grid.columns = 5
 	_grid.add_theme_constant_override(&"h_separation", 10)
@@ -199,8 +193,7 @@ func _draw_doll_bg() -> void:
 	var c: Vector2 = _doll.size * 0.5 - Vector2(0, 12)
 	var skin: SkinDef = ConfigDB.get_skin(GameManager.profile.skin_equipped)
 	var color: Color = skin.light_color if skin != null else UITokens.LIGHT_500
-	for i: int in 6:
-		_doll.draw_circle(c, 130.0 * (1.0 - i / 6.0), Color(color, 0.03))
+	_doll.draw_texture_rect(HeroGlyph.halo_texture(), Rect2(c - Vector2.ONE * 150.0, Vector2.ONE * 300.0), false, Color(color, 0.35))
 	# С Легендарным предметом — золотая кайма света.
 	for slot: StringName in SLOT_POS:
 		var it: PlayerProfile.GearItem = GameManager.profile.find_gear(GearService.equipped_uid(GameManager.profile, slot))
@@ -225,39 +218,46 @@ func _skin_tile(id: StringName, skin: SkinDef, profile: PlayerProfile) -> Contro
 	var tile: Button = Button.new()
 	tile.theme_type_variation = &"ButtonQuiet"
 	tile.focus_mode = Control.FOCUS_NONE
-	tile.custom_minimum_size = Vector2(64, 72)
+	tile.custom_minimum_size = Vector2(68, 76)
 	tile.pressed.connect(_on_skin_pressed.bind(id))
 	var glyph: HeroGlyph = HeroGlyph.new()
 	glyph.color = skin.light_color if unlocked else UITokens.TEXT_DISABLED
 	glyph.diameter = 24.0
 	glyph.glow = UITokens.G1 if equipped else 0
 	glyph.breathe = equipped
-	glyph.custom_minimum_size = Vector2(64, 44)
-	glyph.size = Vector2(64, 44)
+	glyph.custom_minimum_size = Vector2(68, 46)
+	glyph.size = Vector2(68, 46)
 	tile.add_child(glyph)
 	var caption: String = tr("Надет") if equipped else (tr(SkinService.display_name(id)) if unlocked else _lock_text(skin))
-	var label: Label = UIKit.mono(caption.to_upper(), UITokens.LIGHT_500 if equipped else UITokens.TEXT_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
-	label.add_theme_font_size_override(&"font_size", 9)
-	label.position = Vector2(0, 50)
-	label.size = Vector2(64, 14)
+	# Подпись Manrope 11 с многоточием — длинные имена не наезжают на соседей.
+	var label: Label = UIKit.label(caption.to_upper() if equipped else caption, &"body_s", skin.light_color if equipped else UITokens.TEXT_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
+	label.add_theme_font_size_override(&"font_size", 11)
+	label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	label.clip_text = true
+	label.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	label.offset_left = 2
+	label.offset_right = -2
+	label.offset_top = 54
+	label.offset_bottom = 70
 	tile.add_child(label)
-	tile.draw.connect(_draw_skin_tile.bind(tile, unlocked, equipped, profile.skins_new_badge.has(id)))
+	tile.draw.connect(_draw_skin_tile.bind(tile, unlocked, equipped, profile.skins_new_badge.has(id), skin.light_color))
 	return tile
 
 
-func _draw_skin_tile(tile: Button, unlocked: bool, equipped: bool, is_new: bool) -> void:
+func _draw_skin_tile(tile: Button, unlocked: bool, equipped: bool, is_new: bool, skin_color: Color) -> void:
 	var rect: Rect2 = Rect2(Vector2.ONE, tile.size - Vector2.ONE * 2.0)
 	if equipped:
+		# Надет — контур цветом скина (DS S12).
 		var box: StyleBoxFlat = StyleBoxFlat.new()
-		box.draw_center = false
-		box.border_color = UITokens.LIGHT_500
+		box.bg_color = Color(skin_color, 0.08)
+		box.border_color = skin_color
 		box.set_border_width_all(1)
 		box.set_corner_radius_all(UITokens.R14)
 		box.draw(tile.get_canvas_item(), rect)
 	elif not unlocked:
-		var pts: PackedVector2Array = [rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y), rect.position]
-		for i: int in 4:
+		var pts: PackedVector2Array = ButtonFace.rounded_rect(rect, UITokens.R14)
+		pts.append(pts[0])
+		for i: int in pts.size() - 1:
 			tile.draw_dashed_line(pts[i], pts[i + 1], UITokens.LINE_STRONG, 1.0, 5.0)
 	if is_new:
 		tile.draw_circle(Vector2(rect.end.x - 6, rect.position.y + 6), 4.0, UITokens.THREAT)
@@ -322,8 +322,7 @@ func _build_inventory() -> void:
 		child.queue_free()
 	var profile: PlayerProfile = GameManager.profile
 	_inventory_title.text = tr("Инвентарь · %d / %d") % [profile.gear_inventory.size(), GearService.inventory_size()]
-	for i: int in _filter_row.get_child_count():
-		(_filter_row.get_child(i) as Button).set_pressed_no_signal(FILTERS[i] == _filter)
+	_filter_row.set_current(FILTERS.find(_filter))
 	var items: Array[PlayerProfile.GearItem] = []
 	for it: PlayerProfile.GearItem in profile.gear_inventory:
 		if _filter == &"" or it.slot == _filter:

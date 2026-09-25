@@ -9,6 +9,10 @@ const TIMEOUT_S: float = 6.0
 var _status: Label
 var _offline: GlowButton
 var _done: bool = false
+var _glow_rect: TextureRect
+var _mark: TextureRect
+
+const MARK: Texture2D = preload("res://src/assets/brand/splash_mark.png")
 
 
 func _ready() -> void:
@@ -17,10 +21,7 @@ func _ready() -> void:
 	bg.color = UITokens.INK_900
 	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
-	var glow: Control = Control.new()
-	glow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	glow.draw.connect(_draw_glow.bind(glow))
-	add_child(glow)
+	add_child(_glow())
 	var group: VBoxContainer = UIKit.vbox(UITokens.S2, BoxContainer.ALIGNMENT_CENTER)
 	group.set_anchors_preset(Control.PRESET_CENTER)
 	group.anchor_top = 0.36
@@ -28,13 +29,20 @@ func _ready() -> void:
 	group.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	group.grow_vertical = Control.GROW_DIRECTION_BOTH
 	add_child(group)
-	var mark: Control = Control.new()
-	mark.custom_minimum_size = Vector2(96, 96)
+	# Знак 200px на 1080 → 72pt (DS §07); Огонёк с лицом из бренд-пака.
+	var mark: TextureRect = TextureRect.new()
+	mark.texture = MARK
+	mark.custom_minimum_size = Vector2(128, 128) # капля ≈ 64pt
+	mark.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	mark.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	mark.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	mark.draw.connect(_draw_mark.bind(mark))
+	mark.pivot_offset = Vector2(64, 76)
 	group.add_child(mark)
-	group.add_child(UIKit.label("Glow\nin the Dark", &"display", UITokens.TEXT_PRIMARY, HORIZONTAL_ALIGNMENT_CENTER))
-	group.add_child(UIKit.mono("С в е т   в о   т ь м е", UITokens.LIGHT_500, HORIZONTAL_ALIGNMENT_CENTER))
+	_mark = mark
+	var title: Label = UIKit.label("Glow\nin the Dark", &"display", UITokens.TEXT_PRIMARY, HORIZONTAL_ALIGNMENT_CENTER)
+	title.add_theme_constant_override(&"line_spacing", -8) # 34/38
+	group.add_child(title)
+	group.add_child(UIKit.mono("С в е т   в о   т ь м е", UITokens.TEXT_MUTED, HORIZONTAL_ALIGNMENT_CENTER))
 	var bottom: VBoxContainer = UIKit.vbox(UITokens.S3, BoxContainer.ALIGNMENT_CENTER)
 	bottom.set_anchors_preset(Control.PRESET_CENTER)
 	bottom.anchor_top = 0.76
@@ -51,7 +59,7 @@ func _ready() -> void:
 	bottom.add_child(_offline)
 	var studio: Label = UIKit.mono("A game by studio", UITokens.TEXT_DISABLED, HORIZONTAL_ALIGNMENT_CENTER)
 	studio.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	studio.position.y -= 60
+	studio.position.y -= 64 # 150px на 1920 → ~64pt от низа
 	studio.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	add_child(studio)
 	_boot()
@@ -63,7 +71,10 @@ func _boot() -> void:
 	GameServices.sign_in_silently()
 	var started: int = Time.get_ticks_msec()
 	CloudManager.sync()
-	await get_tree().create_timer(MIN_SHOW_S, true, false, true).timeout
+	# Реальное время, а не таймер дерева: первые кадры после загрузки приходят с огромной delta
+	# (компиляция шейдеров, ShaderWarmup), и таймер на 1.2 с истекал за ~60 мс — сплэш мелькал.
+	while Time.get_ticks_msec() - started < MIN_SHOW_S * 1000.0:
+		await get_tree().process_frame
 	while CloudManager.state == &"syncing" and Time.get_ticks_msec() - started < TIMEOUT_S * 1000.0:
 		await get_tree().process_frame
 	if CloudManager.state == &"syncing":
@@ -81,18 +92,31 @@ func _go_next() -> void:
 	SceneRouter.go(&"S02", {"open_daily": DailyGiftService.is_available(GameManager.profile)})
 
 
-func _draw_glow(target: Control) -> void:
-	var center: Vector2 = Vector2(target.size.x * 0.5, target.size.y * 0.36 - 60)
-	var radius: float = target.size.x * 0.6
-	for i: int in 12:
-		var t: float = float(i) / 12.0
-		target.draw_circle(center, radius * (1.0 - t), Color(UITokens.LIGHT_500, 0.012 + t * 0.012))
+## Радиальный градиент от знака, R = 60% ширины (DS §07) — текстурой, без ступенек.
+func _glow() -> TextureRect:
+	var gradient: Gradient = Gradient.new()
+	gradient.set_color(0, Color(UITokens.LIGHT_500, 0.28))
+	gradient.set_color(1, Color(UITokens.LIGHT_700, 0.0))
+	gradient.add_point(0.45, Color(UITokens.LIGHT_700, 0.08))
+	var tex: GradientTexture2D = GradientTexture2D.new()
+	tex.gradient = gradient
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 256
+	tex.height = 256
+	var rect: TextureRect = TextureRect.new()
+	rect.texture = tex
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_glow_rect = rect
+	return rect
 
 
-func _draw_mark(mark: Control) -> void:
-	var c: Vector2 = mark.size * 0.5 + Vector2(0, 4)
-	var breath: float = 1.0 + 0.04 * TimeService.breath_phase()
-	mark.draw_circle(c + Vector2(0, 6), 26.0 * breath, UITokens.LIGHT_500)
-	mark.draw_colored_polygon(PackedVector2Array([c + Vector2(-19, -6), c + Vector2(0, -36) * breath, c + Vector2(19, -6)]), UITokens.LIGHT_500)
-	mark.draw_circle(c + Vector2(0, 12), 11.0, UITokens.HERO_CORE)
-	mark.queue_redraw()
+func _process(_delta: float) -> void:
+	var view: Vector2 = size
+	var r: float = view.x * 0.6
+	_glow_rect.position = Vector2(view.x * 0.5 - r, view.y * 0.36 - 70 - r)
+	_glow_rect.size = Vector2(r, r) * 2.0
+	_mark.scale = Vector2.ONE * (1.0 + 0.04 * TimeService.breath_phase())

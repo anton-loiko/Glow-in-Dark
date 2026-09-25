@@ -1,7 +1,7 @@
 class_name RunHUD
 extends Control
 ## HUD забега S05 (DS правило 8): только полоса XP с уровнем, Искры забега, таймер и пауза.
-## HP — радиусом света и виньеткой, без полосок. Временная вёрстка до task_5 (компоненты DS).
+## HP — радиусом света и виньеткой, без полосок.
 ## Слушает только EventBus, в узлы геймплея не лезет.
 
 const DANGER_RATIO: float = 0.25
@@ -63,11 +63,22 @@ func _build() -> void:
 	var column: VBoxContainer = UIKit.vbox(UITokens.S2)
 	safe.add_child(column)
 
-	# XP-полоса 8pt spark с номером уровня.
+	# XP-полоса 8pt spark с номером уровня в кольце (DS S05).
 	var xp_row: HBoxContainer = UIKit.hbox(UITokens.S2)
 	column.add_child(xp_row)
-	_level_label = UIKit.label("1", &"number", UITokens.SPARK)
-	xp_row.add_child(_level_label)
+	var badge: Control = Control.new()
+	badge.custom_minimum_size = Vector2(28, 28)
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	badge.draw.connect(func() -> void:
+		var c: Vector2 = badge.size * 0.5
+		badge.draw_circle(c, 13.0, UITokens.INK_700, true, -1.0, true)
+		badge.draw_arc(c, 13.0, 0.0, TAU, 32, UITokens.SPARK, 2.0, true))
+	xp_row.add_child(badge)
+	_level_label = UIKit.label("1", &"number", UITokens.TEXT_PRIMARY, HORIZONTAL_ALIGNMENT_CENTER)
+	_level_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_level_label.add_theme_font_size_override(&"font_size", 13)
+	_level_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	badge.add_child(_level_label)
 	_xp_bar = ProgressBar.new()
 	_xp_bar.show_percentage = false
 	_xp_bar.custom_minimum_size = Vector2(0, 8)
@@ -76,20 +87,46 @@ func _build() -> void:
 	_xp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	xp_row.add_child(_xp_bar)
 
-	# Искры забега · таймер · пауза 44pt.
+	# Искры забега слева · таймер строго по центру · пауза 44pt справа.
+	var info: Control = Control.new()
+	info.custom_minimum_size = Vector2(0, UITokens.TOUCH_MIN)
+	info.mouse_filter = Control.MOUSE_FILTER_PASS
+	column.add_child(info)
 	var info_row: HBoxContainer = UIKit.hbox(UITokens.S2)
+	info_row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	info_row.mouse_filter = Control.MOUSE_FILTER_PASS
-	column.add_child(info_row)
+	info.add_child(info_row)
 	var pill: PanelContainer = UIKit.panel(&"PanelPill")
 	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pill.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	info_row.add_child(pill)
-	_sparks_label = UIKit.label("● 0", &"number", UITokens.SPARK)
-	pill.add_child(_sparks_label)
+	var pill_row: HBoxContainer = UIKit.hbox(UITokens.S1)
+	pill.add_child(pill_row)
+	var spark_icon: TextureRect = TextureRect.new()
+	spark_icon.texture = preload("res://src/assets/ui/icons/cur_spark.png")
+	spark_icon.custom_minimum_size = Vector2(18, 18)
+	spark_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	spark_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	spark_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	spark_icon.modulate = UITokens.SPARK
+	pill_row.add_child(spark_icon)
+	_sparks_label = UIKit.label("0", &"number", UITokens.TEXT_PRIMARY)
+	pill_row.add_child(_sparks_label)
 	info_row.add_child(UIKit.spacer(false))
-	_timer_label = UIKit.label("00:00", &"number", UITokens.TEXT_SECONDARY)
-	info_row.add_child(_timer_label)
-	var pause: GlowButton = UIKit.button("II", GlowButton.Variant.ICON, _on_pause_pressed)
+	var pause: GlowButton = UIKit.button("", GlowButton.Variant.ICON, _on_pause_pressed)
+	pause.draw.connect(func() -> void:
+		var c: Vector2 = pause.size * 0.5
+		var bar: StyleBoxFlat = StyleBoxFlat.new()
+		bar.bg_color = UITokens.TEXT_PRIMARY
+		bar.set_corner_radius_all(2)
+		pause.draw_style_box(bar, Rect2(c + Vector2(-6, -8), Vector2(4, 16)))
+		pause.draw_style_box(bar, Rect2(c + Vector2(2, -8), Vector2(4, 16))))
 	info_row.add_child(pause)
+	_timer_label = UIKit.label("00:00", &"number", UITokens.TEXT_SECONDARY, HORIZONTAL_ALIGNMENT_CENTER)
+	_timer_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_timer_label.add_theme_font_size_override(&"font_size", 16)
+	info.add_child(_timer_label)
 
 
 func _on_xp_changed(current: int, needed: int, level: int) -> void:
@@ -100,7 +137,7 @@ func _on_xp_changed(current: int, needed: int, level: int) -> void:
 
 
 func _on_sparks_changed(total: int, _delta: int) -> void:
-	_sparks_label.text = "● " + UIKit.format_number(total)
+	_sparks_label.text = UIKit.format_number(total)
 
 
 func _on_timer_tick(elapsed_s: float) -> void:

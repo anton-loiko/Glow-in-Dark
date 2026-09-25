@@ -159,82 +159,104 @@ func _light_tier() -> void:
 	refresh()
 
 
-func _label() -> String:
+## Две строки Meta DS §02: действие (Unbounded, капс) + цена следующего шага.
+func _lines() -> PackedStringArray:
 	var profile: PlayerProfile = GameManager.profile
+	var cost: String = UIKit.format_number(BeaconService.next_cost(profile, chapter_id))
 	match state:
 		State.TIER_READY:
-			return tr("Зажечь тир %d") % (floori(float(BeaconService.level(profile, chapter_id)) / BeaconService.levels_per_tier()) + 1)
+			var tier: int = floori(float(BeaconService.level(profile, chapter_id)) / BeaconService.levels_per_tier()) + 1
+			return PackedStringArray([tr("Зажечь тир %d") % tier, tr("последний уровень · %s ✦") % cost])
 		State.DISABLED:
-			return tr("Нужно ещё %s ✦") % UIKit.format_number(sparks_missing())
+			return PackedStringArray([tr("Нужно ещё %s ✦") % UIKit.format_number(sparks_missing()), tr("следующий уровень · %s ✦") % cost])
 		State.MAXED:
-			return tr("К главам")
+			return PackedStringArray([tr("Глава %d открыта →") % (chapter_id + 1) if ConfigDB.get_chapter(chapter_id + 1) != null else tr("К главам"), ""])
 		State.SYNCING:
-			return ""
+			return PackedStringArray(["", ""])
 		State.HOLDING:
-			return tr("+%d уровней") % _hold_levels
-	return tr("Внести Искры") + "  ·  " + UIKit.format_number(BeaconService.next_cost(profile, chapter_id)) + " ✦"
+			return PackedStringArray([UIKit.plural(_hold_levels, tr("+%d уровень"), tr("+%d уровня"), tr("+%d уровней")), "−%s ✦" % UIKit.format_number(_hold_sparks)])
+	return PackedStringArray([tr("Внести Искры"), tr("1 ур. · %s ✦ · удерживай, чтобы внести больше") % cost])
 
 
 func _draw() -> void:
 	var rect: Rect2 = Rect2(Vector2.ZERO, size)
-	var box: StyleBoxFlat = StyleBoxFlat.new()
-	box.set_corner_radius_all(UITokens.R16)
-	var text_color: Color = UITokens.TEXT_ON_LIGHT
+	var main_color: Color = UITokens.TEXT_ON_LIGHT
+	var sub_color: Color = Color(UITokens.TEXT_ON_LIGHT, 0.75)
 	match state:
 		State.ACTIVE, State.HOLDING, State.TIER_READY:
-			var glow: float = float(UITokens.G3 if state == State.TIER_READY else UITokens.G2)
-			for i: int in 3:
-				var grow: float = glow * (i + 1) / 3.0
-				var halo: StyleBoxFlat = StyleBoxFlat.new()
-				halo.bg_color = Color(UITokens.LIGHT_500, 0.07)
-				halo.set_corner_radius_all(UITokens.R16 + int(grow))
-				halo.draw(get_canvas_item(), rect.grow(grow * 0.5))
-			box.bg_color = UITokens.LIGHT_500
-			if state != State.HOLDING:
-				# цоколь light.900 3pt; в HOLDING кнопка «вдавлена» — цоколь 0
-				var base: StyleBoxFlat = StyleBoxFlat.new()
-				base.bg_color = UITokens.LIGHT_900
-				base.set_corner_radius_all(UITokens.R16)
-				base.draw(get_canvas_item(), Rect2(rect.position + Vector2(0, 3), rect.size))
+			var pressed: bool = state == State.HOLDING
+			var base: StyleBoxFlat = StyleBoxFlat.new()
+			base.bg_color = UITokens.LIGHT_900
+			base.set_corner_radius_all(UITokens.R16)
+			base.anti_aliasing = true
+			base.shadow_color = Color(UITokens.LIGHT_500, 0.45 if state == State.TIER_READY else 0.35)
+			base.shadow_size = UITokens.G3 if state == State.TIER_READY else UITokens.G2 - 14
+			draw_style_box(base, rect)
+			# Тело: градиент light.300 → 500 → 700, цоколь 4pt; в HOLDING кнопка утоплена (цоколь 0).
+			var body: Rect2 = Rect2(Vector2(0, 4.0 if pressed else 0.0), Vector2(rect.size.x, rect.size.y - 4.0))
+			_draw_gradient(body, [UITokens.LIGHT_300, UITokens.LIGHT_500, UITokens.LIGHT_700])
+			# Заливка = прогресс внутри тира; в HOLDING остаток — тёмный янтарь.
+			var lv: int = BeaconService.level(GameManager.profile, chapter_id)
+			var k: float = float(lv % BeaconService.levels_per_tier()) / BeaconService.levels_per_tier()
+			if pressed:
+				var rest: Rect2 = Rect2(body.position + Vector2(body.size.x * k, 0), Vector2(body.size.x * (1.0 - k), body.size.y))
+				draw_rect(rest.intersection(body.grow_individual(0, 0, -UITokens.R16 * 0.5, 0)), Color(UITokens.LIGHT_900, 0.85))
+			if state == State.ACTIVE and _shine_t < 0.6:
+				var x: float = rect.size.x * (_shine_t / 0.6)
+				draw_line(Vector2(x, 8), Vector2(x - 14, rect.size.y - 10), Color(1, 1, 1, 0.35), 6.0, true)
 		State.DISABLED:
-			box.bg_color = Color(UITokens.INK_700, 1.0)
-			text_color = UITokens.TEXT_MUTED
+			main_color = UITokens.TEXT_MUTED
+			sub_color = UITokens.TEXT_DISABLED
+			_draw_dashed(rect)
 		State.MAXED:
-			box.bg_color = Color(0, 0, 0, 0)
-			box.border_color = UITokens.LIGHT_500
-			box.set_border_width_all(1)
-			text_color = UITokens.TEXT_SECONDARY_BUTTON
+			var sec: StyleBoxFlat = StyleBoxFlat.new()
+			sec.bg_color = Color(0, 0, 0, 0)
+			sec.border_color = UITokens.LIGHT_500
+			sec.set_border_width_all(2)
+			sec.set_corner_radius_all(UITokens.R14)
+			sec.anti_aliasing = true
+			draw_style_box(sec, rect)
+			main_color = UITokens.TEXT_SECONDARY_BUTTON
 		State.SYNCING:
-			box.bg_color = UITokens.INK_600
-	box.draw(get_canvas_item(), rect)
-	if state == State.HOLDING or state == State.ACTIVE:
-		# заливка = прогресс внутри тира
-		var lv: int = BeaconService.level(GameManager.profile, chapter_id)
-		var k: float = float(lv % BeaconService.levels_per_tier()) / BeaconService.levels_per_tier()
-		var fill: StyleBoxFlat = StyleBoxFlat.new()
-		fill.bg_color = Color(UITokens.LIGHT_300, 0.45 if state == State.HOLDING else 0.18)
-		fill.set_corner_radius_all(UITokens.R16)
-		if k > 0.0:
-			fill.draw(get_canvas_item(), Rect2(rect.position, Vector2(maxf(UITokens.R16 * 2.0, rect.size.x * k), rect.size.y)))
-		if state == State.ACTIVE and _shine_t < 0.6:
-			var x: float = rect.size.x * (_shine_t / 0.6)
-			draw_line(Vector2(x, 6), Vector2(x - 14, rect.size.y - 6), Color(1, 1, 1, 0.35), 6.0)
-	if state == State.DISABLED:
-		_draw_dashed(rect)
-	if state == State.SYNCING:
-		for i: int in 3:
-			var a: float = 0.3 + 0.7 * absf(sin(Time.get_ticks_msec() / 400.0 + i))
-			draw_circle(size * 0.5 + Vector2((i - 1) * 16, 0), 4.0, Color(UITokens.LIGHT_500, a))
-		return
-	var font: Font = UIFonts.font(&"button")
-	var font_size: int = 17
-	var text: String = _label().to_upper()
-	var width: float = font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-	draw_string(font, Vector2((size.x - width) * 0.5, size.y * 0.5 + font_size * 0.35), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+			var sync_box: StyleBoxFlat = StyleBoxFlat.new()
+			sync_box.bg_color = UITokens.INK_600
+			sync_box.set_corner_radius_all(UITokens.R16)
+			draw_style_box(sync_box, rect)
+			for i: int in 3:
+				var a: float = 0.3 + 0.7 * absf(sin(Time.get_ticks_msec() / 400.0 + i))
+				draw_circle(size * 0.5 + Vector2((i - 1) * 16, 0), 4.0, Color(UITokens.LIGHT_500, a))
+			return
+	var lines: PackedStringArray = _lines()
+	var y_shift: float = 2.0 if state == State.HOLDING else 0.0
+	var main_font: Font = UIFonts.font(&"button")
+	var main_text: String = lines[0].to_upper() if state != State.DISABLED else lines[0]
+	var main_size: int = 17
+	var main_w: float = main_font.get_string_size(main_text, HORIZONTAL_ALIGNMENT_LEFT, -1, main_size).x
+	var has_sub: bool = not lines[1].is_empty()
+	var main_y: float = size.y * 0.5 + (-2.0 if has_sub else main_size * 0.35) + y_shift - 2.0
+	draw_string(main_font, Vector2((size.x - main_w) * 0.5, main_y), main_text, HORIZONTAL_ALIGNMENT_LEFT, -1, main_size, main_color)
+	if has_sub:
+		var sub_font: Font = UIFonts.font(&"body_s")
+		var sub_w: float = sub_font.get_string_size(lines[1], HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+		draw_string(sub_font, Vector2((size.x - sub_w) * 0.5, main_y + 17.0), lines[1], HORIZONTAL_ALIGNMENT_LEFT, -1, 12, sub_color)
+
+
+func _draw_gradient(body: Rect2, stops: Array[Color]) -> void:
+	var points: PackedVector2Array = ButtonFace.rounded_rect(body, UITokens.R16)
+	var colors: PackedColorArray = PackedColorArray()
+	for p: Vector2 in points:
+		var t: float = clampf((p.y - body.position.y) / body.size.y, 0.0, 1.0)
+		colors.append(stops[0].lerp(stops[1], t / 0.5) if t < 0.5 else stops[1].lerp(stops[2], (t - 0.5) * 1.2))
+	draw_polygon(points, colors)
+	var outline: PackedVector2Array = points.duplicate()
+	outline.append(points[0])
+	var outline_colors: PackedColorArray = colors.duplicate()
+	outline_colors.append(colors[0])
+	draw_polyline_colors(outline, outline_colors, 1.0, true)
 
 
 func _draw_dashed(rect: Rect2) -> void:
-	var r: Rect2 = rect.grow(-1)
-	var pts: PackedVector2Array = [r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y), r.position]
-	for i: int in 4:
+	var pts: PackedVector2Array = ButtonFace.rounded_rect(rect.grow(-1), UITokens.R14)
+	pts.append(pts[0])
+	for i: int in pts.size() - 1:
 		draw_dashed_line(pts[i], pts[i + 1], UITokens.LINE_STRONG, 1.5, 6.0)

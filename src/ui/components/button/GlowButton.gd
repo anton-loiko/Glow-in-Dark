@@ -24,6 +24,9 @@ var ad_placement: StringName = &""
 var ad_extra_reason: String = ""
 
 var _label_text: String = ""
+## Градиентное «лицо» Primary / Crystal (ButtonFace); null у остальных весов.
+var face: ButtonFace
+var _face_palette: Array[Color] = []
 var _ad_poll_s: float = 0.0
 
 
@@ -35,6 +38,12 @@ func _ready() -> void:
 	else:
 		custom_minimum_size.y = maxf(custom_minimum_size.y, height)
 	focus_mode = Control.FOCUS_NONE
+	if variant == Variant.PRIMARY or variant == Variant.CRYSTAL:
+		face = ButtonFace.new()
+		face.palette = ButtonFace.PRIMARY if variant == Variant.PRIMARY else ButtonFace.CRYSTAL
+		if not _face_palette.is_empty():
+			face.palette = _face_palette
+		add_child(face, false, Node.INTERNAL_MODE_FRONT)
 	_label_text = text
 	_refresh_text()
 	pressed.connect(_on_pressed)
@@ -63,6 +72,13 @@ func refresh_ad() -> void:
 		set_blocked(not reason.is_empty(), reason)
 
 
+## Палитра лица кнопки (ButtonFace.PRIMARY / CRYSTAL / INVERTED) — до или после добавления в дерево.
+func set_face_palette(value: Array[Color]) -> void:
+	_face_palette = value
+	if face != null:
+		face.set_palette(value)
+
+
 func set_label(value: String) -> void:
 	_label_text = value
 	_refresh_text()
@@ -74,6 +90,8 @@ func set_blocked(blocked: bool, reason: String = "") -> void:
 	disabled_reason = reason
 	_refresh_text()
 	queue_redraw()
+	if face != null:
+		face.queue_redraw()
 
 
 func _refresh_text() -> void:
