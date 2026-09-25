@@ -68,23 +68,36 @@ func _draw() -> void:
 	var c700: Color = tokens["700"]
 	var glow: int = int(tokens["glow"])
 	if glow > 0:
-		var alpha: float = 0.35
+		# Ореол: мягкая текстура gear_glow цвета 300 (Эпический — пульс α 0.5↔0.9 за 2.4 с).
+		var alpha: float = 0.55
 		if item.rarity == &"epic":
-			alpha = lerpf(0.5, 0.9, 0.5 + 0.5 * sin(t * TAU / 2.4)) * 0.4
-		for i: int in 3:
-			var halo: StyleBoxFlat = StyleBoxFlat.new()
-			halo.bg_color = Color(c300, alpha * 0.25)
-			halo.set_corner_radius_all(UITokens.R14 + roundi(glow / 3.0 * (i + 1)))
-			halo.draw(get_canvas_item(), rect.grow(glow / 3.0 * (i + 1) * 0.5))
+			alpha = lerpf(0.5, 0.9, 0.5 + 0.5 * sin(t * TAU / 2.4))
+		var glow_tex: Texture2D = frame_texture(&"glow")
+		var grow: float = glow * 0.5
+		if glow_tex != null:
+			draw_texture_rect(glow_tex, rect.grow(grow), false, Color(c300, alpha * 0.45))
 	var box: StyleBoxFlat = StyleBoxFlat.new()
 	box.bg_color = tokens["bg"]
-	box.border_color = c700
-	box.set_border_width_all(2)
-	box.border_width_top = 2
 	box.set_corner_radius_all(UITokens.R14)
 	box.draw(get_canvas_item(), rect)
-	# верхняя грань рамки светлее (градиент 300 → 700)
-	draw_line(rect.position + Vector2(UITokens.R14, 1.5), Vector2(rect.end.x - UITokens.R14, rect.position.y + 1.5), c300, 2.0)
+	# Рамка редкости: 9-slice 96px (texture_margin 24), рисуется в 2× и масштабируется 0.5 — углы остаются чёткими.
+	var frame: Texture2D = frame_texture(item.rarity)
+	if frame != null:
+		var sb: StyleBoxTexture = StyleBoxTexture.new()
+		sb.texture = frame
+		sb.set_texture_margin_all(24)
+		sb.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
+		sb.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_TILE_FIT
+		draw_set_transform(rect.position, 0.0, Vector2(0.5, 0.5))
+		draw_style_box(sb, Rect2(Vector2.ZERO, rect.size * 2.0))
+		draw_set_transform(Vector2.ZERO)
+	else:
+		var border: StyleBoxFlat = StyleBoxFlat.new()
+		border.draw_center = false
+		border.border_color = c700
+		border.set_border_width_all(2)
+		border.set_corner_radius_all(UITokens.R14)
+		border.draw(get_canvas_item(), rect)
 	if selected or equipped:
 		var outline: StyleBoxFlat = StyleBoxFlat.new()
 		outline.draw_center = false
@@ -135,6 +148,16 @@ func _draw_empty(rect: Rect2) -> void:
 
 
 static var _icons: Dictionary = {}
+static var _frames: Dictionary = {}
+
+
+## Рамка редкости или ореол (&"glow") из src/assets/ui/gear (tools/brand/make_ui_icons.py).
+static func frame_texture(rarity: StringName) -> Texture2D:
+	if not _frames.has(rarity):
+		var file: String = "gear_glow" if rarity == &"glow" else "frame_" + String(rarity)
+		var path: String = "res://src/assets/ui/gear/%s.png" % file
+		_frames[rarity] = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	return _frames[rarity]
 
 
 ## Иконка предмета (tools/brand/make_skill_icons.py → src/assets/ui/gear/<base_id>.png), белая под modulate.

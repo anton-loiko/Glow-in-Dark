@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="frame_legendary" width="96" height="96" viewBox="0 0 96 96">
+  <defs><linearGradient id="edge" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#FFF1C8"/><stop offset="0.45" stop-color="#FFB547"/><stop offset="1" stop-color="#B8621A"/></linearGradient></defs>
+  <rect id="edge_ring" x="3" y="3" width="90" height="90" rx="26" fill="none" stroke="url(#edge)" stroke-width="6"/>
+  <path id="top_hl" d="M24 5.5h48" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+  <rect id="inner" x="9" y="9" width="78" height="78" rx="20" fill="none" stroke="#FFF1C8" stroke-opacity="0.35" stroke-width="3"/><path id="spark_14_14" fill="#FFF1C8" d="M14 8l1.6 4.4l4.4 1.6l-4.4 1.6l-1.6 4.4l-1.6-4.4l-4.4-1.6l4.4-1.6z"/><path id="spark_82_14" fill="#FFF1C8" d="M82 8l1.6 4.4l4.4 1.6l-4.4 1.6l-1.6 4.4l-1.6-4.4l-4.4-1.6l4.4-1.6z"/><path id="spark_82_82" fill="#FFF1C8" d="M82 76l1.6 4.4l4.4 1.6l-4.4 1.6l-1.6 4.4l-1.6-4.4l-4.4-1.6l4.4-1.6z"/>
+</svg>

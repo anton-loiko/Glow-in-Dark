@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="tab_beacon" width="96" height="96" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="fill" x1="0.2" y1="0.1" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C9C4BA"/>
+    </linearGradient>
+  </defs>
+  <path id="crystal" fill="url(#fill)" d="M12 1.5l5 7l-5 8l-5-8z"/>
+  <path id="base" fill="url(#fill)" d="M5 18h14a1.5 1.5 0 0 1 1.5 1.5V21a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1v-1.5A1.5 1.5 0 0 1 5 18z"/>
+  <path id="hl" fill="#FFF1C8" fill-opacity="0.55" d="M11.6 3.6L8.3 8.4l.9 1.4l2.4-3.9z"/>
+</svg>

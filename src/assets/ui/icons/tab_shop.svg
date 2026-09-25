@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="tab_shop" width="96" height="96" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="fill" x1="0.2" y1="0.1" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C9C4BA"/>
+    </linearGradient>
+  </defs>
+  <path id="awning" fill="url(#fill)" d="M3 4h18l1.5 5.2a2.4 2.4 0 0 1-4.6 1.2a2.4 2.4 0 0 1-4.4 0h-.9a2.4 2.4 0 0 1-4.4 0a2.4 2.4 0 0 1-4.6-1.2z"/>
+  <path id="shop" fill="url(#fill)" d="M4.5 12.5h15V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20z"/>
+  <rect id="door" x="10" y="15" width="4" height="6.5" rx="1" fill="#8F98AB"/>
+  <path id="hl" fill="#FFF1C8" fill-opacity="0.55" d="M4.2 5h2.2l-1 4.2H4z"/>
+</svg>

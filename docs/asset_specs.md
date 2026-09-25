@@ -54,8 +54,8 @@
 
 | Файл | Размер | Статус |
 |---|---|---|
-| `gear_frame_{common,uncommon,rare,epic,legendary}.png` 9-slice, `texture_margin` 24 | 96×96 | 🟨 (`GearCell` рисует процедурно) |
-| `gear_glow.png` (blend add, `modulate` = цвет 500) | 128×128 | ⬜ |
+| `src/assets/ui/gear/frame_{common,uncommon,rare,epic,legendary}.png` 9-slice, `texture_margin` 24 (градиент 300→700, у Эпического и Легендарного внутреннее кольцо, у Легендарного искры) | 96×96 | 🟨 (SVG-генератор `tools/brand/make_ui_icons.py`) |
+| `gear_glow.png` (ореол, `modulate` = цвет 300) | 128×128 | 🟨 |
 | `src/assets/ui/gear/<base_id>.png` — иконки предметов, белые под `modulate` цветом редкости | 128×128 | 🟨 (4 базовые вещи, SVG-генератор) |
 | `chest_{basic,premium,run,epic}_{closed,open}.png` (шов рисует код цветом лучшей редкости) | 320×240 | 🟨 (генератор) |
 | `card_back.png` | 240×320 | 🟨 |
@@ -66,8 +66,8 @@ SVG на сетке 24pt, мягкие формы, заливка + внутре
 
 | Набор | Иконки | Статус |
 |---|---|---|
-| Вкладки | beacon, shop, skills (книга), gear (шлем) | 🟨 (рисуются кодом в `GlowTabBar`) |
-| Валюты | spark (круг), crystal (ромб) | 🟨 |
+| Вкладки | `tab_beacon`, `tab_shop`, `tab_skills` (книга), `tab_gear` (шлем) | 🟨 (SVG-генератор) |
+| Валюты | `cur_spark` (круг), `cur_crystal` (ромб) | 🟨 (SVG-генератор) |
 | Навыки | 12 иконок навыков + 2 fallback (`src/assets/ui/skills`), 128px | 🟨 (SVG-генератор `tools/brand/make_skill_icons.py`) |
 | Прочее | settings, close, info, play-ad ▶, lock, check, arrow | 🟨 |
 

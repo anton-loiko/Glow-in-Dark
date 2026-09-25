@@ -22,6 +22,23 @@ func _ready() -> void:
 	_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_icon.draw.connect(_draw_icon)
 	row.add_child(_icon)
+	# Искра — всегда круг, Кристалл — всегда ромб (DS): иконка src/assets/ui/icons, цвет — токен валюты.
+	var crystal: bool = currency == GameManager.CRYSTALS
+	var path: String = "res://src/assets/ui/icons/%s.png" % ("cur_crystal" if crystal else "cur_spark")
+	if ResourceLoader.exists(path):
+		var art: TextureRect = TextureRect.new()
+		art.texture = load(path)
+		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		art.offset_left = -1
+		art.offset_top = -1
+		art.offset_right = 1
+		art.offset_bottom = 1
+		art.modulate = UITokens.CRYSTAL_500 if crystal else UITokens.SPARK
+		art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_icon.add_child(art)
+		_icon.draw.disconnect(_draw_icon)
 	_label = UIKit.label("0", &"number")
 	row.add_child(_label)
 	if currency == GameManager.CRYSTALS:

@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="gear_glow" width="128" height="128" viewBox="0 0 128 128"><defs><radialGradient id="g"><stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.9"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient></defs><rect id="glow" width="128" height="128" rx="40" fill="url(#g)"/></svg>

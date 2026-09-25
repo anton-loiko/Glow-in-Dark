@@ -116,7 +116,27 @@ func _draw_tab(tab: Button, id: StringName) -> void:
 
 
 ## Временные глифы вкладок до SVG-иконок (task_8): Маяк — ромб, Магазин — сундук, Навыки — книга, Экипировка — шлем.
+const TAB_ICONS: Dictionary = {&"S02": "tab_beacon", &"S10": "tab_shop", &"S11": "tab_skills", &"S12": "tab_gear"}
+
+
 func _draw_icon(tab: Button, id: StringName, c: Vector2, color: Color) -> void:
+	# Иконка 26pt из src/assets/ui/icons (белая, цвет состояния — modulate) — дочерний TextureRect:
+	# отрисовка текстуры из draw-сигнала чужого узла теряла альфу. Без ассета — процедурный глиф.
+	var path: String = "res://src/assets/ui/icons/%s.png" % TAB_ICONS.get(id, "")
+	if ResourceLoader.exists(path):
+		var icon: TextureRect = tab.get_node_or_null(^"Icon") as TextureRect
+		if icon == null:
+			icon = TextureRect.new()
+			icon.name = "Icon"
+			icon.texture = load(path)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			tab.add_child(icon)
+		icon.size = Vector2(26, 26)
+		icon.position = c - Vector2(13, 13)
+		icon.modulate = color
+		return
 	match id:
 		&"S02":
 			tab.draw_colored_polygon(PackedVector2Array([c + Vector2(0, -12), c + Vector2(8, -2), c + Vector2(0, 6), c + Vector2(-8, -2)]), color)

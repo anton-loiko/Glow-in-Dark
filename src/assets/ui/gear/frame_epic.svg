@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="frame_epic" width="96" height="96" viewBox="0 0 96 96">
+  <defs><linearGradient id="edge" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#D4B0FF"/><stop offset="1" stop-color="#6A3FB0"/></linearGradient></defs>
+  <rect id="edge_ring" x="3" y="3" width="90" height="90" rx="26" fill="none" stroke="url(#edge)" stroke-width="6"/>
+  <path id="top_hl" d="M24 5.5h48" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="2" stroke-linecap="round"/>
+  <rect id="inner" x="9" y="9" width="78" height="78" rx="20" fill="none" stroke="#D4B0FF" stroke-opacity="0.35" stroke-width="3"/>
+</svg>
