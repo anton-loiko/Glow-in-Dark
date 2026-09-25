@@ -156,11 +156,17 @@ func _draw() -> void:
 		border = UITokens.GOLD_300.lerp(UITokens.GOLD_700, 0.5 + 0.5 * sin(Time.get_ticks_msec() / 1000.0 * PI))
 	box.border_color = border
 	draw_style_box(box, rect)
-	# Превью навыка (до hi-res иконок task_8): глиф категории на подсветке.
+	# Иконка навыка на подсветке цвета категории (дышит в ритме Огонька).
 	var center: Vector2 = Vector2(54, SIZE.y * 0.5)
 	var breath: float = 1.0 + 0.04 * TimeService.breath_phase()
 	draw_circle(center, 34.0 * breath, Color(_tokens["500"], 0.18))
-	draw_circle(center, 22.0 * breath, Color(_tokens["500"], 0.9))
+	draw_circle(center, 26.0 * breath, Color(_tokens["700"], 0.9))
+	var icon: Texture2D = SkillIcons.texture(def.id) if def != null else null
+	if icon != null:
+		var icon_size: float = 36.0 * breath
+		draw_texture_rect(icon, Rect2(center - Vector2.ONE * icon_size * 0.5, Vector2.ONE * icon_size), false, _tokens["300"])
+	else:
+		draw_circle(center, 22.0 * breath, Color(_tokens["500"], 0.9))
 	if def != null:
 		_draw_segments()
 

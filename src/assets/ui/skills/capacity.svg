@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="capacity" width="128" height="128" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="fill" x1="0.2" y1="0.1" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C9C4BA"/>
+    </linearGradient>
+  </defs>
+  <path id="shell" fill-rule="evenodd" fill="url(#fill)" d="M8 3.5h8a2.5 2.5 0 0 1 2.5 2.5v13a2.5 2.5 0 0 1-2.5 2.5H8A2.5 2.5 0 0 1 5.5 19V6A2.5 2.5 0 0 1 8 3.5zm.3 2.3a.8.8 0 0 0-.8.8v11.8a.8.8 0 0 0 .8.8h7.4a.8.8 0 0 0 .8-.8V6.6a.8.8 0 0 0-.8-.8z"/>
+  <rect id="cap" x="10" y="1.5" width="4" height="2" rx=".8" fill="url(#fill)"/>
+  <rect id="charge" x="8.8" y="10" width="6.4" height="8.3" rx="1" fill="url(#fill)"/>
+  <rect id="hl" x="9.6" y="11" width="1.2" height="5" rx=".6" fill="#FFF1C8" fill-opacity="0.55"/>
+</svg>

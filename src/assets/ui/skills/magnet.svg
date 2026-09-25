@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="magnet" width="128" height="128" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="fill" x1="0.2" y1="0.1" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C9C4BA"/>
+    </linearGradient>
+  </defs>
+  <path id="magnet" fill="url(#fill)" d="M5 3.5h4.2v8.8a2.8 2.8 0 0 0 5.6 0V3.5H19v8.8a7 7 0 0 1-14 0z"/>
+  <rect id="tip1" x="5" y="3.5" width="4.2" height="3" fill="#FFFFFF"/>
+  <rect id="tip2" x="14.8" y="3.5" width="4.2" height="3" fill="#FFFFFF"/>
+  <path id="hl" fill="#FFF1C8" fill-opacity="0.55" d="M6.1 8h1v4.3a4.9 4.9 0 0 0 1.4 3.5l-.7.7a5.9 5.9 0 0 1-1.7-4.2z"/>
+</svg>

@@ -57,6 +57,16 @@ func _tile(id: StringName, seen: bool) -> Control:
 		tile.draw.connect(_draw_dashed.bind(tile))
 	if seen:
 		tile.pressed.connect(_show_details.bind(def))
+		var icon: Texture2D = SkillIcons.texture(id)
+		if icon != null:
+			tile.icon = icon
+			tile.expand_icon = true
+			tile.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			tile.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+			tile.add_theme_constant_override(&"icon_max_width", 40)
+			tile.add_theme_color_override(&"icon_normal_color", tokens["300"])
+			tile.add_theme_color_override(&"icon_pressed_color", tokens["500"])
+			tile.add_theme_color_override(&"icon_hover_color", tokens["300"])
 	return tile
 
 

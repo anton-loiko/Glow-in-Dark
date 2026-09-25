@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="orbs" width="128" height="128" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="fill" x1="0.2" y1="0.1" x2="0.8" y2="0.95">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#C9C4BA"/>
+    </linearGradient>
+  </defs>
+  <circle id="core" cx="12" cy="12" r="2.4" fill="url(#fill)" fill-opacity="0.7"/>
+  <circle id="o1" cx="12" cy="4.6" r="2.8" fill="url(#fill)"/>
+  <circle id="o2" cx="18.4" cy="15.7" r="2.8" fill="url(#fill)"/>
+  <circle id="o3" cx="5.6" cy="15.7" r="2.8" fill="url(#fill)"/>
+  <circle id="hl" cx="11.2" cy="3.8" r=".9" fill="#FFF1C8" fill-opacity="0.55"/>
+</svg>
