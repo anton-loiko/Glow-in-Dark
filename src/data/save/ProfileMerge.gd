@@ -57,6 +57,7 @@ static func merge(local: PlayerProfile, remote: PlayerProfile) -> PlayerProfile:
 
 	# Гарант сундука — максимум (не даём сбросить прогресс гаранта откатом).
 	result.premium_pity = maxi(result.premium_pity, older.premium_pity)
+	result.chests_opened = maxi(result.chests_opened, older.chests_opened)
 
 	# Покупки: нерасходуемые покупки не теряются, чеки объединяются.
 	result.starter_pack_bought = result.starter_pack_bought or older.starter_pack_bought

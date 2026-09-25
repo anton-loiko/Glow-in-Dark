@@ -5,6 +5,7 @@ extends Control
 ## ×10: веер 2×5 по возрастанию редкости; «Открыть все» — шаг 120 мс, стоп на Эпическом+. Тап в C1–C4 — ускорение ×3.
 ## params: items (Array[String] uid) + chest — или pending = true (сундук из profile.pending_rewards).
 
+const FAST_AFTER: int = 10
 const FLIP_S: Dictionary = {&"common": 0.24, &"uncommon": 0.28, &"rare": 0.32, &"epic": 0.48, &"legendary": 0.9}
 
 var _items: Array[PlayerProfile.GearItem] = []
@@ -108,6 +109,8 @@ func _play_intro() -> void:
 	var rest: Vector2 = Vector2((_stage.size.x - _chest_box.size.x) * 0.5, _stage.size.y * 0.5 - 40.0)
 	_chest_box.position = rest - Vector2(0, 260)
 	_intro = UIMotion.tween(self)
+	if _fast():
+		_intro.set_speed_scale(3.0)
 	_intro.tween_property(_chest_box, ^"position", rest, 0.4).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	for pt: float in [2.0, 4.0, 6.0]:
 		_intro.tween_callback(FeedbackManager.haptic.bind(&"light"))
@@ -260,6 +263,8 @@ func _on_card_input(event: InputEvent, card: Control) -> void:
 func _flip(card: Control) -> void:
 	var item: PlayerProfile.GearItem = card.get_meta(&"item")
 	var d: float = float(FLIP_S.get(item.rarity, 0.24))
+	if _fast() and item.rarity != &"legendary":
+		d *= 0.4 # легендарный — всегда полная анимация
 	var t: Tween = UIMotion.tween(card)
 	t.tween_property(card, ^"scale:x", 0.0, d * 0.5)
 	await t.finished
@@ -283,7 +288,7 @@ func _reveal_all() -> void:
 		if bool(card.get_meta(&"revealed")):
 			continue
 		await _flip(card)
-		await get_tree().create_timer(0.12, true, false, true).timeout
+		await get_tree().create_timer(0.04 if _fast() else 0.12, true, false, true).timeout
 		var item: PlayerProfile.GearItem = card.get_meta(&"item")
 		if GearService.RARITIES.find(item.rarity) >= 3 and _has_hidden():
 			_open_all.visible = true # стоп на Эпическом+: продолжить — снова «Открыть все»
@@ -305,6 +310,16 @@ func _check_done() -> void:
 
 
 ## C6: бейджи «НОВЫЙ», «2/3», «↑» и кнопки через 600 мс.
+## «Быстрое открытие» доступно после 10 сундуков и включается переключателем в итоге открытия.
+func _fast() -> bool:
+	var profile: PlayerProfile = GameManager.profile
+	return profile.chests_opened > FAST_AFTER and profile.settings.fast_chests
+
+
+func _toggle_fast(on: bool) -> void:
+	GameManager.set_setting(&"fast_chests", on)
+
+
 func _finish() -> void:
 	_open_all.visible = false
 	var profile: PlayerProfile = GameManager.profile
@@ -323,6 +338,14 @@ func _finish() -> void:
 	_buttons.add_child(take)
 	var gear: GlowButton = UIKit.button(tr("К экипировке"), GlowButton.Variant.QUIET, _to_gear)
 	_buttons.add_child(gear)
+	if profile.chests_opened > FAST_AFTER:
+		var row: HBoxContainer = UIKit.hbox(UITokens.S2, BoxContainer.ALIGNMENT_CENTER)
+		row.add_child(UIKit.label(tr("Быстрое открытие"), &"body_s", UITokens.TEXT_SECONDARY))
+		var toggle: ToggleSwitch = ToggleSwitch.new()
+		toggle.set_on(profile.settings.fast_chests)
+		toggle.toggled.connect(_toggle_fast)
+		row.add_child(toggle)
+		_buttons.add_child(row)
 	UIMotion.appear(take, UITokens.T_BASE_S, 0.6)
 	UIMotion.appear(gear, UITokens.T_BASE_S, 0.6)
 

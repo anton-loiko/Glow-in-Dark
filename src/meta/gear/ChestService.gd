@@ -59,6 +59,7 @@ static func open(profile: PlayerProfile, chest: StringName, count: int = 1, rng:
 		items.append(item)
 	# Порядок показа ×10: по возрастанию редкости, лучшая — последняя.
 	items.sort_custom(func(a: PlayerProfile.GearItem, b: PlayerProfile.GearItem) -> bool: return GearService.RARITIES.find(a.rarity) < GearService.RARITIES.find(b.rarity))
+	profile.chests_opened += count
 	SaveManager.request_save(true)
 	var rarity_names: Array[String] = []
 	for it: PlayerProfile.GearItem in items:

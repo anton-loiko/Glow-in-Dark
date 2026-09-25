@@ -35,6 +35,7 @@ var skins_to_reveal: Array[StringName] = []
 
 # chests
 var premium_pity: int = 0
+var chests_opened: int = 0 ## после 10 — доступно «Быстрое открытие» (Gear DS §03)
 
 # rewarded ads (лимиты AdManager): показы за день по плейсментам и кулдауны (unix-время последней награды)
 var ads_day_stamp: int = 0
@@ -123,6 +124,7 @@ class Settings:
 	var no_flashes: bool = false
 	var camera_shake: bool = true
 	var damage_numbers: int = 1 ## 0 выкл · 1 обычные · 2 крупные
+	var fast_chests: bool = false ## «Быстрое открытие» сундуков
 	var language: String = ""
 
 	func to_dict() -> Dictionary:
@@ -133,6 +135,7 @@ class Settings:
 			"no_flashes": no_flashes,
 			"camera_shake": camera_shake,
 			"damage_numbers": damage_numbers,
+			"fast_chests": fast_chests,
 			"language": language,
 		}
 
@@ -144,6 +147,7 @@ class Settings:
 		s.no_flashes = bool(d.get("no_flashes", false))
 		s.camera_shake = bool(d.get("camera_shake", true))
 		s.damage_numbers = int(d.get("damage_numbers", 1))
+		s.fast_chests = bool(d.get("fast_chests", false))
 		s.language = str(d.get("language", ""))
 		return s
 
@@ -204,7 +208,7 @@ func to_dict() -> Dictionary:
 		},
 		"gear": {"equipped": equipped_dict, "inventory": inventory_list, "slots_unlocked": _names_to_strings(gear_slots_unlocked)},
 		"skins_to_reveal": _names_to_strings(skins_to_reveal),
-		"chests": {"premium_pity": premium_pity},
+		"chests": {"premium_pity": premium_pity, "opened": chests_opened},
 		"ads": {"day_stamp": ads_day_stamp, "today": ads_today.duplicate(), "cooldowns": ad_cooldowns.duplicate()},
 		"skills_archive": {"seen": _names_to_strings(skills_seen)},
 		"daily": {"streak_day": daily_streak_day, "last_claim_day": daily_last_claim_day},
@@ -256,6 +260,7 @@ static func from_dict(d: Dictionary) -> PlayerProfile:
 
 	var chests: Dictionary = d.get("chests", {}) as Dictionary
 	p.premium_pity = int(chests.get("premium_pity", 0))
+	p.chests_opened = int(chests.get("opened", 0))
 	var ads: Dictionary = d.get("ads", {}) as Dictionary
 	p.ads_day_stamp = int(ads.get("day_stamp", chests.get("ads_day_stamp", 0)))
 	var today: Dictionary = ads.get("today", {}) as Dictionary

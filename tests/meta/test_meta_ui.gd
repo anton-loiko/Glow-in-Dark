@@ -157,3 +157,12 @@ func test_slot_accepts_only_matching_item() -> void:
 	assert_bool(feet._can_drop_data(Vector2.ZERO, data)).is_false()
 	var inventory_cell: GearCell = auto_free(GearCell.new().setup(helm, 62.0))
 	assert_bool(inventory_cell._can_drop_data(Vector2.ZERO, data)).is_false()
+
+
+func test_chests_opened_counts_and_roundtrips() -> void:
+	ChestService.open(p, &"basic", 3)
+	assert_int(p.chests_opened).is_equal(3)
+	p.settings.fast_chests = true
+	var back: PlayerProfile = PlayerProfile.from_dict(p.to_dict())
+	assert_int(back.chests_opened).is_equal(3)
+	assert_bool(back.settings.fast_chests).is_true()
