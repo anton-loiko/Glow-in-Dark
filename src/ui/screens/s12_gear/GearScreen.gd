@@ -32,6 +32,17 @@ func _ready() -> void:
 	var title: Label = UIKit.label(tr("Экипировка"), &"h1")
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title)
+	# «История Маяка» — пересмотр пройденных вех (Meta DS §01).
+	var history: Button = Button.new()
+	history.theme_type_variation = &"ButtonQuiet"
+	history.icon = load("res://src/assets/ui/icons/tab_beacon.png")
+	history.expand_icon = true
+	history.custom_minimum_size = Vector2(UITokens.TOUCH_MIN, UITokens.TOUCH_MIN)
+	history.add_theme_constant_override(&"icon_max_width", 22)
+	history.add_theme_color_override(&"icon_normal_color", UITokens.RUNE)
+	history.tooltip_text = tr("История Маяка")
+	history.pressed.connect(_open_history)
+	header.add_child(history)
 	var pill: CurrencyPill = CurrencyPill.new()
 	pill.currency = GameManager.SPARKS
 	header.add_child(pill)
@@ -355,3 +366,49 @@ func _draw_merge_badge() -> void:
 	var t: String = str(count)
 	var w: float = font.get_string_size(t, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
 	_merge_button.draw_string(font, c + Vector2(-w * 0.5, 4), t, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, UITokens.TEXT_PRIMARY)
+
+
+# --- История Маяка ---
+
+func _open_history() -> void:
+	var overlay: Control = Control.new()
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(overlay)
+	var dim: ColorRect = ColorRect.new()
+	dim.color = Color(UITokens.INK_900, 0.8)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.gui_input.connect(_on_history_dim.bind(overlay))
+	overlay.add_child(dim)
+	var center: CenterContainer = CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(center)
+	var panel: PanelContainer = UIKit.panel(&"PanelModal")
+	panel.custom_minimum_size = Vector2(320, 0)
+	center.add_child(panel)
+	var box: VBoxContainer = UIKit.vbox(UITokens.S2)
+	panel.add_child(box)
+	box.add_child(UIKit.label(tr("История Маяка"), &"h2"))
+	var chapter_id: int = GameManager.profile.current_chapter
+	var seen: Array[int] = GameManager.profile.get_beacon(chapter_id).seen_milestones
+	if seen.is_empty():
+		box.add_child(UIKit.label(tr("Вехи появятся на 25% Маяка"), &"body_s", UITokens.TEXT_MUTED))
+	for m: int in [25, 50, 75, 100]:
+		if seen.has(m):
+			var title: String = "%d%% · %s" % [m, tr(BeaconCutscene.MILESTONE_TITLES[m])]
+			box.add_child(UIKit.button(title, GlowButton.Variant.SECONDARY, _replay_milestone.bind(overlay, chapter_id, m)))
+	UIMotion.appear(panel)
+
+
+func _replay_milestone(overlay: Control, chapter_id: int, milestone: int) -> void:
+	overlay.queue_free()
+	var cutscene: BeaconCutscene = BeaconCutscene.new()
+	add_child(cutscene)
+	cutscene.play(chapter_id, floori(float(milestone) / BeaconService.levels_per_tier()) if milestone % BeaconService.levels_per_tier() == 0 else 0, milestone)
+
+
+func _on_history_dim(event: InputEvent, overlay: Control) -> void:
+	var tapped: bool = (event is InputEventMouseButton and (event as InputEventMouseButton).pressed) \
+		or (event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed)
+	if tapped:
+		overlay.queue_free()

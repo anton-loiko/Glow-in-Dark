@@ -17,10 +17,12 @@ var _tween: Tween
 var _done: bool = false
 var _finish_skip: bool = false
 var _milestone: int = 0
+var _chapter_id: int = 1
 
 
 func play(chapter_id: int, tier: int, milestone: int) -> void:
 	_milestone = milestone
+	_chapter_id = chapter_id
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -55,6 +57,7 @@ func play(chapter_id: int, tier: int, milestone: int) -> void:
 
 func finished_flash() -> void:
 	flash_peak.emit()
+	_milestone_fx()
 	var cutscene_cfg: Dictionary = BeaconService.config().get("cutscene", {}) as Dictionary
 	var shake_cfg: Dictionary = cutscene_cfg.get("shake_pt", {}) as Dictionary
 	if GameManager.profile.settings.camera_shake and get_parent() is Control:
@@ -64,6 +67,98 @@ func finished_flash() -> void:
 		for i: int in 4:
 			t.tween_property(target, ^"position:x", pt * (1.0 if i % 2 == 0 else -1.0) * (1.0 - i / 4.0), 0.05)
 		t.tween_property(target, ^"position:x", 0.0, 0.05)
+
+
+# --- Хореография вех (Meta DS §01, упрощённо): у каждой вехи свой акцент ---
+
+## 25% «Первое пламя» — 80 мотов вверх · 50% «Руны» — 4 руны по очереди + «+1 слот экипировки» ·
+## 75% «Луч» — столб света за 200 мс · 100% «Абсолютный Свет» — схлопывание в тишине → сверхновая → «Глава N+1 открыта».
+func _milestone_fx() -> void:
+	var origin: Vector2 = Vector2(size.x * 0.5, size.y * 0.42)
+	match _milestone:
+		25:
+			var motes: CPUParticles2D = CPUParticles2D.new()
+			motes.position = origin + Vector2(0, 60)
+			motes.amount = 80
+			motes.one_shot = true
+			motes.explosiveness = 0.7
+			motes.lifetime = 2.2
+			motes.direction = Vector2.UP
+			motes.spread = 40.0
+			motes.initial_velocity_min = 60.0
+			motes.initial_velocity_max = 180.0
+			motes.gravity = Vector2(0, -20)
+			motes.texture = preload("res://src/assets/vfx/ember.png")
+			motes.scale_amount_min = 0.15
+			motes.scale_amount_max = 0.35
+			motes.color = UITokens.RUNE
+			add_child(motes)
+			move_child(motes, 1)
+			motes.emitting = true
+		50:
+			var runes: Control = Control.new()
+			runes.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			runes.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			runes.set_meta(&"lit", 0)
+			runes.draw.connect(_draw_runes.bind(runes, origin))
+			add_child(runes)
+			move_child(runes, 1)
+			var t: Tween = UIMotion.tween(runes)
+			for i: int in 4:
+				t.tween_interval(0.15)
+				t.tween_callback(_light_rune.bind(runes))
+			_banner(tr("+1 слот экипировки"))
+		75:
+			var beam: ColorRect = ColorRect.new()
+			beam.color = Color(UITokens.RUNE, 0.85)
+			beam.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			beam.size = Vector2(10, 0)
+			beam.position = origin - Vector2(5, 0)
+			add_child(beam)
+			move_child(beam, 1)
+			var t: Tween = UIMotion.tween(beam)
+			t.tween_property(beam, ^"size:y", origin.y, 0.2)
+			t.parallel().tween_property(beam, ^"position:y", 0.0, 0.2)
+			t.tween_property(beam, ^"modulate:a", 0.35, 0.8)
+		100:
+			var nova: ColorRect = ColorRect.new()
+			nova.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			nova.color = Color(UITokens.GOLD_300, 0.0) if GameManager.profile.settings.no_flashes else Color(1, 1, 1, 0.0)
+			nova.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			add_child(nova)
+			move_child(nova, 1)
+			AudioManager.duck_music(0.9, 0.4) # схлопывание в тишине
+			var t: Tween = UIMotion.tween(nova)
+			t.tween_interval(0.4)
+			t.tween_property(nova, ^"color:a", 0.8, 0.3)
+			t.tween_property(nova, ^"color:a", 0.0, 0.9)
+			t.tween_callback(AudioManager.duck_music.bind(0.0, 0.6))
+			var next: int = BeaconService.reward_for(_chapter_id, 10).get("chapter_unlock", 0)
+			if next > 0:
+				_banner(tr("Глава %d открыта") % next)
+
+
+func _light_rune(runes: Control) -> void:
+	runes.set_meta(&"lit", int(runes.get_meta(&"lit")) + 1)
+	runes.queue_redraw()
+	FeedbackManager.haptic(&"light")
+
+
+func _draw_runes(runes: Control, origin: Vector2) -> void:
+	for i: int in int(runes.get_meta(&"lit")):
+		var p: Vector2 = origin + Vector2(-66 + i * 44, 110)
+		runes.draw_circle(p, 12.0, Color(UITokens.RUNE, 0.25))
+		runes.draw_circle(p, 6.0, UITokens.RUNE)
+
+
+func _banner(text: String) -> void:
+	var pill: PanelContainer = UIKit.panel(&"PanelPill")
+	pill.add_child(UIKit.label(text, &"h2", UITokens.RUNE, HORIZONTAL_ALIGNMENT_CENTER))
+	pill.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	pill.position = Vector2(-140, UITokens.SAFE_TOP + 40)
+	pill.custom_minimum_size = Vector2(280, 48)
+	add_child(pill)
+	UIMotion.appear(pill, UITokens.T_BASE_S, 0.4)
 
 
 func _gui_input(event: InputEvent) -> void:
