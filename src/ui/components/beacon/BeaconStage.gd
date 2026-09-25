@@ -8,6 +8,7 @@ var chapter_id: int = 1
 var pulse: float = 0.0 ## вспышка кристалла на каждое внесение (+6% эмиссии)
 
 var _level: int = 0
+var _diorama: HubDiorama
 
 ## Hi-res ассеты (tools/art/gen_sprites.lua, свет запечён): постамент 160×80pt, кристалл 48×80pt × 12 кадров вращения.
 const ART_DIR: String = "res://src/assets/beacon/"
@@ -33,6 +34,14 @@ func flash_rune() -> void:
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip_contents = true
+	_diorama = HubDiorama.new()
+	if _diorama.setup(chapter_id):
+		_diorama.show_behind_parent = true
+		_diorama.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		add_child(_diorama)
+	else:
+		_diorama = null
 	refresh()
 
 
@@ -57,6 +66,9 @@ func _draw() -> void:
 	var base: Vector2 = Vector2(size.x * 0.5, size.y * 0.78)
 	var hub_light: Array = BeaconService.config().get("hub_light", [0.0])
 	var light_r: float = float(hub_light[clampi(tier(), 0, hub_light.size() - 1)]) * size.x
+	if _diorama != null:
+		_diorama.anchor_point = base + Vector2(0, -10)
+		_diorama.set_light(maxf(40.0, light_r), 1.0 if tier() >= 10 else 0.0, breath)
 	# Свет Хаба: радиус = прогресс.
 	for i: int in 8:
 		var k: float = 1.0 - i / 8.0

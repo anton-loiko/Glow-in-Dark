@@ -47,7 +47,7 @@
 | `pedestal_{ruins,cracked,runes,armored,radiant}.png` (свет запечён) | 320×160 | 🟨 (генератор) |
 | `crystal_{shards,dim,bright,white}.png` — 12 кадров вращения | 96×160 кадр | 🟨 (генератор) |
 | `rune_{off,on}.png` | 24×24 | 🟨 |
-| `hub_diorama_ch{1..3}.png` + маска `hub_light` | 780×1100 | ⬜ |
+| `hub_diorama_ch1.png` «Затопленный город» (кварталы, мост, вода, островок); проявление — шейдер `hub_reveal` по `hub_light`, тир 10 — дневная палитра | 780×1100 | 🟨 (генератор; главы 2–3 — пока диорама главы 1) |
 | `beam.png`, `aura.png`, `mote.png` | 64–256 | 🟨 |
 
 ## 5. Экипировка и сундуки (`src/assets/gear/`) — Gear DS

@@ -475,6 +475,68 @@ local function rune(x, y, f)
   return d, { albedo = { 1, 1, 1 }, dome = 2, normal_strength = 0 }
 end
 
+
+-- ---------------------------------------------------------------- Хаб-диорама главы 1 «Затопленный город» (780×1100)
+-- Непрозрачный фон: небо → дальний и ближний кварталы с окнами → мост → вода с отражениями → островок Маяка.
+-- Свет запечён мягко; проявление светом хаба делает шейдер hub_reveal (за радиусом — силуэты во тьме).
+local function skyline(x, cell, base, span, seed)
+  local i = math.floor(x / cell)
+  local h = base - hash(i, 1, seed) * span
+  local spire = hash(i, 2, seed) > 0.82 and 40 or 0
+  local lx = x - i * cell
+  local roof = h
+  if spire > 0 and math.abs(lx - cell * 0.5) < cell * 0.12 then roof = h - spire end
+  return roof, i, lx
+end
+
+local function hub_city(x, y, f)
+  local sky = lerp(0.03, 0.075, y / 700)
+  local col = { sky * 0.85, sky * 0.95, sky * 1.35 }
+  -- дальний квартал
+  local far_roof, fi, flx = skyline(x, 46, 470, 190, 201)
+  if y > far_roof and y < 820 then
+    local v = 0.085 + hash(fi, 3, 201) * 0.03
+    col = { v * 0.9, v * 0.95, v * 1.2 }
+    local wx, wy = flx % 12, (y - far_roof) % 18
+    if wx > 4 and wx < 9 and wy > 6 and wy < 12 and hash(math.floor(x / 12), math.floor(y / 18), 205) > 0.78 then
+      col = { 0.36, 0.48, 0.52 } -- редкие холодные окна (тёплый свет — только Маяк)
+    end
+  end
+  -- ближний квартал
+  local mid_roof, mi, mlx = skyline(x + 23, 104, 640, 170, 211)
+  if y > mid_roof and y < 840 then
+    local v = 0.055 + hash(mi, 3, 211) * 0.025
+    col = { v * 0.9, v * 0.95, v * 1.15 }
+    -- арки нижних этажей, залитых водой
+    local ax = mlx % 52
+    if y > 760 and math.abs(ax - 26) < 14 and y - 760 > (14 - math.abs(ax - 26)) * 0.4 then col = { 0.02, 0.025, 0.04 } end
+    local wx, wy = mlx % 20, (y - mid_roof) % 26
+    if wx > 7 and wx < 14 and wy > 8 and wy < 17 and hash(math.floor((x + 23) / 20), math.floor(y / 26), 215) > 0.8 then
+      col = { 0.3, 0.42, 0.46 }
+    end
+  end
+  -- мост через канал
+  local deck = math.abs(y - 730) < 7 and x > 60 and x < 720
+  local arch = y > 737 and y < 800 and math.abs(((x - 60) % 110) - 55) < 6
+  if deck or arch then col = { 0.07, 0.075, 0.1 } end
+  -- вода с рябью и отражением кварталов
+  if y >= 820 then
+    local ry = 820 - (y - 820) * 0.8
+    local refl_roof = skyline(x + 23 + math.sin(y * 0.15) * 4, 104, 640, 170, 211)
+    local ripple = (vnoise(x / 40, y / 3, 221) - 0.5) * 0.02
+    local w = 0.035 + ripple
+    col = { w * 0.8, w * 1.0, w * 1.4 }
+    if ry > refl_roof then col = { col[1] + 0.02, col[2] + 0.022, col[3] + 0.03 } end
+  end
+  -- островок Маяка
+  local island = sd_ellipse(x, y, 390, 880, 190, 46)
+  if island < 0 then
+    local v = 0.16 + (fbm(x / 10, y / 10, 231) - 0.5) * 0.06 + smoothstep(-20, -46, island) * 0.03
+    col = { v * 0.95, v, v * 1.1 }
+  end
+  return -1, { albedo = { clamp(col[1], 0, 1), clamp(col[2], 0, 1), clamp(col[3], 0, 1) }, height_override = 0, normal_strength = 0 }
+end
+
 -- ---------------------------------------------------------------- запуск
 local only = ONLY
 local function want(name) return only == nil or only == name end
@@ -512,6 +574,9 @@ if want("vfx") then
   save_asset("src/assets/world/common", "biolum_mushrooms_1", 64, 64, 1, mushrooms(111), false, true)
   save_asset("src/assets/world/common", "biolum_mushrooms_2", 64, 64, 1, mushrooms(131), false, true)
   save_asset("src/assets/world/common", "biolum_rune", 48, 48, 1, rune, false, true)
+end
+if want("hub") then
+  save_asset("src/assets/beacon", "hub_diorama_ch1", 780, 1100, 1, hub_city, false, true)
 end
 if want("hero") then
   save_asset("src/assets/hero", "hero_body", 170, 170, 1, hero_body, false)
