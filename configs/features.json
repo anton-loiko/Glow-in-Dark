@@ -1,0 +1,10 @@
+{
+  "_doc": "Фича-флаги V1 (task_8 §7). Выключенная фича не видна игроку и не участвует в логике.",
+  "flags": {
+    "mourner_enabled": false,
+    "evolutions_enabled": false,
+    "quests_board": false,
+    "leaderboards": false,
+    "perf_overlay": true
+  }
+}

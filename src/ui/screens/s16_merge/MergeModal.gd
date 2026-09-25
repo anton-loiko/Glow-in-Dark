@@ -201,7 +201,7 @@ func _animate(cells: Array[GearCell], result: PlayerProfile.GearItem) -> void:
 	var appear: Tween = UIMotion.tween(new_cell)
 	appear.tween_property(new_cell, ^"scale", Vector2.ONE, 0.4).set_custom_interpolator(UIMotion.settle)
 	await appear.finished
-	FeedbackManager.haptic(&"success")
+	FeedbackManager.cue(&"item_merge")
 
 
 ## M6: таблица «было → стало» и возврат Искр.

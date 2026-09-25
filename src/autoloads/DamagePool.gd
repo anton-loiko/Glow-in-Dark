@@ -63,3 +63,7 @@ func _on_number_finished(number: DamageNumber) -> void:
 
 func _on_damage_dealt(amount: int, world_pos: Vector2, style: int) -> void:
 	show_damage(amount, world_pos, style as DamageNumber.Style)
+
+
+func active_count() -> int:
+	return _pool.active_count() if _pool != null else 0

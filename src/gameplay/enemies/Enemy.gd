@@ -53,12 +53,27 @@ var _next_blink: float = 4.0
 var _facing: Vector2 = Vector2.DOWN
 var _recoil_dir: Vector2
 var _cfg: Dictionary = {}
+## Hi-res спрайт тела (EnemyVisuals): освещается светом Огонька; нет ассета — процедурная отрисовка.
+var _sprite: Sprite2D
+var _frame_px: float = 72.0
+var _anim_t: float = 0.0
+# Значения конфига, кэшированные при активации (без разбора словарей в тике — task_8 §5).
+var _spawn_s: float = 0.6
+var _death_s: float = 0.48
+var _recoil_pt: float = 24.0
+var _contact_cooldown_s: float = 0.5
+var _light_speed_mul: float = 0.85
 
 
 func _init() -> void:
 	var unshaded: CanvasItemMaterial = CanvasItemMaterial.new()
 	unshaded.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
 	material = unshaded
+	_sprite = Sprite2D.new()
+	_sprite.visible = false
+	_sprite.show_behind_parent = true # глаза и кольца (_draw родителя) — поверх тела
+	add_child(_sprite)
+	move_child(_sprite, 0)
 
 
 func _ready() -> void:
@@ -72,6 +87,13 @@ func activate(p_def: EnemyDef, pos: Vector2, elite: bool, hp_mul: float, damage_
 	_cfg = manager.enemies_cfg
 	is_elite = elite
 	var elite_cfg: Dictionary = _cfg.get("elite", {}) as Dictionary
+	var lifecycle: Dictionary = _cfg.get("lifecycle", {}) as Dictionary
+	var contact: Dictionary = _cfg.get("contact", {}) as Dictionary
+	_spawn_s = float(lifecycle.get("spawn_s", 0.6))
+	_death_s = float(lifecycle.get("death_s", 0.48))
+	_recoil_pt = float(contact.get("recoil_pt", 24.0))
+	_contact_cooldown_s = float(contact.get("cooldown_s", 0.5))
+	_light_speed_mul = float((_cfg.get("burn", {}) as Dictionary).get("speed_mul_in_light", 0.85))
 	var sizes: Dictionary = _cfg.get("size_pt", {}) as Dictionary
 	radius = float(sizes.get(String(def.size_class), 36)) * 0.5 * (float(elite_cfg.get("size_mul", 1.4)) if elite else 1.0)
 	max_hp = def.hp * hp_mul * (float(elite_cfg.get("hp_mul", 5.0)) if elite else 1.0)
@@ -101,6 +123,7 @@ func activate(p_def: EnemyDef, pos: Vector2, elite: bool, hp_mul: float, damage_
 	rotation = 0.0
 	scale = Vector2.ONE
 	modulate = Color.WHITE
+	_setup_sprite()
 	_set_state(State.SPAWN)
 
 
@@ -118,7 +141,7 @@ func current_speed() -> float:
 	var slow: float = 0.0
 	for pct: float in _slows.values():
 		slow = maxf(slow, pct)
-	var light_mul: float = float((_cfg.get("burn", {}) as Dictionary).get("speed_mul_in_light", 0.85)) if in_light else 1.0
+	var light_mul: float = _light_speed_mul if in_light else 1.0
 	return base_speed * (1.0 - slow / 100.0) * light_mul
 
 
@@ -189,7 +212,7 @@ func tick(delta: float, to_player: Vector2, light_radius: float) -> void:
 		State.SPAWN:
 			velocity = Vector2.ZERO
 			_eyes_only_left = maxf(0.0, _eyes_only_left - delta)
-			if state_t >= float((_cfg.get("lifecycle", {}) as Dictionary).get("spawn_s", 0.6)) and _eyes_only_left <= 0.0:
+			if state_t >= _spawn_s and _eyes_only_left <= 0.0:
 				_set_state(State.HUNT)
 		State.HUNT, State.BURN:
 			if in_light and state == State.HUNT:
@@ -215,7 +238,7 @@ func tick(delta: float, to_player: Vector2, light_radius: float) -> void:
 			if not attack.tick_active(self, delta):
 				_set_state(State.BURN if in_light else State.HUNT)
 		State.RECOIL:
-			velocity = _recoil_dir * float((_cfg.get("contact", {}) as Dictionary).get("recoil_pt", 24.0)) / 0.2
+			velocity = _recoil_dir * _recoil_pt / 0.2
 			if state_t >= 0.2:
 				_set_state(State.BURN if in_light else State.HUNT)
 		State.STUN:
@@ -229,7 +252,7 @@ func tick(delta: float, to_player: Vector2, light_radius: float) -> void:
 			velocity = -to_player.normalized() * base_speed * 0.6
 		State.DYING:
 			velocity = Vector2.ZERO
-			if state_t >= float((_cfg.get("lifecycle", {}) as Dictionary).get("death_s", 0.48)):
+			if state_t >= _death_s:
 				manager.release_enemy(self)
 				return
 		State.DESPAWN:
@@ -242,7 +265,50 @@ func tick(delta: float, to_player: Vector2, light_radius: float) -> void:
 		attack.tick_passive(self, delta, manager)
 		_check_contact(to_player)
 	_move(delta)
+	_update_sprite(delta)
 	queue_redraw()
+
+
+func _setup_sprite() -> void:
+	var tex: CanvasTexture = EnemyVisuals.texture_for(def.id)
+	_sprite.visible = tex != null
+	if tex == null:
+		return
+	_sprite.texture = tex
+	_sprite.hframes = EnemyVisuals.frame_count(def.id)
+	_sprite.material = EnemyVisuals.material_for(def.id)
+	_frame_px = float(tex.diffuse_texture.get_height())
+	_anim_t = randf() * 2.0
+	_sprite.modulate = Color.WHITE
+	_sprite.scale = Vector2.ONE * (radius * 2.0 / _frame_px)
+
+
+## Кадр анимации, разворот к игроку, сквош фаз, растворение при смерти (альфа modulate = прогресс).
+func _update_sprite(delta: float) -> void:
+	if not _sprite.visible and _sprite.texture == null:
+		return
+	_anim_t += delta
+	_sprite.frame = int(_anim_t * EnemyVisuals.FPS) % _sprite.hframes
+	_sprite.flip_h = _facing.x < 0.0
+	var base: float = radius * 2.0 / _frame_px
+	var squash: Vector2 = Vector2.ONE
+	var dissolve: float = 0.0
+	match state:
+		State.SPAWN:
+			var appear: float = clampf(state_t / 0.4, 0.0, 1.0)
+			squash = Vector2.ONE * lerpf(0.6, 1.0, appear)
+		State.TELEGRAPH:
+			squash = Vector2.ONE * (0.92 if def.id != &"devourer" else 1.12)
+		State.REVEAL:
+			squash = Vector2(1.1, 0.9)
+		State.DYING:
+			dissolve = clampf(state_t / _death_s, 0.0, 1.0)
+			squash = Vector2.ONE * (1.0 + dissolve * 0.15)
+		State.DESPAWN:
+			squash = Vector2.ONE * (1.0 - state_t / 0.2)
+	_sprite.visible = _eyes_only_left <= 0.0
+	_sprite.scale = squash * base
+	_sprite.modulate = Color(1, 1, 1, 1.0 - dissolve)
 
 
 func begin_despawn() -> void:
@@ -258,6 +324,7 @@ func _hunt(to_player: Vector2, light_radius: float) -> void:
 			marker = m
 			if m != null:
 				attack.on_telegraph(self, to_player, m)
+			FeedbackManager.telegraph(def.id)
 			_set_state(State.TELEGRAPH)
 			return
 	velocity = attack.hunt_velocity(self, to_player, light_radius) + separation
@@ -268,7 +335,7 @@ func _check_contact(to_player: Vector2) -> void:
 		return
 	if to_player.length() > radius + manager.player_body_radius():
 		return
-	contact_cd = float((_cfg.get("contact", {}) as Dictionary).get("cooldown_s", 0.5))
+	contact_cd = _contact_cooldown_s
 	if manager.try_instant_burn(self):
 		return
 	if damage_pct > 0.0:
@@ -342,10 +409,11 @@ func _draw() -> void:
 				var a: float = TAU * i / 24.0
 				draw_arc(Vector2.ZERO, zone_r, a, a + TAU / 48.0, 4, Color(ELITE_RIM, appear), 1.5)
 	if body_alpha > 0.0:
-		_draw_body(Vector2.ZERO, r * squash.x, Color(body, body_alpha))
-		if in_light or _reveal > 0.0:
-			_draw_rim(r, _reveal)
-			_draw_cracks(r)
+		if _sprite.texture == null:
+			_draw_body(Vector2.ZERO, r * squash.x, Color(body, body_alpha))
+			if in_light or _reveal > 0.0:
+				_draw_rim(r, _reveal)
+				_draw_cracks(r)
 		if is_elite:
 			draw_arc(Vector2.ZERO, r + 1.0, 0.0, TAU, 32, ELITE_RIM, 2.0)
 	if state != State.DYING:

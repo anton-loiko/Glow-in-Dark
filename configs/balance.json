@@ -35,6 +35,7 @@
   },
   "run": {
     "revive_countdown_s": 5.0,
+    "extra_lights": 6,
     "revive_crystal_cost": 30,
     "reroll_spark_cost": 50,
     "reroll_crystal_cost": 10,
@@ -79,9 +80,7 @@
     "collect_radius_pt": 18.0,
     "spark_pool": 300,
     "fuel_pool": 24,
-    "fuel_light_budget": 4,
-    "pitch_window_s": 0.4,
-    "pitch_max_semitones": 12
+    "_light_budget": "бюджет доп. света — run.extra_lights"
   },
   "camera": {
     "player_screen_y": 0.51,

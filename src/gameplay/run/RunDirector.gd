@@ -4,8 +4,6 @@ extends Node
 ## смерть → S08 (один раз за забег) → S09, воскрешение, завершение по таймеру главы.
 ## Временный источник искр/топлива (debug_pickup_spawner) работает до появления врагов в task_3.
 
-const PICKUP_SFX: AudioStream = preload("res://src/assets/audio/pickup_coin_powerUp9.ogg")
-const FUEL_SFX: AudioStream = preload("res://src/assets/audio/pickup_impactWood_light_001.ogg")
 const MILESTONE_EVERY_S: float = 120.0
 
 @export var player: Player
@@ -32,10 +30,6 @@ var _spark_income_carry: float = 0.0
 var _pending_level_ups: int = 0
 var _in_level_up: bool = false
 var _finished: bool = false
-var _pitch_count: int = 0
-var _pitch_last_ms: int = 0
-var _pitch_window_ms: int = 400
-var _pitch_max: int = 12
 
 var _spawner_enabled: bool = false
 var _spawner_sparks_per_s: float = 2.0
@@ -59,9 +53,6 @@ func setup(p_run: RunContext, p_chapter: ChapterDef, p_balance: Dictionary) -> v
 	var level_cfg: Dictionary = balance.get("level_up", {}) as Dictionary
 	_ramp_in_ms = int(level_cfg.get("time_ramp_in_ms", _ramp_in_ms))
 	_ramp_out_ms = int(level_cfg.get("time_ramp_out_ms", _ramp_out_ms))
-	var pickup_cfg: Dictionary = balance.get("pickups", {}) as Dictionary
-	_pitch_window_ms = int(float(pickup_cfg.get("pitch_window_s", 0.4)) * 1000.0)
-	_pitch_max = int(pickup_cfg.get("pitch_max_semitones", 12))
 	var spawner: Dictionary = run_cfg.get("debug_pickup_spawner", {}) as Dictionary
 	_spawner_enabled = bool(spawner.get("enabled", false))
 	_spawner_sparks_per_s = float(spawner.get("sparks_per_s", _spawner_sparks_per_s))
@@ -118,8 +109,7 @@ func _on_spark_collected(value: int, _pos: Vector2) -> void:
 	_spark_income_carry -= gained
 	run.run_sparks += gained
 	EventBus.run_sparks_changed.emit(run.run_sparks, gained)
-	_play_pickup_sound()
-	FeedbackManager.haptic(&"selection")
+	FeedbackManager.cue(&"spark")
 	_add_xp(value)
 
 
@@ -162,13 +152,13 @@ func _level_up_flow() -> void:
 func _on_fuel_collected(pos: Vector2) -> void:
 	var healed: float = player.light_model.heal_fuel(_fuel_heal)
 	EventBus.fuel_collected.emit(healed, pos)
-	AudioManager.play_sfx(FUEL_SFX)
+	FeedbackManager.cue(&"fuel")
 	burst.trigger()
 
 
 func _on_chest_collected(_pos: Vector2) -> void:
 	run.run_chests.append(&"run")
-	FeedbackManager.haptic(&"medium")
+	FeedbackManager.cue(&"run_chest")
 
 
 # --- Смерть и воскрешение -----------------------------------------------------
@@ -206,15 +196,6 @@ func _finish(reason: StringName) -> void:
 	if reason == RunResult.REASON_CHAPTER_CLEARED:
 		Telemetry.log_event(&"chapter_cleared", {"run_id": run.run_id, "chapter": run.chapter_id})
 	GameManager.end_run(result)
-
-
-# --- Звук серии искр ----------------------------------------------------------
-
-func _play_pickup_sound() -> void:
-	var now: int = Time.get_ticks_msec()
-	_pitch_count = mini(_pitch_count + 1, _pitch_max) if now - _pitch_last_ms <= _pitch_window_ms else 0
-	_pitch_last_ms = now
-	AudioManager.play_sfx(PICKUP_SFX, pow(2.0, _pitch_count / 12.0))
 
 
 # --- Временный спавнер (до task_3) -------------------------------------------

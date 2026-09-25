@@ -39,7 +39,7 @@ func play(chapter_id: int, tier: int, milestone: int) -> void:
 	_card = _build_card(chapter_id, tier, milestone)
 	_card.modulate.a = 0.0
 	add_child(_card)
-	FeedbackManager.haptic(&"success" if milestone > 0 else &"medium")
+	FeedbackManager.cue(&"beacon_milestone" if milestone > 0 else &"beacon_tier")
 	var cfg: Dictionary = BeaconService.config().get("cutscene", {}) as Dictionary
 	var total: float = float((cfg.get("milestone_s", {}) as Dictionary).get(str(milestone), cfg.get("tier_s", 2.4))) if milestone > 0 else float(cfg.get("tier_s", 2.4))
 	_tween = UIMotion.tween(self)

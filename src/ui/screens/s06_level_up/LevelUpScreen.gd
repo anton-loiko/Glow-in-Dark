@@ -32,6 +32,7 @@ func on_screen_enter(_params: Dictionary) -> void:
 	if run == null:
 		SceneRouter.close_top()
 		return
+	FeedbackManager.cue(&"level_up")
 	_title.text = "УРОВЕНЬ %d" % run.player_level
 	_show_offer(SkillsManager.draw_offer(run))
 
@@ -171,7 +172,7 @@ func _on_card_chosen(card: SkillCard, focus_used: bool) -> void:
 	if _busy:
 		return
 	_busy = true
-	FeedbackManager.haptic(&"medium")
+	FeedbackManager.cue(&"card_pick")
 	var position_idx: int = _cards.find(card)
 	var decision_ms: int = Time.get_ticks_msec() - _shown_at_ms
 	for other: SkillCard in _cards:

@@ -1,0 +1,299 @@
+{
+  "_doc": "Звук по событиям (DS §06). event → файл в src/assets/audio/sfx, шина, громкость, лимит одновременных голосов, кулдаун, приоритет (выше — вытесняет ниже при нехватке плееров), случайный разброс высоты в полутонах. Звуки генерирует tools/audio/synth_sfx.py.",
+  "pool_size": 24,
+  "spark_series": {
+    "window_ms": 400,
+    "max_steps": 12
+  },
+  "low_light": {
+    "threshold": 0.25,
+    "lowpass_hz": 900,
+    "heartbeat_every_s": 1.2
+  },
+  "hit_distortion_ms": 200,
+  "music_duck_ad": 0.6,
+  "events": {
+    "spark": {
+      "file": "spark",
+      "bus": "SFX",
+      "volume_db": -8,
+      "voices": 4,
+      "cooldown_ms": 30,
+      "priority": 1
+    },
+    "fuel": {
+      "file": "fuel",
+      "bus": "SFX",
+      "volume_db": -2,
+      "voices": 2,
+      "priority": 4
+    },
+    "light_burst": {
+      "file": "light_burst",
+      "bus": "SFX",
+      "volume_db": 0,
+      "voices": 1,
+      "priority": 5
+    },
+    "burn": {
+      "file": "burn",
+      "bus": "SFX",
+      "volume_db": -10,
+      "voices": 4,
+      "cooldown_ms": 40,
+      "priority": 1,
+      "pitch_random": 1.5
+    },
+    "player_hit": {
+      "file": "player_hit",
+      "bus": "SFX",
+      "volume_db": -3,
+      "voices": 2,
+      "cooldown_ms": 90,
+      "priority": 4
+    },
+    "heartbeat": {
+      "file": "heartbeat",
+      "bus": "SFX",
+      "volume_db": -6,
+      "voices": 1,
+      "priority": 3
+    },
+    "level_up": {
+      "file": "level_up",
+      "bus": "UI",
+      "volume_db": -2,
+      "voices": 1,
+      "priority": 5
+    },
+    "card_pick": {
+      "file": "card_pick",
+      "bus": "UI",
+      "volume_db": -4,
+      "voices": 1,
+      "priority": 4
+    },
+    "beacon_tick": {
+      "file": "beacon_tick",
+      "bus": "UI",
+      "volume_db": -8,
+      "voices": 3,
+      "cooldown_ms": 40,
+      "priority": 2
+    },
+    "beacon_tier": {
+      "file": "beacon_tier",
+      "bus": "UI",
+      "volume_db": 0,
+      "voices": 1,
+      "priority": 6
+    },
+    "beacon_milestone": {
+      "file": "beacon_milestone",
+      "bus": "UI",
+      "volume_db": 0,
+      "voices": 1,
+      "priority": 6
+    },
+    "iap_crystal": {
+      "file": "iap_crystal",
+      "bus": "UI",
+      "volume_db": -1,
+      "voices": 1,
+      "priority": 6
+    },
+    "ui_click": {
+      "file": "ui_click",
+      "bus": "UI",
+      "volume_db": -10,
+      "voices": 2,
+      "cooldown_ms": 40,
+      "priority": 2
+    },
+    "ui_disabled": {
+      "file": "ui_disabled",
+      "bus": "UI",
+      "volume_db": -6,
+      "voices": 1,
+      "cooldown_ms": 80,
+      "priority": 2
+    },
+    "whisper_eyes": {
+      "file": "whisper_eyes",
+      "bus": "SFX",
+      "volume_db": -14,
+      "voices": 2,
+      "cooldown_ms": 300,
+      "priority": 1
+    },
+    "reaper_windup": {
+      "file": "reaper_windup",
+      "bus": "SFX",
+      "volume_db": -8,
+      "voices": 2,
+      "cooldown_ms": 150,
+      "priority": 3
+    },
+    "devourer_bite": {
+      "file": "devourer_bite",
+      "bus": "SFX",
+      "volume_db": -6,
+      "voices": 2,
+      "cooldown_ms": 120,
+      "priority": 3
+    },
+    "extinguisher_hum": {
+      "file": "extinguisher_hum",
+      "bus": "SFX",
+      "volume_db": -4,
+      "voices": 1,
+      "priority": 5
+    },
+    "chest_open": {
+      "file": "chest_open",
+      "bus": "UI",
+      "volume_db": -3,
+      "voices": 2,
+      "priority": 4
+    },
+    "item_merge": {
+      "file": "item_merge",
+      "bus": "UI",
+      "volume_db": -2,
+      "voices": 1,
+      "priority": 5
+    },
+    "revive": {
+      "file": "revive",
+      "bus": "SFX",
+      "volume_db": -1,
+      "voices": 1,
+      "priority": 6
+    }
+  },
+  "burn_pitch_by_size": {
+    "S": 1.25,
+    "M": 1.0,
+    "L": 0.8,
+    "XL": 0.65
+  },
+  "music": {
+    "hub": {
+      "file": "hub",
+      "volume_db": -6
+    },
+    "run_layers": [
+      "run_base",
+      "run_drums"
+    ],
+    "run_layer_volume_db": {
+      "calm": [
+        -6,
+        -60
+      ],
+      "tension": [
+        -6,
+        -8
+      ],
+      "reward": [
+        -9,
+        -60
+      ]
+    },
+    "reward_stinger": "reward_resolve",
+    "fade_s": 1.5
+  },
+  "cues": {
+    "_doc": "Реплика = звук + хаптика (DS §06). FeedbackManager.cue(name). haptic — вид из FeedbackManager.PATTERNS.",
+    "spark": {
+      "sfx": "spark",
+      "haptic": "selection",
+      "series": true
+    },
+    "fuel": {
+      "sfx": "fuel",
+      "haptic": "heavy"
+    },
+    "light_burst": {
+      "sfx": "light_burst",
+      "haptic": "heavy"
+    },
+    "enemy_burned": {
+      "sfx": "burn",
+      "haptic": "light"
+    },
+    "player_hit": {
+      "sfx": "player_hit",
+      "haptic": "rigid"
+    },
+    "player_hit_shield": {
+      "sfx": "player_hit",
+      "haptic": "soft"
+    },
+    "low_light": {
+      "sfx": "heartbeat",
+      "haptic": "soft"
+    },
+    "level_up": {
+      "sfx": "level_up",
+      "haptic": "success"
+    },
+    "card_pick": {
+      "sfx": "card_pick",
+      "haptic": "medium"
+    },
+    "beacon_tick": {
+      "sfx": "beacon_tick",
+      "haptic": "light"
+    },
+    "beacon_tier": {
+      "sfx": "beacon_tier",
+      "haptic": "success"
+    },
+    "beacon_milestone": {
+      "sfx": "beacon_milestone",
+      "haptic": "heavy"
+    },
+    "purchase": {
+      "sfx": "iap_crystal",
+      "haptic": "success"
+    },
+    "button": {
+      "sfx": "ui_click",
+      "haptic": "selection"
+    },
+    "button_disabled": {
+      "sfx": "ui_disabled",
+      "haptic": "rigid"
+    },
+    "enemy_eyes": {
+      "sfx": "whisper_eyes"
+    },
+    "reaper_windup": {
+      "sfx": "reaper_windup"
+    },
+    "devourer_bite": {
+      "sfx": "devourer_bite"
+    },
+    "extinguisher": {
+      "sfx": "extinguisher_hum",
+      "haptic": "medium"
+    },
+    "chest_burst": {
+      "sfx": "chest_open",
+      "haptic": "heavy"
+    },
+    "item_merge": {
+      "sfx": "item_merge",
+      "haptic": "success"
+    },
+    "revive": {
+      "sfx": "revive",
+      "haptic": "success"
+    },
+    "run_chest": {
+      "sfx": "chest_open",
+      "haptic": "medium"
+    }
+  }
+}

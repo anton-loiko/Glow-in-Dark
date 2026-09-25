@@ -10,15 +10,17 @@ config_version=5
 
 [application]
 
+config/icon="res://src/assets/brand/app_icon_256.png"
+
 config/name="Glow in the Dark"
 config/version="1.0.0"
 run/main_scene="res://src/app/Boot.tscn"
 config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "Mobile")
-boot_splash/bg_color=Color(0.039215688, 0.05882353, 0.09411765, 1)
+boot_splash/bg_color=Color(0.02745098, 0.03529412, 0.05882353, 1)
 boot_splash/stretch_mode=4
-boot_splash/use_filter=false
-boot_splash/image="uid://81ffxjynrwpg"
+boot_splash/use_filter=true
+boot_splash/image="res://src/assets/brand/splash.png"
 
 [autoload]
 

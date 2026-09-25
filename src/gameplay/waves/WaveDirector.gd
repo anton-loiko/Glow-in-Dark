@@ -59,6 +59,12 @@ func setup(p_run: RunContext, p_manager: EnemyManager, p_pickups: PickupSystem, 
 
 
 func _physics_process(delta: float) -> void:
+	PerfStats.begin(&"waves")
+	_tick(delta)
+	PerfStats.end(&"waves")
+
+
+func _tick(delta: float) -> void:
 	if run == null or run.result != null or player.is_dead():
 		return
 	var t: float = run.elapsed_s

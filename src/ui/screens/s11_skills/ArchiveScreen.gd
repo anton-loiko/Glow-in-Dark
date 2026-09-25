@@ -74,7 +74,8 @@ func _show_details(def: SkillDef) -> void:
 	for lvl: int in range(1, def.max_level + 1):
 		var note: String = def.level_note(lvl)
 		_details_box.add_child(UIKit.label(tr("Ур. %d: %s") % [lvl, def.level_value(lvl)] + ((" · " + note) if not note.is_empty() else ""), &"body_s", UITokens.TEXT_SECONDARY))
-	for evolution: Variant in SkillsManager.get_tuning().get("evolutions", []):
+	var evolutions: Array = SkillsManager.get_tuning().get("evolutions", []) if ConfigDB.feature("evolutions_enabled") else []
+	for evolution: Variant in evolutions:
 		var requires: Dictionary = (evolution as Dictionary).get("requires", {}) as Dictionary
 		if requires.has(String(def.id)):
 			_details_box.add_child(UIKit.mono(tr("Эволюция: %s") % (evolution as Dictionary).get("name", ""), UITokens.GOLD_300))

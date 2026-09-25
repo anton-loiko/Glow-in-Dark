@@ -106,7 +106,7 @@ func _on_down() -> void:
 			return
 		State.DISABLED:
 			UIMotion.shake(self)
-			FeedbackManager.haptic(&"rigid")
+			FeedbackManager.cue(&"button_disabled")
 			need_sparks.emit()
 			return
 		State.MAXED:
@@ -141,7 +141,7 @@ func _step() -> void:
 		return
 	_hold_levels += 1
 	_hold_sparks += cost
-	FeedbackManager.haptic(&"light")
+	FeedbackManager.cue(&"beacon_tick", pow(2.0, float(BeaconService.level(GameManager.profile, chapter_id) % BeaconService.levels_per_tier()) / 12.0))
 	deposited.emit(1)
 	refresh()
 	if state != State.ACTIVE and state != State.HOLDING:

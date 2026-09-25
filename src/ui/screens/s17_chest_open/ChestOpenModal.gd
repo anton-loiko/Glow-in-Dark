@@ -126,7 +126,7 @@ func _set_shake(k: float, pt: float) -> void:
 
 func _burst() -> void:
 	_lid_open = true
-	FeedbackManager.haptic(&"heavy")
+	FeedbackManager.cue(&"chest_burst")
 	_chest_box.queue_redraw()
 	var column: ColorRect = ColorRect.new()
 	column.color = Color(_seam_color, 0.5) if not GameManager.profile.settings.no_flashes else Color(UITokens.LIGHT_500, 0.3)

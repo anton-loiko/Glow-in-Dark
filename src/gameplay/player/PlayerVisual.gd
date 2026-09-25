@@ -1,13 +1,11 @@
 class_name PlayerVisual
 extends Node2D
-## Визуал Огонька (Art Direction §02, GDD 7.2). Временная процедурная отрисовка до hi-res арта:
-## капля с раскалённым ядром и двумя глазами, дыхание 1.2 с, squash & stretch по скорости,
-## 4 эмоции глаз, остывание и мерцание при HP < 25%, моргание при уроне.
+## Визуал Огонька (Art Direction §02, GDD 7.2): hi-res слои src/assets/hero — тело (белое, цвет скина через
+## modulate), раскалённое ядро, 4 эмоции глаз. Огонёк сам источник света — слои unshaded.
+## Дыхание 1.2 с, squash & stretch по скорости, остывание и мерцание при HP < 25%, вспышка при уроне.
 
 enum Mood { CALM, FOCUSED, SCARED, HAPPY }
 
-const EYE_COLOR: Color = Color("#07090F")
-const CORE_COLOR: Color = Color("#FFFDF5")
 const COLD_COLOR: Color = Color("#8FA3C0")
 
 @export var body_radius: float = 20.0
@@ -21,6 +19,38 @@ var danger: bool = false
 
 var _hurt_left: float = 0.0
 var _happy_left: float = 0.0
+var _body: Sprite2D
+var _core: Sprite2D
+var _eyes: Sprite2D
+
+const BODY_TEX: Texture2D = preload("res://src/assets/hero/hero_body.png")
+const CORE_TEX: Texture2D = preload("res://src/assets/hero/hero_core.png")
+const EYES_TEX: Dictionary = {
+	Mood.CALM: preload("res://src/assets/hero/hero_eyes_calm.png"),
+	Mood.FOCUSED: preload("res://src/assets/hero/hero_eyes_focused.png"),
+	Mood.SCARED: preload("res://src/assets/hero/hero_eyes_scared.png"),
+	Mood.HAPPY: preload("res://src/assets/hero/hero_eyes_happy.png"),
+}
+## Геометрия исходника 170×170: центр круга тела (85, 104), радиус 50 px.
+const SRC_BODY_R: float = 50.0
+const SRC_BODY_CENTER_Y: float = 104.0
+
+
+func _ready() -> void:
+	var unshaded: CanvasItemMaterial = CanvasItemMaterial.new()
+	unshaded.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	_body = _layer(BODY_TEX, unshaded)
+	_core = _layer(CORE_TEX, unshaded)
+	_eyes = _layer(EYES_TEX[Mood.CALM], unshaded)
+
+
+func _layer(tex: Texture2D, mat: Material) -> Sprite2D:
+	var sprite: Sprite2D = Sprite2D.new()
+	sprite.texture = tex
+	sprite.material = mat
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	add_child(sprite)
+	return sprite
 
 
 func _process(delta: float) -> void:
@@ -37,7 +67,7 @@ func _process(delta: float) -> void:
 	else:
 		rotation = lerp_angle(rotation, 0.0, minf(1.0, delta * 8.0))
 		scale = Vector2.ONE * base_scale
-	queue_redraw()
+	_update_layers()
 
 
 func play_hurt() -> void:
@@ -56,36 +86,20 @@ func _current_mood() -> Mood:
 	return mood
 
 
-func _draw() -> void:
+## Цвет тела, остывание при HP < 25%, вспышка урона, эмоция глаз; масштаб слоёв под body_radius.
+func _update_layers() -> void:
+	if _body == null:
+		return
 	var color: Color = light_color
 	if danger:
 		var flicker: float = 0.75 + 0.25 * sin(Time.get_ticks_msec() * 0.037) * sin(Time.get_ticks_msec() * 0.011)
 		color = light_color.lerp(COLD_COLOR, 0.7) * Color(flicker, flicker, flicker, 1.0)
 	if _hurt_left > 0.0:
 		color = color.lerp(Color.WHITE, 0.6)
-	var r: float = body_radius
-	# Капля: круг + заострённая макушка.
-	draw_circle(Vector2(0, r * 0.15), r, color)
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(-r * 0.72, -r * 0.35), Vector2(0, -r * 1.45), Vector2(r * 0.72, -r * 0.35),
-	]), color)
-	draw_circle(Vector2(0, r * 0.35), r * 0.42, CORE_COLOR)
-	_draw_eyes(r)
-
-
-func _draw_eyes(r: float) -> void:
-	var spacing: float = r * 0.38
-	var y: float = -r * 0.05
-	for side: float in [-1.0, 1.0]:
-		var center: Vector2 = Vector2(side * spacing, y)
-		match _current_mood():
-			Mood.HAPPY:
-				draw_arc(center + Vector2(0, r * 0.08), r * 0.16, PI * 1.1, PI * 1.9, 8, EYE_COLOR, r * 0.09)
-			Mood.FOCUSED:
-				draw_rect(Rect2(center - Vector2(r * 0.14, r * 0.07), Vector2(r * 0.28, r * 0.14)), EYE_COLOR)
-			Mood.SCARED:
-				draw_circle(center, r * 0.22, EYE_COLOR)
-				draw_circle(center + Vector2(-r * 0.06, -r * 0.07), r * 0.06, CORE_COLOR)
-			_:
-				draw_circle(center, r * 0.16, EYE_COLOR)
-				draw_circle(center + Vector2(-r * 0.05, -r * 0.05), r * 0.045, CORE_COLOR)
+	var k: float = body_radius / SRC_BODY_R
+	var offset: Vector2 = Vector2(0, -(SRC_BODY_CENTER_Y - 85.0) + body_radius * 0.15 / k)
+	for layer: Sprite2D in [_body, _core, _eyes]:
+		layer.scale = Vector2.ONE * k
+		layer.offset = offset
+	_body.modulate = color
+	_eyes.texture = EYES_TEX[_current_mood()]

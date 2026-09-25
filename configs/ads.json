@@ -1,16 +1,51 @@
 {
   "_doc": "Rewarded-плейсменты (task_7 §1, D15, D17). limit: per_run | per_day | cooldown_h | shared (with — чей лимит общий). Лимиты применяет AdManager.",
-  "app_keys": {"android": "", "ios": ""},
+  "app_keys": {
+    "android": "",
+    "ios": ""
+  },
+  "admob_app_id": {
+    "_doc": "Нужен адаптеру AdMob внутри Appodeal (без него приложение падает на старте). Пока аккаунта нет — тестовый ID Google; реальный выдаёт кабинет Appodeal (BACKLOG A2).",
+    "android": "ca-app-pub-3940256099942544~3347511713",
+    "ios": "ca-app-pub-3940256099942544~1458002511"
+  },
   "test_mode_in_debug": true,
   "music_duck": 0.6,
   "placements": {
-    "revive": {"limit": "per_run", "count": 1},
-    "run_x3": {"limit": "per_run", "count": 1},
-    "skill_reroll": {"limit": "per_run", "count": 1},
-    "skill_take_all": {"limit": "per_run", "count": 1},
-    "daily_x2": {"limit": "per_day", "count": 1},
-    "shop_free_gift": {"limit": "cooldown_h", "hours": 8, "grants": {"sparks": 300}},
-    "basic_chest": {"limit": "per_day", "count": 3},
-    "hub_sparks": {"limit": "shared", "with": "shop_free_gift"}
+    "revive": {
+      "limit": "per_run",
+      "count": 1
+    },
+    "run_x3": {
+      "limit": "per_run",
+      "count": 1
+    },
+    "skill_reroll": {
+      "limit": "per_run",
+      "count": 1
+    },
+    "skill_take_all": {
+      "limit": "per_run",
+      "count": 1
+    },
+    "daily_x2": {
+      "limit": "per_day",
+      "count": 1
+    },
+    "shop_free_gift": {
+      "limit": "cooldown_h",
+      "hours": 8,
+      "grants": {
+        "sparks": 300
+      }
+    },
+    "basic_chest": {
+      "limit": "per_day",
+      "count": 3
+    },
+    "hub_sparks": {
+      "limit": "shared",
+      "with": "shop_free_gift"
+    }
   }
 }

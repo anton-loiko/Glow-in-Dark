@@ -20,7 +20,7 @@ func _on_purchase_completed(product_id: StringName) -> void:
 
 
 func play(crystals: int) -> void:
-	FeedbackManager.haptic(&"success")
+	FeedbackManager.cue(&"purchase")
 	var viewport: Vector2 = get_viewport().get_visible_rect().size
 	var pulse: ColorRect = ColorRect.new()
 	pulse.color = Color(UITokens.CRYSTAL_500, 0.0)

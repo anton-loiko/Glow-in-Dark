@@ -15,3 +15,15 @@ reports/
 addons/godot_mcp_bridge/
 godot_access.log
 godot_error.log
+
+# Сборки и ключи подписи (task_8 §7)
+*.apk
+*.aab
+*.idsig
+*.ipa
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+.godot-bin/
+local.properties

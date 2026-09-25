@@ -40,7 +40,7 @@ func trigger() -> void:
 	global_position = origin
 	burst_started.emit(origin)
 	EventBus.light_burst_triggered.emit(origin)
-	FeedbackManager.haptic(&"heavy")
+	FeedbackManager.cue(&"light_burst")
 	_run_sequence()
 
 

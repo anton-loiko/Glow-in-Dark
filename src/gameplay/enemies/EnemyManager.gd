@@ -13,10 +13,12 @@ var run: RunContext
 
 var _pools: Dictionary[StringName, ObjectPool] = {}
 var _active: Array[Enemy] = []
+var _grid_pos: PackedVector2Array = PackedVector2Array()
+var _grid_rad: PackedFloat32Array = PackedFloat32Array()
 var _counts: Dictionary[StringName, int] = {}
 var _elite_count: int = 0
 var _markers: ObjectPool = ObjectPool.new()
-var _grid: Dictionary[Vector2i, Array] = {}
+var _grid: Dictionary[Vector2i, PackedInt32Array] = {}
 var _frame: int = 0
 var _burn_tick: float = 0.25
 var _burn_acc: float = 0.0
@@ -182,7 +184,7 @@ func hit_player(enemy: Enemy, source: StringName) -> void:
 	var dealt: float = player.light_model.apply_damage(enemy.damage_pct, source)
 	if dealt > 0.0:
 		camera.shake(3.0, 0.12)
-		FeedbackManager.haptic(&"rigid")
+		FeedbackManager.player_hit(run.skills.has(&"shield"))
 
 
 ## Плазменный Огонёк: касание сжигает врага (элита −40% HP, Гаситель −15%). true — урон игроку не наносится.
@@ -212,6 +214,12 @@ func stats_burn_after_exit() -> float:
 # --- Цикл ----------------------------------------------------------------------
 
 func _physics_process(delta: float) -> void:
+	PerfStats.begin(&"enemies")
+	_tick(delta)
+	PerfStats.end(&"enemies")
+
+
+func _tick(delta: float) -> void:
 	if player == null:
 		return
 	_frame += 1
@@ -226,7 +234,9 @@ func _physics_process(delta: float) -> void:
 		if i >= _active.size():
 			continue
 		var enemy: Enemy = _active[i]
-		enemy.separation = _separation_for(enemy)
+		# Разлёт — половина врагов за кадр (шахматный порядок), остальные держат прошлое значение.
+		if (i + _frame) % 2 == 0 or not enemy.is_alive():
+			enemy.separation = _separation_for(enemy)
 		var to_player: Vector2 = player_pos - enemy.global_position
 		enemy.tick(delta, to_player, light_radius)
 		if not enemy.is_alive():
@@ -305,31 +315,46 @@ func _is_offscreen(enemy: Enemy) -> bool:
 
 # --- Разделение стаи -----------------------------------------------------------
 
+## Сетка разлёта: позиции и радиусы кэшируются в упакованных массивах, клетка → индексы (task_8 §5:
+## чтение global_position у соседей в цикле было половиной бюджета врагов).
 func _rebuild_grid() -> void:
 	_grid.clear()
-	for enemy: Enemy in _active:
-		var cell: Vector2i = Vector2i((enemy.global_position / _sep_cell).floor())
-		if not _grid.has(cell):
-			_grid[cell] = []
-		_grid[cell].append(enemy)
+	var n: int = _active.size()
+	_grid_pos.resize(n)
+	_grid_rad.resize(n)
+	for i: int in n:
+		var enemy: Enemy = _active[i]
+		var pos: Vector2 = enemy.global_position
+		_grid_pos[i] = pos
+		_grid_rad[i] = enemy.radius if enemy.is_alive() else -1.0
+		var cell: Vector2i = Vector2i((pos / _sep_cell).floor())
+		var bucket: PackedInt32Array = _grid.get(cell, PackedInt32Array())
+		bucket.append(i)
+		_grid[cell] = bucket
 
 
 func _separation_for(enemy: Enemy) -> Vector2:
 	if not enemy.is_alive():
 		return Vector2.ZERO
-	var cell: Vector2i = Vector2i((enemy.global_position / _sep_cell).floor())
+	var pos: Vector2 = enemy.global_position
+	var r: float = enemy.radius
+	var cell: Vector2i = Vector2i((pos / _sep_cell).floor())
 	var push: Vector2 = Vector2.ZERO
 	for dy: int in range(-1, 2):
 		for dx: int in range(-1, 2):
-			var bucket: Array = _grid.get(cell + Vector2i(dx, dy), [])
-			for other: Enemy in bucket:
-				if other == enemy or not other.is_alive():
+			var key: Vector2i = cell + Vector2i(dx, dy)
+			if not _grid.has(key):
+				continue
+			for j: int in _grid[key]:
+				var other_r: float = _grid_rad[j]
+				if other_r < 0.0:
 					continue
-				var offset: Vector2 = enemy.global_position - other.global_position
-				var min_dist: float = (enemy.radius + other.radius) * 0.9
-				var d: float = offset.length()
-				if d > 0.001 and d < min_dist:
-					push += offset / d * (1.0 - d / min_dist) * (other.radius / enemy.radius)
+				var offset: Vector2 = pos - _grid_pos[j]
+				var min_dist: float = (r + other_r) * 0.9
+				var d2: float = offset.length_squared()
+				if d2 > 0.000001 and d2 < min_dist * min_dist:
+					var d: float = sqrt(d2)
+					push += offset / d * (1.0 - d / min_dist) * (other_r / r)
 	return push * _sep_strength
 
 
@@ -364,7 +389,7 @@ func on_enemy_killed(enemy: Enemy) -> void:
 	for child_id: String in spawn_on_death:
 		_spawn_children_later(StringName(child_id), int(spawn_on_death[child_id]), pos)
 	run.kills += 1
-	FeedbackManager.haptic(&"light")
+	FeedbackManager.enemy_burned(enemy.def.id)
 	EventBus.enemy_killed.emit(enemy.def.id, pos, enemy.is_elite)
 
 

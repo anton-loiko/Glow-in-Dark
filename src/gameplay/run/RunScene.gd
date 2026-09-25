@@ -39,6 +39,12 @@ func on_screen_enter(_params: Dictionary) -> void:
 	waves.setup(run, enemies, pickups, streamer, player, camera)
 	skills.setup(player, enemies, pickups, camera, run)
 	DamagePool.bind_world(fx_layer)
+	if PerfOverlay.is_allowed():
+		var overlay: PerfOverlay = PerfOverlay.new()
+		overlay.enemies = enemies
+		overlay.pickups = pickups
+		overlay.run = run
+		add_child(overlay)
 
 
 func _exit_tree() -> void:

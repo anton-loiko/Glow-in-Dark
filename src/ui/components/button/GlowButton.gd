@@ -86,7 +86,7 @@ func _refresh_text() -> void:
 
 
 func _on_pressed() -> void:
-	FeedbackManager.haptic(&"selection")
+	FeedbackManager.cue(&"button")
 
 
 func _on_gui_input(event: InputEvent) -> void:
@@ -96,7 +96,7 @@ func _on_gui_input(event: InputEvent) -> void:
 		or (event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed)
 	if tapped:
 		UIMotion.shake(self)
-		FeedbackManager.haptic(&"rigid")
+		FeedbackManager.cue(&"button_disabled")
 
 
 func _draw() -> void:

@@ -20,12 +20,14 @@ var merge_threshold: int = 60
 var merge_value_mul: int = 5
 var bounce_range: Vector2 = Vector2(12, 30)
 var magnet_delay: float = 0.15
-var fuel_light_budget: int = 4
+## Общий бюджет доп. источников света забега (топливо — приоритет 1, ниже взрывов и навыков).
+const FUEL_LIGHT_PRIORITY: int = 1
+
+var light_budget: LightBudget = LightBudget.new()
 
 var _sparks: ObjectPool = ObjectPool.new()
 var _fuel: ObjectPool = ObjectPool.new()
 var _chests: ObjectPool = ObjectPool.new()
-var _fuel_lights_on: int = 0
 var _light_texture: GradientTexture2D
 
 
@@ -41,7 +43,8 @@ func setup(p_player: Player, balance: Dictionary) -> void:
 	merge_threshold = int(cfg.get("spark_merge_threshold", merge_threshold))
 	merge_value_mul = int(cfg.get("spark_merge_value_mul", merge_value_mul))
 	magnet_delay = float(cfg.get("magnet_delay_s", magnet_delay))
-	fuel_light_budget = int(cfg.get("fuel_light_budget", fuel_light_budget))
+	if GameManager.current_run != null:
+		light_budget = GameManager.current_run.light_budget
 	var bounce: Array = cfg.get("drop_bounce_pt", [12, 30])
 	bounce_range = Vector2(float(bounce[0]), float(bounce[1]))
 	_light_texture = _make_light_texture()
@@ -71,9 +74,7 @@ func spawn_fuel(pos: Vector2) -> void:
 	if fuel == null:
 		return
 	fuel.reset(1, pos, 0.0, 0.0)
-	if _fuel_lights_on < fuel_light_budget:
-		fuel.glow_light.enabled = true
-		_fuel_lights_on += 1
+	light_budget.acquire(fuel.glow_light, FUEL_LIGHT_PRIORITY)
 
 
 func spawn_chest(pos: Vector2) -> void:
@@ -97,6 +98,12 @@ func active_sparks() -> int:
 
 
 func _physics_process(delta: float) -> void:
+	PerfStats.begin(&"pickups")
+	_tick(delta)
+	PerfStats.end(&"pickups")
+
+
+func _tick(delta: float) -> void:
 	if player == null:
 		return
 	var target: Vector2 = player.global_position
@@ -137,9 +144,7 @@ func _collect(pool: ObjectPool, p: Pickup) -> void:
 		Pickup.Kind.SPARK:
 			spark_collected.emit(p.value, pos)
 		Pickup.Kind.FUEL:
-			if p.glow_light.enabled:
-				p.glow_light.enabled = false
-				_fuel_lights_on -= 1
+			light_budget.release(p.glow_light)
 			fuel_collected.emit(pos)
 		Pickup.Kind.CHEST:
 			chest_collected.emit(pos)

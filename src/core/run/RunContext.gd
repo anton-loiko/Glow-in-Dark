@@ -29,9 +29,12 @@ var ad_reroll_used: bool = false
 var run_chests: Array[StringName] = []
 
 var result: RunResult
+## Доп. источники света боя сверх света игрока (task_8 §2).
+var light_budget: LightBudget
 
 
 func _init(p_chapter_id: int, p_seed: int, p_stats: StatBlock) -> void:
+	light_budget = LightBudget.new(int((ConfigDB.get_balance().get("run", {}) as Dictionary).get("extra_lights", 6)))
 	chapter_id = p_chapter_id
 	run_seed = p_seed
 	stats = p_stats

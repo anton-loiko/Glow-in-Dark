@@ -59,6 +59,7 @@ func _ready() -> void:
 
 func _boot() -> void:
 	Telemetry.log_event(&"app_open")
+	add_child(ShaderWarmup.new())
 	GameServices.sign_in_silently()
 	var started: int = Time.get_ticks_msec()
 	CloudManager.sync()

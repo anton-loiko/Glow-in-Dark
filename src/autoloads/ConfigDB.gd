@@ -20,6 +20,8 @@ const REQUIRED_KEYS: Dictionary = {
 	"ads": ["placements"],
 	"daily": ["days"],
 	"services": ["cloud_sync_enabled"],
+	"audio": ["pool_size", "events", "music"],
+	"features": ["flags"],
 }
 
 var _raw: Dictionary = {}
@@ -63,6 +65,11 @@ func get_beacon_config() -> Dictionary:
 
 func get_gear_config() -> Dictionary:
 	return get_config("gear_config")
+
+
+## Фича-флаг из configs/features.json (неизвестный флаг — выключен).
+func feature(flag: String) -> bool:
+	return bool((get_config("features").get("flags", {}) as Dictionary).get(flag, false))
 
 
 func get_skill(id: StringName) -> SkillDef:
@@ -151,6 +158,8 @@ func _build_defs() -> void:
 	for entry: Dictionary in get_config("enemies").get("enemies", []):
 		var enemy: EnemyDef = _load_visual("enemies", str(entry.get("id")), EnemyDef.new()) as EnemyDef
 		enemy.apply_dict(entry)
+		if enemy.id == &"mourner":
+			enemy.enabled = feature("mourner_enabled") # D7: Плакальщик за флагом (configs/features.json)
 		_enemies[enemy.id] = enemy
 
 	_skins.clear()

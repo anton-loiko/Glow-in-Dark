@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="root" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs id="defs">
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFB547" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#E08A1E" stop-opacity="0.193"/>
+      <stop offset="1" stop-color="#E08A1E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="body" cx="0.42" cy="0.62" r="0.7">
+      <stop offset="0" stop-color="#FFD08A"/>
+      <stop offset="0.55" stop-color="#FFB547"/>
+      <stop offset="1" stop-color="#E08A1E"/>
+    </radialGradient>
+    <radialGradient id="core" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFDF5"/>
+      <stop offset="0.7" stop-color="#FFFDF5" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#FFD08A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect id="tile" width="1024" height="1024" rx="286.7" fill="#07090F"/>
+  <circle id="hero-glow" cx="512" cy="580.0" r="480.0" fill="url(#glow)"/>
+  <path id="hero-body" d="M 512.0,250.0 C 588.0,360.0 712.0,460.0 712.0,580.0 A 200.0 200.0 0 1 1 312.0,580.0 C 312.0,460.0 436.0,360.0 512.0,250.0 Z" fill="url(#body)"/>
+  <ellipse id="hero-core" cx="512" cy="600.0" rx="110.0" ry="104.0" fill="url(#core)"/>
+  <path id="hero-highlight" d="M 388.0,520.0 Q 402.0,410.0 488.0,340.0" stroke="#FFFDF5" stroke-opacity="0.55" stroke-width="18.0" stroke-linecap="round" fill="none"/>
+</svg>
