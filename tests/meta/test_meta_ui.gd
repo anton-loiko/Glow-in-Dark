@@ -141,3 +141,19 @@ func test_spark_flow_expires() -> void:
 	assert_int(flow._sparks.size()).is_equal(5)
 	flow._process(2.0)
 	assert_int(flow._sparks.size()).is_equal(0)
+
+
+func test_slot_accepts_only_matching_item() -> void:
+	var helm: PlayerProfile.GearItem = GearService.create_item(&"hood_lamplighter", &"common")
+	GearService.add_item(p, helm)
+	var head: GearCell = auto_free(GearCell.new().setup(null, 76.0))
+	head.slot = &"head"
+	head.accepts_drop = true
+	var feet: GearCell = auto_free(GearCell.new().setup(null, 76.0))
+	feet.slot = &"feet"
+	feet.accepts_drop = true
+	var data: Dictionary = {"gear_uid": helm.uid, "slot": helm.slot}
+	assert_bool(head._can_drop_data(Vector2.ZERO, data)).is_true()
+	assert_bool(feet._can_drop_data(Vector2.ZERO, data)).is_false()
+	var inventory_cell: GearCell = auto_free(GearCell.new().setup(helm, 62.0))
+	assert_bool(inventory_cell._can_drop_data(Vector2.ZERO, data)).is_false()

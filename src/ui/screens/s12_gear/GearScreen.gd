@@ -163,6 +163,8 @@ func _build_doll_slots() -> void:
 		cell.slot = slot
 		cell.set_meta(&"slot", slot)
 		cell.pressed.connect(_on_slot_pressed)
+		cell.accepts_drop = true
+		cell.item_dropped.connect(_on_item_dropped)
 		_doll.add_child(cell)
 		var caption: Label = UIKit.mono(GearText.slot_name(slot).to_upper(), UITokens.TEXT_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
 		caption.add_theme_font_size_override(&"font_size", 10)
@@ -333,6 +335,7 @@ func _build_inventory() -> void:
 		cell.badge_up = GearService.can_level_up(profile, it)
 		cell.badge_merge = GearService.can_merge_rarity(it.rarity) and GearService.merge_partners(profile, it).size() >= GearService.merge_count()
 		cell.pressed.connect(_on_item_pressed)
+		cell.long_pressed.connect(_show_compare)
 		_grid.add_child(cell)
 	if items.is_empty():
 		var empty: Label = UIKit.label(tr("Здесь появятся предметы из сундуков"), &"body_s", UITokens.TEXT_MUTED)
@@ -412,3 +415,34 @@ func _on_history_dim(event: InputEvent, overlay: Control) -> void:
 		or (event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed)
 	if tapped:
 		overlay.queue_free()
+
+
+# --- Надевание перетаскиванием и сравнение по долгому тапу (Gear DS §01) ---
+
+func _on_item_dropped(slot_cell: GearCell, uid: String) -> void:
+	if GearService.equip(GameManager.profile, uid, slot_cell.slot):
+		FeedbackManager.cue(&"card_pick")
+		_hero.squash = 0.95 # Огонёк «кивает»
+		UIMotion.tween(_hero).tween_property(_hero, ^"squash", 1.0, UITokens.T_BASE_S).set_custom_interpolator(UIMotion.settle)
+
+
+## «+6 Свет»: разница стата предмета с надетым в его слоте.
+func _show_compare(cell: GearCell) -> void:
+	var it: PlayerProfile.GearItem = cell.item
+	var profile: PlayerProfile = GameManager.profile
+	var current: PlayerProfile.GearItem = profile.find_gear(GearService.equipped_uid(profile, it.slot))
+	var delta: float = GearService.stat_value(it) - (GearService.stat_value(current) if current != null else 0.0)
+	var stat: StringName = GearText.stat_item(it)
+	var text: String = tr("Надет") if current == it else GearText.stat_text(stat, delta)
+	if current != it and delta < 0.0 and stat != &"decay_rate_pct":
+		text = "−" + GearText.stat_text(stat, -delta).trim_prefix("+")
+	var tip: PanelContainer = UIKit.panel(&"PanelPill")
+	var label: Label = UIKit.label(text, &"number", UITokens.GAIN if delta >= 0.0 or stat == &"decay_rate_pct" else UITokens.COLD)
+	tip.add_child(label)
+	tip.top_level = true
+	add_child(tip)
+	tip.global_position = cell.global_position + Vector2(-20, -44)
+	var t: Tween = UIMotion.tween(tip)
+	t.tween_interval(1.4)
+	t.tween_property(tip, ^"modulate:a", 0.0, UITokens.T_FAST_S)
+	t.tween_callback(tip.queue_free)

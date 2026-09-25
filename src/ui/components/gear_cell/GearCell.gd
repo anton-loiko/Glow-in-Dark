@@ -6,6 +6,19 @@ extends Control
 ## item = null — пустой слот куклы (пунктир + «+»). Временная отрисовка до 9-slice-рамок task_8.
 
 signal pressed(cell: GearCell)
+## Долгий тап (≥ 450 мс) — тултип сравнения с надетым в слоте.
+signal long_pressed(cell: GearCell)
+## Предмет брошен на этот слот куклы (drag-n-drop).
+signal item_dropped(cell: GearCell, uid: String)
+
+const LONG_PRESS_MS: int = 450
+
+## Ячейка-слот куклы принимает перетаскиваемые предметы подходящего слота.
+var accepts_drop: bool = false
+var drop_hover: bool = false
+var _down_ms: int = -1
+var _long_fired: bool = false
+var _animated: bool = false
 
 var item: PlayerProfile.GearItem
 var slot: StringName = &"head"
@@ -31,12 +44,56 @@ func setup(p_item: PlayerProfile.GearItem, p_size: float = 62.0) -> GearCell:
 func _ready() -> void:
 	custom_minimum_size = Vector2(cell_size, cell_size)
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var animated: bool = item != null and item.rarity in [&"epic", &"legendary"]
-	set_process(animated)
+	_animated = item != null and item.rarity in [&"epic", &"legendary"]
+	set_process(_animated)
 
 
 func _process(_delta: float) -> void:
+	if _down and not _long_fired and item != null and Time.get_ticks_msec() - _down_ms >= LONG_PRESS_MS:
+		_long_fired = true
+		FeedbackManager.haptic(&"light")
+		long_pressed.emit(self)
+	if not _down and not _animated:
+		set_process(false) # таймер долгого тапа нужен только пока палец на ячейке
 	queue_redraw()
+
+
+# --- Drag-n-drop на слот куклы (Gear DS §01) ---
+
+func _get_drag_data(_at: Vector2) -> Variant:
+	if item == null or accepts_drop:
+		return null
+	_down = false
+	var preview: GearCell = GearCell.new().setup(item, cell_size)
+	preview.modulate.a = 0.85
+	var holder: Control = Control.new()
+	holder.add_child(preview)
+	preview.position = -Vector2.ONE * cell_size * 0.5
+	set_drag_preview(holder)
+	return {"gear_uid": item.uid, "slot": item.slot}
+
+
+func _can_drop_data(_at: Vector2, data: Variant) -> bool:
+	if not accepts_drop or not data is Dictionary or not (data as Dictionary).has("gear_uid"):
+		return false
+	var it: PlayerProfile.GearItem = GameManager.profile.find_gear(str((data as Dictionary)["gear_uid"]))
+	var ok: bool = it != null and GearService.slots_for(GameManager.profile, it).has(slot)
+	if drop_hover != ok:
+		drop_hover = ok
+		queue_redraw()
+	return ok
+
+
+func _drop_data(_at: Vector2, data: Variant) -> void:
+	drop_hover = false
+	item_dropped.emit(self, str((data as Dictionary)["gear_uid"]))
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_END or what == NOTIFICATION_MOUSE_EXIT:
+		if drop_hover:
+			drop_hover = false
+			queue_redraw()
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -50,9 +107,12 @@ func _gui_input(event: InputEvent) -> void:
 		up = not down
 	if down:
 		_down = true
+		_down_ms = Time.get_ticks_msec()
+		_long_fired = false
+		set_process(true)
 	elif up and _down:
 		_down = false
-		if Rect2(Vector2.ZERO, size).has_point(get_local_mouse_position()):
+		if not _long_fired and Rect2(Vector2.ZERO, size).has_point(get_local_mouse_position()):
 			FeedbackManager.haptic(&"selection")
 			pressed.emit(self)
 
@@ -60,6 +120,8 @@ func _gui_input(event: InputEvent) -> void:
 func _draw() -> void:
 	var rect: Rect2 = Rect2(Vector2.ZERO, size).grow(-1.0)
 	var t: float = Time.get_ticks_msec() / 1000.0
+	if drop_hover:
+		_draw_drop_hover(rect)
 	if item == null:
 		_draw_empty(rect)
 		return
@@ -131,6 +193,17 @@ func _draw() -> void:
 		draw_string(font, Vector2(rect.end.x - 20, rect.position.y + 13), "3×", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, UITokens.SPARK)
 	if dimmed:
 		draw_rect(rect, Color(UITokens.INK_900, 0.6))
+
+
+func _draw_drop_hover(rect: Rect2) -> void:
+	var hl: StyleBoxFlat = StyleBoxFlat.new()
+	hl.draw_center = false
+	hl.border_color = UITokens.LIGHT_500
+	hl.set_border_width_all(3)
+	hl.set_corner_radius_all(UITokens.R14 + 2)
+	hl.shadow_color = Color(UITokens.LIGHT_500, 0.4)
+	hl.shadow_size = 8
+	hl.draw(get_canvas_item(), rect.grow(3.0))
 
 
 func _draw_empty(rect: Rect2) -> void:
