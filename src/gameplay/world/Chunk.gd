@@ -28,11 +28,18 @@ static var _biolum_textures: Array[Texture2D] = []
 
 
 ## Hi-res ассеты мира (tools/art/gen_sprites.lua): серый альбедо + normal map, цвет главы — modulate.
-static var _floor_textures: Array[CanvasTexture] = []
-static var _prop_textures: Array[CanvasTexture] = []
+static var _floor_by_biome: Dictionary = {} ## biome → Array[CanvasTexture]
+static var _props_by_biome: Dictionary = {}
+const BIOME_PROPS: Dictionary = {
+	&"flooded_city": ["prop_slab", "prop_rubble"],
+	&"sleeping_forest": ["prop_stump", "prop_boulder"],
+	&"rusty_port": ["prop_crate", "prop_container"],
+}
 ## Альбедо текстур ~0.45 серого — множитель приближает яркость к палитре главы (окружение ≤ 60% яркости врагов в свете).
 const TEXTURE_TINT_GAIN: float = 1.6
 var _tile_variant: PackedByteArray = PackedByteArray()
+var _floor_textures: Array[CanvasTexture] = []
+var _prop_textures: Array[CanvasTexture] = []
 
 
 static func _canvas_texture(base: String) -> CanvasTexture:
@@ -45,21 +52,30 @@ static func _canvas_texture(base: String) -> CanvasTexture:
 	return tex
 
 
-static func _load_world_textures() -> void:
-	if not _floor_textures.is_empty():
+## Текстуры биома (src/assets/world/<biome>/); чего нет — берётся из common (пол, плиты/обломки Затопленного города).
+static func _load_biome(biome: StringName) -> void:
+	if _floor_by_biome.has(biome):
 		return
-	for i: int in range(1, 5):
-		var tex: CanvasTexture = _canvas_texture("res://src/assets/world/common/floor_%d" % i)
-		if tex != null:
-			_floor_textures.append(tex)
-	for file: String in ["prop_slab", "prop_rubble"]:
-		var tex: CanvasTexture = _canvas_texture("res://src/assets/world/common/" + file)
-		if tex != null:
-			_prop_textures.append(tex)
+	var floors: Array[CanvasTexture] = []
+	for dir: String in [String(biome), "common"]:
+		for i: int in range(1, 5):
+			var tex: CanvasTexture = _canvas_texture("res://src/assets/world/%s/floor_%d" % [dir, i])
+			if tex != null:
+				floors.append(tex)
+		if not floors.is_empty():
+			break
+	var props: Array[CanvasTexture] = []
+	for file: String in BIOME_PROPS.get(biome, BIOME_PROPS[&"flooded_city"]):
+		for dir: String in [String(biome), "common"]:
+			var tex: CanvasTexture = _canvas_texture("res://src/assets/world/%s/%s" % [dir, file])
+			if tex != null:
+				props.append(tex)
+				break
+	_floor_by_biome[biome] = floors
+	_props_by_biome[biome] = props
 
 
 func _init() -> void:
-	_load_world_textures()
 	z_index = -10
 	for i: int in MAX_PROPS:
 		var body: StaticBody2D = StaticBody2D.new()
@@ -122,6 +138,9 @@ func build(cell: Vector2i, p_size: float, run_seed: int, chapter: ChapterDef, wo
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_for(cell, run_seed)
 
+	_load_biome(chapter.biome)
+	_floor_textures.assign(_floor_by_biome[chapter.biome])
+	_prop_textures.assign(_props_by_biome[chapter.biome])
 	_floor_color = chapter.palette_color("floor", Color("#2A3A44"))
 	_floor_alt = chapter.palette_color("floor_alt", _floor_color.darkened(0.1))
 	_glow_color = chapter.palette_color("biolum", Color("#5FB3A1"))

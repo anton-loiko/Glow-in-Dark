@@ -537,6 +537,167 @@ local function hub_city(x, y, f)
   return -1, { albedo = { clamp(col[1], 0, 1), clamp(col[2], 0, 1), clamp(col[3], 0, 1) }, height_override = 0, normal_strength = 0 }
 end
 
+
+-- ---------------------------------------------------------------- Биомы глав 2–3 (серый альбедо, тон главы — modulate)
+-- Спящий лес: земля, пятна мха, корни (гребни шума), опавшие листья.
+-- Бесшовный fbm на тайле T: четыре выборки со сдвигом на период, билинейное смешивание.
+local function tiled_fbm(x, y, T, sc, s)
+  local wx, wy = x / T, y / T
+  local a = fbm(x / sc, y / sc, s)
+  local b = fbm((x + T) / sc, y / sc, s)
+  local c = fbm(x / sc, (y + T) / sc, s)
+  local d = fbm((x + T) / sc, (y + T) / sc, s)
+  -- в точке x = 0 вес у выборки со сдвигом +T, при x = T — у несдвинутой: края совпадают
+  return lerp(lerp(b, a, wx), lerp(d, c, wx), wy)
+end
+
+local function forest_floor(seed)
+  return function(x, y, f)
+    local T = 128
+    local earth = 0.38 + (tiled_fbm(x, y, T, 9, seed) - 0.5) * 0.16
+    local moss = smoothstep(0.52, 0.62, tiled_fbm(x, y, T, 22, seed + 5))
+    local root = smoothstep(0.03, 0.0, math.abs(tiled_fbm(x, y, T, 30, seed + 9) - 0.5)) * (1 - moss)
+    local leaf = hash(math.floor(x / 5) % 26, math.floor(y / 5) % 26, seed) > 0.93 and 1 or 0
+    local v = lerp(earth, 0.5, moss * 0.6)
+    v = lerp(v, 0.3, root * 0.7) + leaf * 0.08
+    local relief = moss * 0.5 + root * 0.8 + leaf * 0.2
+    return -1, { albedo = { v * 0.95, v * 1.05, v * 0.9 }, height_override = relief, normal_strength = 6 }
+  end
+end
+
+-- Ржавый порт: клёпаные стальные листы 2×2 на тайл, швы, пятна ржавчины.
+local function port_floor(seed)
+  return function(x, y, f)
+    local px, py = x % 64, y % 64
+    local seam = math.min(px, 64 - px, py, 64 - py)
+    local plate = smoothstep(0.5, 3, seam)
+    local rivet = 0
+    for _, c in ipairs({ { 6, 6 }, { 58, 6 }, { 6, 58 }, { 58, 58 } }) do
+      if len(px - c[1], py - c[2]) < 2.6 then rivet = 1 end
+    end
+    local rust = smoothstep(0.55, 0.7, tiled_fbm(x, y, 128, 18, seed + 3))
+    local scratches = smoothstep(0.02, 0.0, math.abs(tiled_fbm(x, y, 128, 6, seed + 7) - 0.5)) * 0.4
+    local v = 0.44 + (tiled_fbm(x, y, 128, 7, seed) - 0.5) * 0.08 - scratches * 0.1
+    local col = { v, v * 1.01, v * 1.05 }
+    if rust > 0 then col = { lerp(col[1], 0.5, rust), lerp(col[2], 0.33, rust), lerp(col[3], 0.24, rust) } end
+    local relief = plate * 0.5 + rivet * 0.9 - rust * 0.1
+    return -1, { albedo = col, height_override = relief, normal_strength = 7 }
+  end
+end
+
+local function prop_stump(x, y, f)
+  local r = len(x - 128, y - 128)
+  local ring = 0.5 + 0.5 * math.sin(r * 0.55 + fbm(x / 20, y / 20, 301) * 4)
+  local bark = smoothstep(96, 112, r)
+  local v = lerp(0.42 + ring * 0.08, 0.26, bark)
+  return r - 120, { albedo = { v * 1.05, v * 0.95, v * 0.8 }, height_override = smoothstep(122, 90, r) * (0.8 + ring * 0.1), normal_strength = 6 }
+end
+
+local function prop_boulder(x, y, f)
+  local d = sd_ellipse(x, y, 128, 132, 116, 102) + (fbm(x / 14, y / 14, 311) - 0.5) * 30
+  local moss = smoothstep(0.5, 0.6, fbm(x / 18, y / 18, 313)) * smoothstep(40, -60, y - 128)
+  local v = 0.36 + (fbm(x / 8, y / 8, 317) - 0.5) * 0.1
+  return d, { albedo = { v * (1 - moss * 0.1), v * (1 + moss * 0.25), v * (1 - moss * 0.15) }, height_override = math.sqrt(clamp(-d / 90, 0, 1)), normal_strength = 7 }
+end
+
+local function prop_crate(x, y, f)
+  local px, py = math.abs(x - 128), math.abs(y - 128)
+  local frame = (px > 104 or py > 104) and 1 or 0
+  local diag = smoothstep(9, 5, math.abs((x - 128) - (y - 128)) / 1.414) * (1 - frame)
+  local plank = (math.floor(y / 32) % 2) * 0.04
+  local v = 0.44 + plank + (fbm(x / 40, y / 4, 321) - 0.5) * 0.1 + frame * 0.05 + diag * 0.05
+  return math.max(px, py) - 124, { albedo = { v * 1.05, v * 0.92, v * 0.75 }, height_override = 0.4 + frame * 0.4 + diag * 0.3, normal_strength = 6 }
+end
+
+local function prop_container(x, y, f)
+  local rib = 0.5 + 0.5 * math.cos(x / 256 * math.pi * 2 * 12)
+  local rust = smoothstep(0.55, 0.72, fbm(x / 24, y / 24, 331))
+  local v = 0.4 + rib * 0.06
+  local col = { lerp(v, 0.5, rust), lerp(v * 1.02, 0.32, rust), lerp(v * 1.08, 0.22, rust) }
+  local edge = math.min(x, 256 - x, y, 256 - y)
+  return 4 - edge, { albedo = col, height_override = rib * 0.6 + smoothstep(4, 18, edge) * 0.4, normal_strength = 6 }
+end
+
+
+-- Хаб главы 2 «Спящий лес»: стволы-великаны, кроны, туман между деревьями, пруд с островком Маяка.
+local function hub_forest(x, y, f)
+  local sky = lerp(0.03, 0.06, y / 700)
+  local col = { sky * 0.8, sky * 1.1, sky * 0.95 }
+  -- дальние стволы
+  local fi = math.floor(x / 60)
+  local fx = x - fi * 60
+  local fw = 8 + hash(fi, 1, 401) * 10
+  if math.abs(fx - 30) < fw and y > 200 and y < 830 then local v = 0.07 col = { v * 0.8, v * 1.05, v * 0.9 } end
+  -- ближние стволы-великаны с корнями
+  local ni = math.floor((x + 40) / 150)
+  local nx = x + 40 - ni * 150
+  local nw = 16 + hash(ni, 2, 403) * 18 + math.max(0, (y - 700) * 0.25)
+  if math.abs(nx - 75) < nw and y > 120 and y < 840 then local v = 0.05 col = { v * 0.8, v, v * 0.85 } end
+  -- кроны
+  local canopy = fbm(x / 90, y / 60, 405)
+  if y < 420 and canopy > 0.5 - (420 - y) / 900 then
+    local v = 0.05 + (canopy - 0.5) * 0.06
+    col = { v * 0.75, v * 1.15, v * 0.85 }
+  end
+  -- светлячки в тумане
+  if hash(math.floor(x / 7), math.floor(y / 7), 407) > 0.996 and y > 300 and y < 800 then col = { 0.5, 0.65, 0.35 } end
+  -- пруд
+  if y >= 820 then
+    local w = 0.03 + (vnoise(x / 40, y / 3, 409) - 0.5) * 0.015
+    col = { w * 0.8, w * 1.15, w }
+  end
+  local island = sd_ellipse(x, y, 390, 880, 190, 46)
+  if island < 0 then
+    local moss = smoothstep(0.5, 0.6, fbm(x / 12, y / 12, 411))
+    local v = 0.15 + (fbm(x / 10, y / 10, 413) - 0.5) * 0.05
+    col = { v * 0.9, v * (1 + moss * 0.25), v * 0.85 }
+  end
+  return -1, { albedo = { clamp(col[1], 0, 1), clamp(col[2], 0, 1), clamp(col[3], 0, 1) }, height_override = 0, normal_strength = 0 }
+end
+
+-- Хаб главы 3 «Ржавый порт»: склады, штабеля контейнеров, портовые краны, корпус корабля у причала.
+local function hub_port(x, y, f)
+  local sky = lerp(0.035, 0.07, y / 700)
+  local col = { sky * 1.1, sky * 0.95, sky }
+  -- склады (широкие низкие коробки)
+  local wi = math.floor(x / 130)
+  local roof = 560 - hash(wi, 1, 501) * 90
+  if y > roof and y < 830 then local v = 0.075 col = { v * 1.05, v * 0.95, v * 0.95 } end
+  -- штабеля контейнеров
+  local ci = math.floor(x / 34)
+  local stack = 700 - math.floor(hash(ci, 2, 503) * 4) * 26
+  if y > stack and y < 830 and (x % 34) > 2 then
+    local tone = hash(ci, math.floor(y / 26), 505)
+    local rib = (x % 5 < 1) and -0.008 or 0
+    local seam = ((y - stack) % 26 < 2) and -0.012 or 0
+    local v = 0.058 + tone * 0.012 + rib + seam
+    col = { v * (1.02 + tone * 0.12), v * 0.95, v * 0.92 }
+  end
+  -- краны: мачта + стрела
+  for k = 0, 1 do
+    local mx = 150 + k * 440
+    if math.abs(x - mx) < 6 and y > 220 and y < 830 then col = { 0.05, 0.048, 0.05 } end
+    local boom_y = 230 + (x - mx) * 0.08
+    if math.abs(y - boom_y) < 4 and x > mx - 60 and x < mx + 230 then col = { 0.05, 0.048, 0.05 } end
+    if math.abs(x - (mx + 180)) < 1.2 and y > boom_y and y < 520 then col = { 0.06, 0.058, 0.06 } end
+  end
+  -- корабль у причала
+  local hull = math.max(math.abs(x - 600) - 170 + (y - 800) * 0.6, math.abs(y - 800) - 30)
+  if hull < 0 then col = { 0.045, 0.04, 0.042 } end
+  -- вода
+  if y >= 830 then
+    local w = 0.032 + (vnoise(x / 40, y / 3, 507) - 0.5) * 0.015
+    col = { w * 1.05, w, w * 1.1 }
+  end
+  local island = sd_ellipse(x, y, 390, 880, 190, 46)
+  if island < 0 then
+    -- причал: доски
+    local v = 0.15 + (math.floor(x / 16) % 2) * 0.012 + (fbm(x / 30, y / 4, 509) - 0.5) * 0.04
+    col = { v * 1.05, v * 0.95, v * 0.85 }
+  end
+  return -1, { albedo = { clamp(col[1], 0, 1), clamp(col[2], 0, 1), clamp(col[3], 0, 1) }, height_override = 0, normal_strength = 0 }
+end
+
 -- ---------------------------------------------------------------- запуск
 local only = ONLY
 local function want(name) return only == nil or only == name end
@@ -575,8 +736,20 @@ if want("vfx") then
   save_asset("src/assets/world/common", "biolum_mushrooms_2", 64, 64, 1, mushrooms(131), false, true)
   save_asset("src/assets/world/common", "biolum_rune", 48, 48, 1, rune, false, true)
 end
+if want("biomes") then
+  for i = 1, 4 do
+    save_asset("src/assets/world/sleeping_forest", "floor_" .. i, 128, 128, 1, forest_floor(400 + i * 13), false)
+    save_asset("src/assets/world/rusty_port", "floor_" .. i, 128, 128, 1, port_floor(500 + i * 13), false)
+  end
+  save_asset("src/assets/world/sleeping_forest", "prop_stump", 256, 256, 1, prop_stump, false)
+  save_asset("src/assets/world/sleeping_forest", "prop_boulder", 256, 256, 1, prop_boulder, false)
+  save_asset("src/assets/world/rusty_port", "prop_crate", 256, 256, 1, prop_crate, false)
+  save_asset("src/assets/world/rusty_port", "prop_container", 256, 256, 1, prop_container, false)
+end
 if want("hub") then
-  save_asset("src/assets/beacon", "hub_diorama_ch1", 780, 1100, 1, hub_city, false, true)
+  if ONLY_HUB == nil or ONLY_HUB == 1 then save_asset("src/assets/beacon", "hub_diorama_ch1", 780, 1100, 1, hub_city, false, true) end
+  if ONLY_HUB == nil or ONLY_HUB == 2 then save_asset("src/assets/beacon", "hub_diorama_ch2", 780, 1100, 1, hub_forest, false, true) end
+  if ONLY_HUB == nil or ONLY_HUB == 3 then save_asset("src/assets/beacon", "hub_diorama_ch3", 780, 1100, 1, hub_port, false, true) end
 end
 if want("hero") then
   save_asset("src/assets/hero", "hero_body", 170, 170, 1, hero_body, false)
