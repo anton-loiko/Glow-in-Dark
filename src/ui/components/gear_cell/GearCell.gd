@@ -97,7 +97,12 @@ func _draw() -> void:
 		if phase < 1.0:
 			var x: float = lerpf(rect.position.x - 10.0, rect.end.x + 10.0, phase)
 			draw_line(Vector2(x, rect.end.y - 4), Vector2(x + 12, rect.position.y + 4), Color(1, 1, 1, 0.35), 5.0)
-	draw_slot_icon(self, slot, rect.get_center() - Vector2(0, size.y * 0.06), size.x * 0.2, c300)
+	var icon: Texture2D = item_icon(item.base_id)
+	if icon != null:
+		var side: float = size.x * 0.56
+		draw_texture_rect(icon, Rect2(rect.get_center() - Vector2(side * 0.5, side * 0.5 + size.y * 0.05), Vector2(side, side)), false, c300)
+	else:
+		draw_slot_icon(self, slot, rect.get_center() - Vector2(0, size.y * 0.06), size.x * 0.2, c300)
 	var font: Font = UIFonts.font(&"number")
 	var fs: int = 10 if cell_size < 70.0 else 12
 	var lv_text: String = str(item.level)
@@ -119,7 +124,27 @@ func _draw_empty(rect: Rect2) -> void:
 	var pts: PackedVector2Array = [rect.position, Vector2(rect.end.x, rect.position.y), rect.end, Vector2(rect.position.x, rect.end.y), rect.position]
 	for i: int in 4:
 		draw_dashed_line(pts[i], pts[i + 1], UITokens.LINE_STRONG, 1.5, 6.0)
-	draw_slot_icon(self, slot, rect.get_center(), size.x * 0.18, UITokens.TEXT_DISABLED)
+	# Пустой слот — силуэт базовой вещи слота, приглушённо.
+	var bases: Array = (ConfigDB.get_gear_config().get("slot_items", {}) as Dictionary).get(String(&"amulet" if slot == &"amulet_2" else slot), [])
+	var icon: Texture2D = item_icon(StringName(str(bases[0]))) if not bases.is_empty() else null
+	if icon != null:
+		var side: float = size.x * 0.46
+		draw_texture_rect(icon, Rect2(rect.get_center() - Vector2.ONE * side * 0.5, Vector2.ONE * side), false, Color(UITokens.TEXT_DISABLED, 0.6))
+	else:
+		draw_slot_icon(self, slot, rect.get_center(), size.x * 0.18, UITokens.TEXT_DISABLED)
+
+
+static var _icons: Dictionary = {}
+
+
+## Иконка предмета (tools/brand/make_skill_icons.py → src/assets/ui/gear/<base_id>.png), белая под modulate.
+static func item_icon(base_id: StringName) -> Texture2D:
+	if _icons.has(base_id):
+		return _icons[base_id]
+	var path: String = "res://src/assets/ui/gear/%s.png" % base_id
+	var tex: Texture2D = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	_icons[base_id] = tex
+	return tex
 
 
 ## Силуэт слота: шлем · ядро · ботинок · амулет.

@@ -56,7 +56,7 @@
 |---|---|---|
 | `gear_frame_{common,uncommon,rare,epic,legendary}.png` 9-slice, `texture_margin` 24 | 96×96 | 🟨 (`GearCell` рисует процедурно) |
 | `gear_glow.png` (blend add, `modulate` = цвет 500) | 128×128 | ⬜ |
-| `item_<base_id>.png` (иконки предметов, белые под `modulate` не нужны — цветные) | 128×128 | 🟨 (силуэты слотов) |
+| `src/assets/ui/gear/<base_id>.png` — иконки предметов, белые под `modulate` цветом редкости | 128×128 | 🟨 (4 базовые вещи, SVG-генератор) |
 | `chest_{basic,premium,run,epic}_{closed,open}.png` + шов-маска | 320×240 | 🟨 |
 | `card_back.png` | 240×320 | 🟨 |
 
@@ -68,7 +68,7 @@ SVG на сетке 24pt, мягкие формы, заливка + внутре
 |---|---|---|
 | Вкладки | beacon, shop, skills (книга), gear (шлем) | 🟨 (рисуются кодом в `GlowTabBar`) |
 | Валюты | spark (круг), crystal (ромб) | 🟨 |
-| Навыки | 12 иконок навыков + 4 fallback; мастер 16×16 → финал 128px | 🟨 (глифы категорий) |
+| Навыки | 12 иконок навыков + 2 fallback (`src/assets/ui/skills`), 128px | 🟨 (SVG-генератор `tools/brand/make_skill_icons.py`) |
 | Прочее | settings, close, info, play-ad ▶, lock, check, arrow | 🟨 |
 
 ## 7. Бренд и магазины (`src/assets/brand/`) — DS §07

@@ -85,6 +85,29 @@ ICONS = {
 }
 
 
+# Предметы экипировки (Gear DS): белые, перекрашиваются цветом редкости (300) в GearCell.
+GEAR_OUT = os.path.join(ROOT, "src", "assets", "ui", "gear")
+GEAR = {
+    # Шлем: капюшон Фонарщика с огоньком.
+    "hood_lamplighter": """<path id="hood" fill="url(#fill)" d="M12 2.5c4.8 0 8 3.9 8 8.6v8.4c0 1-.8 2-2 2h-2.5v-6.3a3.5 3.5 0 0 0-7 0v6.3H6c-1.2 0-2-1-2-2v-8.4c0-4.7 3.2-8.6 8-8.6z"/>
+  <path id="flame" fill="#FFF1C8" d="M12 12.4c.9 1.1 1.8 2 1.8 3a1.8 1.8 0 0 1-3.6 0c0-1 .9-1.9 1.8-3z"/>
+  <path id="hl" {HL} d="M6.4 9.8c.6-2.6 2.6-4.6 5.1-5.2l.3 1c-2.1.5-3.8 2.2-4.3 4.4z"/>""",
+    # Ядро: тлеющий огранённый кристалл.
+    "ember_core": """<path id="gem" fill="url(#fill)" d="M12 2l7.5 6L17 20H7L4.5 8z"/>
+  <path id="facet" fill="#FFFFFF" fill-opacity="0.35" d="M12 2l3 6H9zM4.5 8H9l-2 12zM19.5 8H15l2 12z"/>
+  <path id="hl" {HL} d="M11.6 4.2l-1.8 3.3h1.3l1.2-2.4z"/>""",
+    # Ботинки: сапог с мотыльковым крылом.
+    "moth_boots": """<path id="boot" fill="url(#fill)" d="M7 3h5.5v9.5l6.2 2.6c1 .4 1.8 1.4 1.8 2.5V21H5.5V5c0-1.1.7-2 1.5-2z"/>
+  <path id="wing" fill="#FFFFFF" fill-opacity="0.55" d="M12.5 5.5c2.6-2.4 6.6-2.2 8 .4c-1.8.2-3.6 1.3-4.6 3c-1-1.7-2.3-3-3.4-3.4z"/>
+  <path id="hl" {HL} d="M7 5h1v11H7z"/>""",
+    # Амулет: цепочка и искра в оправе.
+    "spark_charm": """<path id="chain" fill="none" stroke="#C9C4BA" stroke-width="1.4" stroke-linecap="round" d="M6 3c0 4 2.5 6.5 6 7c3.5-.5 6-3 6-7"/>
+  <circle id="frame" cx="12" cy="15.5" r="6.5" fill="url(#fill)"/>
+  <path id="spark" fill="#FFF1C8" d="M12 11l1.2 3.3l3.3 1.2l-3.3 1.2L12 20l-1.2-3.3l-3.3-1.2l3.3-1.2z"/>
+  <circle id="hl" cx="9.3" cy="12.8" r="1" {HL}/>""",
+}
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     for name, body in ICONS.items():
@@ -93,6 +116,13 @@ def main():
         with open(os.path.join(OUT, name + ".svg"), "w") as f:
             f.write(svg)
         print("wrote", name)
+    os.makedirs(GEAR_OUT, exist_ok=True)
+    for name, body in GEAR.items():
+        svg = (f'<svg xmlns="http://www.w3.org/2000/svg" id="{name}" width="128" height="128" viewBox="0 0 24 24">\n  '
+               f'{DEFS}\n  {body.replace("{HL}", HL)}\n</svg>\n')
+        with open(os.path.join(GEAR_OUT, name + ".svg"), "w") as f:
+            f.write(svg)
+        print("wrote gear", name)
 
 
 if __name__ == "__main__":
