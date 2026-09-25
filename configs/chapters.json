@@ -1,8 +1,54 @@
 {
   "_doc": "Главы V1 (GDD 3.2, Enemy DS §03).",
   "chapters": [
-    {"id": 1, "name_key": "CHAPTER_1_NAME", "biome": "flooded_city", "duration_s": 600, "unlock": {}},
-    {"id": 2, "name_key": "CHAPTER_2_NAME", "biome": "sleeping_forest", "duration_s": 600, "unlock": {"beacon_chapter": 1, "level": 100}},
-    {"id": 3, "name_key": "CHAPTER_3_NAME", "biome": "rusty_port", "duration_s": 600, "unlock": {"beacon_chapter": 2, "level": 100}}
-  ]
+    {
+      "id": 1,
+      "name_key": "CHAPTER_1_NAME",
+      "biome": "flooded_city",
+      "duration_s": 600,
+      "unlock": {},
+      "palette": {
+        "floor": "#4A6270",
+        "floor_alt": "#41596A",
+        "prop": "#1B2630",
+        "darkness": "#10141F",
+        "biolum": "#5FB3A1"
+      }
+    },
+    {
+      "id": 2,
+      "name_key": "CHAPTER_2_NAME",
+      "biome": "sleeping_forest",
+      "duration_s": 600,
+      "unlock": {
+        "beacon_chapter": 1,
+        "level": 100
+      },
+      "palette": {
+        "floor": "#4A614C",
+        "floor_alt": "#415744",
+        "prop": "#1A241C",
+        "darkness": "#0E1310",
+        "biolum": "#9FD37A"
+      }
+    },
+    {
+      "id": 3,
+      "name_key": "CHAPTER_3_NAME",
+      "biome": "rusty_port",
+      "duration_s": 600,
+      "unlock": {
+        "beacon_chapter": 2,
+        "level": 100
+      },
+      "palette": {
+        "floor": "#63584F",
+        "floor_alt": "#574D46",
+        "prop": "#241F1C",
+        "darkness": "#120F10",
+        "biolum": "#C9A7FF"
+      }
+    }
+  ],
+  "_palette_doc": "Палитра биома: пол в свете, тьма вне света (CanvasModulate), биолюминесценция. Без красного и янтаря (Art Direction §02)."
 }

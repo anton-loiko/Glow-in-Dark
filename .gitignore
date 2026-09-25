@@ -10,3 +10,8 @@ addons/**/.env
 
 # gdUnit4 reports
 reports/
+
+# Инструменты MCP (внедряются при запуске редактора через godot-core MCP)
+addons/godot_mcp_bridge/
+godot_access.log
+godot_error.log

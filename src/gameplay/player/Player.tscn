@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/player/Player.gd" id="1_player"]
+[ext_resource type="Script" path="res://src/gameplay/player/PlayerVisual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://src/gameplay/player/PlayerLight.gd" id="3_light"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_light"]
+radius = 100.0
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("light_node", "light_area_shape", "visual", "light_model", "trail")]
+collision_layer = 2
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1_player")
+light_node = NodePath("Light")
+light_area_shape = NodePath("LightArea/Shape")
+visual = NodePath("Visual")
+light_model = NodePath("PlayerLight")
+trail = NodePath("Trail")
+
+[node name="BodyShape" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Trail" type="GPUParticles2D" parent="."]
+amount = 24
+lifetime = 0.6
+
+[node name="Light" type="PointLight2D" parent="."]
+energy = 2.0
+shadow_enabled = true
+shadow_filter = 1
+shadow_filter_smooth = 2.0
+
+[node name="LightArea" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+
+[node name="Shape" type="CollisionShape2D" parent="LightArea"]
+shape = SubResource("CircleShape2D_light")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("2_visual")
+
+[node name="PlayerLight" type="Node" parent="."]
+script = ExtResource("3_light")

@@ -14,6 +14,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
 	set_profile(SaveManager.load_profile())
+	EventBus.ad_reward_granted.connect(_on_ad_reward_granted)
 
 
 ## Подменяет профиль (загрузка, слияние с облаком).
@@ -106,6 +107,26 @@ func start_run(chapter_id: int, run_seed: int = -1) -> RunContext:
 	})
 	SceneRouter.go(&"S05")
 	return current_run
+
+
+## Воскрешение на S08 (DS S08, GDD 5.3): один раз за забег, за рекламу или Кристаллы.
+## При успехе публикует факт EventBus.player_revived — эффект применяет RunDirector.
+func request_revive(source: StringName) -> bool:
+	if not is_run_active() or current_run.revive_used:
+		return false
+	if source == &"crystal":
+		var cost: int = int((ConfigDB.get_balance().get("run", {}) as Dictionary).get("revive_crystal_cost", 30))
+		if not spend(CRYSTALS, cost, &"revive"):
+			return false
+	current_run.revive_used = true
+	Telemetry.log_event(&"revive_used", {"run_id": current_run.run_id, "source": String(source)})
+	EventBus.player_revived.emit(source)
+	return true
+
+
+func _on_ad_reward_granted(placement: StringName) -> void:
+	if placement == &"revive":
+		request_revive(&"ad")
 
 
 ## Фиксирует итог забега. Награды зачисляются отдельно, после выбора на S09.

@@ -57,6 +57,11 @@ func oldest_active() -> Node:
 	return null if _active.is_empty() else _active[0]
 
 
+## Активные узлы в порядке выдачи. Не изменять массив снаружи.
+func active_nodes() -> Array[Node]:
+	return _active
+
+
 func active_count() -> int:
 	return _active.size()
 

@@ -26,7 +26,7 @@ signal player_light_changed(current: float, max_value: float)
 signal player_damaged(amount: float, source: StringName)
 ## PlayerLight, ровно один раз за «смерть»
 signal player_light_depleted
-## RunDirector после применения воскрешения: ad | crystal
+## GameManager.request_revive — воскрешение одобрено: ad | crystal
 signal player_revived(source: StringName)
 ## FuelCapsule
 signal fuel_collected(amount: float, world_pos: Vector2)

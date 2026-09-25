@@ -1,0 +1,96 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://src/gameplay/run/RunScene.gd" id="1_scene"]
+[ext_resource type="Script" path="res://src/gameplay/world/ChapterEnvironment.gd" id="2_env"]
+[ext_resource type="Script" path="res://src/gameplay/world/ChunkStreamer.gd" id="3_streamer"]
+[ext_resource type="Script" path="res://src/gameplay/pickups/PickupSystem.gd" id="4_pickups"]
+[ext_resource type="PackedScene" path="res://src/gameplay/player/Player.tscn" id="5_player"]
+[ext_resource type="Script" path="res://src/gameplay/run/RunCamera.gd" id="6_camera"]
+[ext_resource type="Script" path="res://src/gameplay/player/LightBurst.gd" id="7_burst"]
+[ext_resource type="Script" path="res://src/gameplay/run/RunDirector.gd" id="8_director"]
+[ext_resource type="Script" path="res://src/ui/hud/RunHUD.gd" id="9_hud"]
+[ext_resource type="Script" path="res://src/ui/hud/FloatingJoystick.gd" id="10_joystick"]
+
+[node name="RunScene" type="Node2D" node_paths=PackedStringArray("chapter_environment", "streamer", "pickups", "player", "camera", "burst", "fx_layer", "director")]
+script = ExtResource("1_scene")
+chapter_environment = NodePath("ChapterEnvironment")
+streamer = NodePath("World/ChunkStreamer")
+pickups = NodePath("World/Pickups")
+player = NodePath("World/Player")
+camera = NodePath("World/Player/Camera")
+burst = NodePath("World/Burst")
+fx_layer = NodePath("World/FX")
+director = NodePath("RunDirector")
+
+[node name="ChapterEnvironment" type="Node" parent="." node_paths=PackedStringArray("canvas_modulate", "world_environment")]
+script = ExtResource("2_env")
+canvas_modulate = NodePath("CanvasModulate")
+world_environment = NodePath("WorldEnvironment")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="ChapterEnvironment"]
+color = Color(0.0627451, 0.0784314, 0.121569, 1)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="ChapterEnvironment"]
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="ChunkStreamer" type="Node2D" parent="World"]
+script = ExtResource("3_streamer")
+
+[node name="Pickups" type="Node2D" parent="World"]
+script = ExtResource("4_pickups")
+
+[node name="Player" parent="World" instance=ExtResource("5_player")]
+
+[node name="Camera" type="Camera2D" parent="World/Player"]
+script = ExtResource("6_camera")
+
+[node name="Burst" type="Node2D" parent="World" node_paths=PackedStringArray("player", "camera", "pickups", "flash_rect")]
+script = ExtResource("7_burst")
+player = NodePath("../Player")
+camera = NodePath("../Player/Camera")
+pickups = NodePath("../Pickups")
+flash_rect = NodePath("../../FlashLayer/FlashRect")
+
+[node name="FX" type="Node2D" parent="World"]
+z_index = 20
+
+[node name="RunDirector" type="Node" parent="." node_paths=PackedStringArray("player", "pickups", "streamer", "burst", "camera")]
+script = ExtResource("8_director")
+player = NodePath("../World/Player")
+pickups = NodePath("../World/Pickups")
+streamer = NodePath("../World/ChunkStreamer")
+burst = NodePath("../World/Burst")
+camera = NodePath("../World/Player/Camera")
+
+[node name="InputLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Joystick" type="Control" parent="InputLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("10_joystick")
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="RunHUD" type="Control" parent="HUDLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("9_hud")
+
+[node name="FlashLayer" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="FlashRect" type="ColorRect" parent="FlashLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2

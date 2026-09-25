@@ -7,6 +7,7 @@ extends Resource
 @export var biome: StringName
 @export var duration_s: float = 600.0
 @export var unlock: Dictionary = {}
+@export var palette: Dictionary = {}
 @export var chunk_scenes: Array[PackedScene] = []
 
 
@@ -16,3 +17,8 @@ func apply_dict(d: Dictionary) -> void:
 	biome = StringName(d.get("biome", biome))
 	duration_s = float(d.get("duration_s", duration_s))
 	unlock = d.get("unlock", unlock) as Dictionary
+	palette = d.get("palette", palette) as Dictionary
+
+
+func palette_color(key: String, fallback: Color) -> Color:
+	return DefUtil.color_or(palette.get(key), fallback)

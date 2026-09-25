@@ -3,6 +3,9 @@ extends Node
 ## (левел-ап, пауза, «Свет угас» не конфликтуют). UI-анимации обязаны игнорировать time_scale
 ## (Tween.set_ignore_time_scale(true)) и работать при паузе (PROCESS_MODE_ALWAYS).
 
+## Общий такт «дыхания» (t.breath, DS §05): Огонёк, Ember «В БОЙ» и Маяк дышат синхронно.
+const BREATH_PERIOD_S: float = 1.2
+
 var _pause_reasons: Array[StringName] = []
 var _hit_stop_active: bool = false
 var _ramp_tween: Tween
@@ -64,6 +67,12 @@ func ramp_time_scale(target: float, ms: int) -> Tween:
 	_ramp_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	_ramp_tween.tween_method(_set_time_scale, Engine.time_scale, target, ms / 1000.0)
 	return _ramp_tween
+
+
+## Фаза дыхания 0..1 (синус), по реальному времени.
+func breath_phase() -> float:
+	var t: float = Time.get_ticks_msec() / 1000.0
+	return 0.5 + 0.5 * sin(t * TAU / BREATH_PERIOD_S)
 
 
 func reset() -> void:

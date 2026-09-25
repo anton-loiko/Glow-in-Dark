@@ -14,27 +14,97 @@
     "fuel_heal": 40.0,
     "revive_light_pct": 0.5,
     "invuln_after_revive_s": 2.0,
-    "invuln_after_levelup_s": 1.5
+    "invuln_after_levelup_s": 1.5,
+    "body_radius_pt": 20.0,
+    "danger_threshold_pct": 0.25,
+    "hurt_recoil_s": 0.12,
+    "burst_overshoot": 0.08
   },
-  "all_stats_keys": ["max_light", "move_speed", "magnet_radius", "aura_dps", "fuel_efficiency"],
+  "all_stats_keys": [
+    "max_light",
+    "move_speed",
+    "magnet_radius",
+    "aura_dps",
+    "fuel_efficiency"
+  ],
   "xp_curve": {
     "_todo": "B2: первый левел-ап ≤ 30 с",
     "base": 5,
-    "growth": 1.25
+    "growth": 1.25,
+    "_formula": "xp_to_next(level) = round(base × growth^(level − 1))"
   },
   "run": {
     "revive_countdown_s": 5.0,
     "revive_crystal_cost": 30,
     "reroll_spark_cost": 50,
-    "reroll_crystal_cost": 10
+    "reroll_crystal_cost": 10,
+    "debug_pickup_spawner": {
+      "_doc": "Временный источник искр/топлива до task_3 (враги, WaveDirector)",
+      "enabled": true,
+      "sparks_per_s": 2.0,
+      "fuel_every_s": 25.0,
+      "ring_min_pt": 120,
+      "ring_max_pt": 420
+    }
   },
   "world": {
     "_todo": "Размер чанка «5×5 м» в pt — task_2",
-    "chunk_size_pt": 480
+    "chunk_size_pt": 480,
+    "active_radius_chunks": 2,
+    "props_per_chunk": [
+      1,
+      4
+    ],
+    "fuel_marker_chance": 0.35,
+    "safe_start_radius_pt": 160
   },
   "damage_numbers": {
     "accumulate_s": 0.4,
     "pool_size": 40,
     "max_visible": 12
+  },
+  "pickups": {
+    "_doc": "task_2 §5: искры и топливо",
+    "spark_value": 1,
+    "spark_lifetime_s": 20.0,
+    "spark_merge_threshold": 60,
+    "spark_merge_value_mul": 5,
+    "drop_bounce_pt": [
+      12,
+      30
+    ],
+    "magnet_delay_s": 0.15,
+    "fly_speed": 360.0,
+    "fly_accel": 1400.0,
+    "collect_radius_pt": 18.0,
+    "spark_pool": 300,
+    "fuel_pool": 24,
+    "fuel_light_budget": 4,
+    "pitch_window_s": 0.4,
+    "pitch_max_semitones": 12
+  },
+  "camera": {
+    "player_screen_y": 0.51,
+    "shake_max_offset_pt": 10.0,
+    "shake_decay_per_s": 2.2,
+    "lens_zoom_step": 0.015,
+    "lens_zoom_max": 0.075
+  },
+  "burst": {
+    "hit_stop_ms": 60,
+    "squash_ms": 60,
+    "flash_frames": 2,
+    "shake_pt": 6.0,
+    "shake_ms": 180,
+    "ring_ms": 250,
+    "radius_ms": 500,
+    "magnet_ms": 900,
+    "stun_s": 0.6,
+    "merge_window_s": 0.34
+  },
+  "level_up": {
+    "flicker_from_pct": 0.9,
+    "time_ramp_in_ms": 120,
+    "time_ramp_out_ms": 300
   }
 }

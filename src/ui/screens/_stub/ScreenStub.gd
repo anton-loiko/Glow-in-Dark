@@ -40,6 +40,12 @@ func _ready() -> void:
 		_add_button(box, "Выйти", SceneRouter.quit_game)
 		_add_button(box, "Остаться", SceneRouter.close_top)
 		return
+	match screen_id:
+		&"S06":
+			_add_button(box, "Продолжить (выбор навыка — task_4)", SceneRouter.close_top)
+		&"S08":
+			_add_button(box, "▶ Разжечь снова", AdManager.show_rewarded.bind(&"revive"))
+			_add_button(box, "Разжечь за 30 ◆", GameManager.request_revive.bind(&"crystal"))
 	for target: StringName in info.get("links", []):
 		_add_button(box, "→ %s · %s" % [target, SceneRouter.SCREENS[target]["title"]], _open.bind(target))
 	if info.get("back", &"none") != &"none":

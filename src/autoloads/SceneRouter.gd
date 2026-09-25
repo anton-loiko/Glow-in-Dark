@@ -10,7 +10,7 @@ const SCREENS: Dictionary = {
 	&"S02": {"title": "Хаб · Маяк", "kind": &"screen", "back": &"exit", "path": "", "links": [&"S05", &"S04", &"S03", &"S10", &"S11", &"S12", &"S13"]},
 	&"S03": {"title": "Дар дня", "kind": &"modal", "back": &"close", "path": "", "links": []},
 	&"S04": {"title": "Выбор главы", "kind": &"screen", "back": &"hub", "path": "", "links": [&"S05"]},
-	&"S05": {"title": "Забег · HUD", "kind": &"screen", "back": &"pause", "path": "", "transition_ms": 600, "links": [&"S06", &"S07", &"S08", &"S09"]},
+	&"S05": {"title": "Забег · HUD", "kind": &"screen", "back": &"pause", "path": "res://src/gameplay/run/RunScene.tscn", "transition_ms": 600, "links": [&"S06", &"S07", &"S08", &"S09"]},
 	&"S06": {"title": "Левел-ап", "kind": &"modal", "back": &"none", "pauses_world": true, "path": "", "links": []},
 	&"S07": {"title": "Пауза", "kind": &"modal", "back": &"close", "pauses_world": true, "path": "", "links": [&"S09"]},
 	&"S08": {"title": "Свет угас", "kind": &"modal", "back": &"none", "pauses_world": true, "path": "", "links": [&"S09"]},
