@@ -60,7 +60,7 @@ func test_every_tr_string_has_translation() -> void:
 		var row: PackedStringArray = csv.get_csv_line()
 		if row.size() >= 3:
 			keys[row[0]] = row[2]
-	var regex: RegEx = RegEx.create_from_string("tr\\(\"([^\"]+)\"\\)")
+	var regex: RegEx = RegEx.create_from_string("(?:\\btr|translate)\\(\"([^\"]+)\"\\)")
 	var missing: Array[String] = []
 	for path: String in _scripts("res://src"):
 		for m: RegExMatch in regex.search_all(FileAccess.get_file_as_string(path)):

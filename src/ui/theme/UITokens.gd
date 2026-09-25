@@ -34,12 +34,22 @@ const EPIC: Color = Color("#B07CFF")
 const GOLD_300: Color = Color("#FFF1C8")
 const GOLD_700: Color = Color("#B8621A")
 const HERO_CORE: Color = Color("#FFFDF5") ## раскалённое ядро Огонька
+const RUNE: Color = Color("#FFE7B0") ## руны и кристалл Маяка (не циан — Meta DS)
 
 ## Категории навыков (Skills DS §00): 300 метка · 500 иконка · 700 низ рамки · bg фон карты · глиф.
 const CATEGORY: Dictionary = {
 	&"attack": {"300": Color("#FFB08A"), "500": Color("#FF7A3D"), "700": Color("#C2461A"), "bg": Color("#1E120C"), "glyph": "▲", "name": "АТАКА"},
 	&"defense": {"300": Color("#C8DAFF"), "500": Color("#8FB8FF"), "700": Color("#3F5FA8"), "bg": Color("#0F1422"), "glyph": "■", "name": "ЗАЩИТА"},
 	&"utility": {"300": Color("#B8F0C0"), "500": Color("#7FD68A"), "700": Color("#3F8A4E"), "bg": Color("#0F1A14"), "glyph": "●", "name": "УТИЛИТА"},
+}
+
+## Редкость предметов (Gear DS §00): рамка 300 → 700, фон ячейки, свечение, число «звёзд».
+const RARITY: Dictionary = {
+	&"common": {"300": Color("#8F98AB"), "700": Color("#3A4356"), "bg": Color("#0E1320"), "glow": 0, "stars": 1, "name": "Обычный"},
+	&"uncommon": {"300": Color("#B8F0C0"), "700": Color("#3F8A4E"), "bg": Color("#0F1A14"), "glow": 0, "stars": 2, "name": "Необычный"},
+	&"rare": {"300": Color("#A8C4FF"), "700": Color("#2F56B8"), "bg": Color("#0E1528"), "glow": 12, "stars": 3, "name": "Редкий"},
+	&"epic": {"300": Color("#D4B0FF"), "700": Color("#6A3FB0"), "bg": Color("#1A1428"), "glow": 12, "stars": 4, "name": "Эпический"},
+	&"legendary": {"300": Color("#FFF1C8"), "700": Color("#B8621A"), "bg": Color("#1E160C"), "glow": 30, "stars": 5, "name": "Легендарный"},
 }
 
 # Отступы (сетка 4pt)

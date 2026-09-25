@@ -1,25 +1,182 @@
 {
   "_doc": "Экипировка (Gear DS §04, D8). Cost = ROUND(base_cost × multiplier^(level−1)); Item_Stat = Base_Stat + Level × Stat_Step.",
-  "slots": ["head", "core", "feet", "amulet", "amulet_2"],
-  "rarities": ["common", "uncommon", "rare", "epic", "legendary"],
+  "slots": [
+    "head",
+    "core",
+    "feet",
+    "amulet",
+    "amulet_2"
+  ],
+  "rarities": [
+    "common",
+    "uncommon",
+    "rare",
+    "epic",
+    "legendary"
+  ],
   "rarity": {
-    "common": {"max_lv": 10, "base_cost": 50},
-    "uncommon": {"max_lv": 15, "base_cost": 100},
-    "rare": {"max_lv": 20, "base_cost": 200},
-    "epic": {"max_lv": 25, "base_cost": 400},
-    "legendary": {"max_lv": 30, "base_cost": 800}
+    "common": {
+      "max_lv": 10,
+      "base_cost": 50
+    },
+    "uncommon": {
+      "max_lv": 15,
+      "base_cost": 100
+    },
+    "rare": {
+      "max_lv": 20,
+      "base_cost": 200
+    },
+    "epic": {
+      "max_lv": 25,
+      "base_cost": 400
+    },
+    "legendary": {
+      "max_lv": 30,
+      "base_cost": 800
+    }
   },
   "cost_multiplier": 1.4,
-  "merge": {"count": 3, "max_result": "epic", "refund_pct": 100},
+  "merge": {
+    "count": 3,
+    "max_result": "epic",
+    "refund_pct": 100
+  },
   "dismantle_refund_pct": 100,
   "inventory_size": 40,
   "items": [
     {
-      "_todo": "B3: каталог предметов; этот — пример из gear_system.md",
+      "_todo": "B3: каталог — по одному базовому предмету на слот; числа — заготовка баланса",
       "base_id": "hood_lamplighter",
       "slot": "head",
+      "name_key": "Капюшон Фонарщика",
       "stat": "max_light",
-      "stats": {"rare": {"base": 30, "step": 2}}
+      "stats": {
+        "common": {
+          "base": 10,
+          "step": 1
+        },
+        "uncommon": {
+          "base": 20,
+          "step": 1.5
+        },
+        "rare": {
+          "base": 30,
+          "step": 2
+        },
+        "epic": {
+          "base": 45,
+          "step": 2.5
+        },
+        "legendary": {
+          "base": 60,
+          "step": 3
+        }
+      }
+    },
+    {
+      "base_id": "ember_core",
+      "slot": "core",
+      "name_key": "Тлеющее Ядро",
+      "stat": "decay_rate_pct",
+      "stats": {
+        "common": {
+          "base": -3,
+          "step": -0.2
+        },
+        "uncommon": {
+          "base": -5,
+          "step": -0.25
+        },
+        "rare": {
+          "base": -7,
+          "step": -0.3
+        },
+        "epic": {
+          "base": -10,
+          "step": -0.35
+        },
+        "legendary": {
+          "base": -14,
+          "step": -0.4
+        }
+      }
+    },
+    {
+      "base_id": "moth_boots",
+      "slot": "feet",
+      "name_key": "Мотыльковые Ботинки",
+      "stat": "move_speed_pct",
+      "stats": {
+        "common": {
+          "base": 3,
+          "step": 0.3
+        },
+        "uncommon": {
+          "base": 5,
+          "step": 0.35
+        },
+        "rare": {
+          "base": 7,
+          "step": 0.4
+        },
+        "epic": {
+          "base": 10,
+          "step": 0.45
+        },
+        "legendary": {
+          "base": 14,
+          "step": 0.5
+        }
+      }
+    },
+    {
+      "base_id": "spark_charm",
+      "slot": "amulet",
+      "name_key": "Искровой Амулет",
+      "stat": "spark_income_pct",
+      "stats": {
+        "common": {
+          "base": 3,
+          "step": 0.3
+        },
+        "uncommon": {
+          "base": 5,
+          "step": 0.35
+        },
+        "rare": {
+          "base": 7,
+          "step": 0.4
+        },
+        "epic": {
+          "base": 10,
+          "step": 0.45
+        },
+        "legendary": {
+          "base": 14,
+          "step": 0.5
+        }
+      }
     }
-  ]
+  ],
+  "slot_items": {
+    "head": [
+      "hood_lamplighter"
+    ],
+    "core": [
+      "ember_core"
+    ],
+    "feet": [
+      "moth_boots"
+    ],
+    "amulet": [
+      "spark_charm"
+    ]
+  },
+  "hold": {
+    "start_ms": 500,
+    "min_ms": 150,
+    "ramp_ms": 2000
+  },
+  "inventory_warn_at": 36
 }

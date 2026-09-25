@@ -28,6 +28,10 @@ var skins_new_badge: Array[StringName] = []
 # gear
 var gear_equipped: Dictionary[StringName, String] = {}
 var gear_inventory: Array[GearItem] = []
+## Слоты, открытые Маяком (тир 5 — «Второй амулет», D8).
+var gear_slots_unlocked: Array[StringName] = []
+## Огоньки, открытые, но ещё не показанные экраном S14.
+var skins_to_reveal: Array[StringName] = []
 
 # chests
 var premium_pity: int = 0
@@ -196,7 +200,8 @@ func to_dict() -> Dictionary:
 			"equipped": String(skin_equipped),
 			"new_badge": _names_to_strings(skins_new_badge),
 		},
-		"gear": {"equipped": equipped_dict, "inventory": inventory_list},
+		"gear": {"equipped": equipped_dict, "inventory": inventory_list, "slots_unlocked": _names_to_strings(gear_slots_unlocked)},
+		"skins_to_reveal": _names_to_strings(skins_to_reveal),
 		"chests": {
 			"premium_pity": premium_pity,
 			"basic_ads_today": basic_ads_today,
@@ -247,6 +252,8 @@ static func from_dict(d: Dictionary) -> PlayerProfile:
 		p.gear_equipped[StringName(str(key))] = "" if uid == null else str(uid)
 	for entry: Variant in gear.get("inventory", []):
 		p.gear_inventory.append(GearItem.from_dict(entry as Dictionary))
+	p.gear_slots_unlocked = DefUtil.to_string_names(gear.get("slots_unlocked", []))
+	p.skins_to_reveal = DefUtil.to_string_names(d.get("skins_to_reveal", []))
 
 	var chests: Dictionary = d.get("chests", {}) as Dictionary
 	p.premium_pity = int(chests.get("premium_pity", 0))

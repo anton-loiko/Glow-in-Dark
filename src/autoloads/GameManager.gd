@@ -161,6 +161,9 @@ func apply_run_rewards(multiplier: int) -> void:
 		if not profile.skills_seen.has(skill_id):
 			profile.skills_seen.append(skill_id)
 	grant(SPARKS, run.run_sparks * maxi(1, multiplier), &"run_x3" if multiplier > 1 else &"run")
+	# Сундуки забега открываются в хабе (S17) из очереди pending_rewards — переживают закрытие приложения.
+	for chest: StringName in run.result.chests:
+		profile.pending_rewards.append({"chest": String(chest), "source": "run"})
 	Telemetry.log_event(&"reward_multiplier", {"run_id": run.run_id, "multiplier": multiplier})
 	current_run = null
 	SaveManager.flush(true)

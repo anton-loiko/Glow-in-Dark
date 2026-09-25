@@ -57,7 +57,12 @@ static func build(profile: PlayerProfile, balance: Dictionary, tiers: Array[Beac
 		if item == null or not item_defs.has(item.base_id):
 			continue
 		var item_def: GearItemDef = item_defs[item.base_id]
-		_add(flat, String(item_def.stat), item_def.stat_value(item.rarity, item.level))
+		var stat_key: String = String(item_def.stat)
+		var value: float = item_def.stat_value(item.rarity, item.level)
+		if PCT_KEYS.has(stat_key):
+			_add(pct, PCT_KEYS[stat_key], value)
+		else:
+			_add(flat, stat_key, value)
 
 	# Скин-класс.
 	if skin != null:

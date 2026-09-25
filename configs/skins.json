@@ -1,13 +1,162 @@
 {
   "_doc": "Огоньки-классы (Meta DS §03, D7, D18). mods — проценты от базовых статов; flags — особые механики.",
   "skins": [
-    {"id": "base", "light": "#FFB547", "rim": "#FFB547", "class_key": "SKIN_CLASS_BASE", "unlock": {"type": "start"}, "mods": {}, "flags": {}},
-    {"id": "ghost", "light": "#BFD4FF", "rim": "#BFD4FF", "class_key": "SKIN_CLASS_FORGIVING", "unlock": {"type": "beacon", "chapter": 1, "tier": 1}, "mods": {"contact_damage_pct": -30, "decay_rate_pct": 25}, "flags": {}},
-    {"id": "plasma", "light": "#E68CFF", "rim": "#E68CFF", "class_key": "SKIN_CLASS_GLASS_CANNON", "unlock": {"type": "beacon", "chapter": 1, "tier": 2}, "mods": {"light_radius_pct": -40}, "flags": {"contact_instant_burn": true, "elite_contact_hp_pct": 40, "extinguisher_contact_hp_pct": 15}},
-    {"id": "blue", "light": "#6E9BFF", "rim": "#6E9BFF", "class_key": "SKIN_CLASS_CROWD_CONTROL", "unlock": {"type": "beacon", "chapter": 1, "tier": 4}, "mods": {"aura_dps_pct": -10}, "flags": {"aura_slow_pct": 10}},
-    {"id": "pink", "light": "#FF8FC8", "rim": "#FFD0D8", "class_key": "SKIN_CLASS_ECONOMY", "unlock": {"type": "beacon", "chapter": 1, "tier": 6}, "mods": {}, "flags": {"start_sparks": 50}},
-    {"id": "inferno", "light": "#FF7A3D", "rim": "#FFD0D8", "class_key": "SKIN_CLASS_BURN", "unlock": {"type": "beacon", "chapter": 1, "tier": 8}, "mods": {}, "flags": {"burn_after_exit_s": 2.0}},
-    {"id": "solar", "light": "#FFF1C8", "rim": "#FFF1C8", "class_key": "SKIN_CLASS_HARDCORE", "unlock": {"type": "beacon", "chapter": 1, "tier": 10}, "_todo": "Величина «огромного радиуса» — баланс", "mods": {"light_radius_pct": 60, "spawn_rate_pct": 50}, "flags": {}},
-    {"id": "moon", "light": "#D8D0FF", "rim": "#D8D0FF", "class_key": "SKIN_CLASS_RHYTHM", "unlock": {"type": "shop", "product": "starter_pack"}, "mods": {}, "flags": {"moon_phases": {"cycle_s": 20.0, "telegraph_s": 1.0, "full_s": 6.0, "full_radius_pct": 30, "full_aura_dps_pct": 40, "new_s": 6.0, "new_radius_pct": -20, "radius_cap_mul": 2.0}}}
+    {
+      "id": "base",
+      "light": "#FFB547",
+      "rim": "#FFB547",
+      "class_key": "SKIN_CLASS_BASE",
+      "unlock": {
+        "type": "start"
+      },
+      "mods": {},
+      "flags": {},
+      "plus": "Сбалансированный свет",
+      "minus": "Без особенностей",
+      "class_name": "Базовый"
+    },
+    {
+      "id": "ghost",
+      "light": "#BFD4FF",
+      "rim": "#BFD4FF",
+      "class_key": "SKIN_CLASS_FORGIVING",
+      "unlock": {
+        "type": "beacon",
+        "chapter": 1,
+        "tier": 1
+      },
+      "mods": {
+        "contact_damage_pct": -30,
+        "decay_rate_pct": 25
+      },
+      "flags": {},
+      "plus": "Враги наносят на 30% меньше урона",
+      "minus": "Свет тухнет на 25% быстрее",
+      "class_name": "Прощающий ошибки"
+    },
+    {
+      "id": "plasma",
+      "light": "#E68CFF",
+      "rim": "#E68CFF",
+      "class_key": "SKIN_CLASS_GLASS_CANNON",
+      "unlock": {
+        "type": "beacon",
+        "chapter": 1,
+        "tier": 2
+      },
+      "mods": {
+        "light_radius_pct": -40
+      },
+      "flags": {
+        "contact_instant_burn": true,
+        "elite_contact_hp_pct": 40,
+        "extinguisher_contact_hp_pct": 15
+      },
+      "plus": "Касание мгновенно сжигает врага",
+      "minus": "Базовый радиус света −40%",
+      "class_name": "Стеклянная пушка"
+    },
+    {
+      "id": "blue",
+      "light": "#6E9BFF",
+      "rim": "#6E9BFF",
+      "class_key": "SKIN_CLASS_CROWD_CONTROL",
+      "unlock": {
+        "type": "beacon",
+        "chapter": 1,
+        "tier": 4
+      },
+      "mods": {
+        "aura_dps_pct": -10
+      },
+      "flags": {
+        "aura_slow_pct": 10
+      },
+      "plus": "Враги в ауре замедлены на 10%",
+      "minus": "Урон ауры −10%",
+      "class_name": "Контроль толпы"
+    },
+    {
+      "id": "pink",
+      "light": "#FF8FC8",
+      "rim": "#FFD0D8",
+      "class_key": "SKIN_CLASS_ECONOMY",
+      "unlock": {
+        "type": "beacon",
+        "chapter": 1,
+        "tier": 6
+      },
+      "mods": {},
+      "flags": {
+        "start_sparks": 50
+      },
+      "plus": "Старт забега с 50 Искрами",
+      "minus": "Без особых слабостей",
+      "class_name": "Экономика"
+    },
+    {
+      "id": "inferno",
+      "light": "#FF7A3D",
+      "rim": "#FFD0D8",
+      "class_key": "SKIN_CLASS_BURN",
+      "unlock": {
+        "type": "beacon",
+        "chapter": 1,
+        "tier": 8
+      },
+      "mods": {},
+      "flags": {
+        "burn_after_exit_s": 2.0
+      },
+      "plus": "Враги горят ещё 2 с после выхода из света",
+      "minus": "Без особых слабостей",
+      "class_name": "Поджигатель"
+    },
+    {
+      "id": "solar",
+      "light": "#FFF1C8",
+      "rim": "#FFF1C8",
+      "class_key": "SKIN_CLASS_HARDCORE",
+      "unlock": {
+        "type": "beacon",
+        "chapter": 1,
+        "tier": 10
+      },
+      "_todo": "Величина «огромного радиуса» — баланс",
+      "mods": {
+        "light_radius_pct": 60,
+        "spawn_rate_pct": 50
+      },
+      "flags": {},
+      "plus": "Огромный стартовый радиус",
+      "minus": "Врагов на 50% больше",
+      "class_name": "Хардкор"
+    },
+    {
+      "id": "moon",
+      "light": "#D8D0FF",
+      "rim": "#D8D0FF",
+      "class_key": "SKIN_CLASS_RHYTHM",
+      "unlock": {
+        "type": "shop",
+        "product": "starter_pack"
+      },
+      "mods": {},
+      "flags": {
+        "moon_phases": {
+          "cycle_s": 20.0,
+          "telegraph_s": 1.0,
+          "full_s": 6.0,
+          "full_radius_pct": 30,
+          "full_aura_dps_pct": 40,
+          "new_s": 6.0,
+          "new_radius_pct": -20,
+          "radius_cap_mul": 2.0
+        }
+      },
+      "plus": "Полнолуние: свет +30%, аура +40%",
+      "minus": "Новолуние: свет −20%",
+      "class_name": "Ритм"
+    }
   ]
 }

@@ -19,10 +19,10 @@ const SCREENS: Dictionary = {
 	&"S11": {"title": "Навыки · Архив", "kind": &"screen", "back": &"hub", "tab": true, "path": "res://src/ui/screens/s11_skills/ArchiveScreen.gd", "links": []},
 	&"S12": {"title": "Экипировка", "kind": &"screen", "back": &"hub", "tab": true, "path": "res://src/ui/screens/s12_gear/GearScreen.gd", "links": [&"S14", &"S15", &"S16", &"S17"]},
 	&"S13": {"title": "Настройки", "kind": &"screen", "back": &"hub", "path": "res://src/ui/screens/s13_settings/SettingsScreen.gd", "links": []},
-	&"S14": {"title": "Новый Огонёк", "kind": &"modal", "back": &"close", "path": "", "links": []},
-	&"S15": {"title": "Лист предмета", "kind": &"sheet", "back": &"close", "path": "", "links": [&"S16"]},
-	&"S16": {"title": "Слияние", "kind": &"modal", "back": &"close", "path": "", "links": []},
-	&"S17": {"title": "Открытие сундука", "kind": &"modal", "back": &"close", "path": "", "links": []},
+	&"S14": {"title": "Новый Огонёк", "kind": &"modal", "back": &"close", "path": "res://src/ui/screens/s14_skin_unlock/SkinUnlockModal.gd", "links": []},
+	&"S15": {"title": "Лист предмета", "kind": &"sheet", "back": &"close", "path": "res://src/ui/screens/s15_item_sheet/ItemSheet.gd", "links": [&"S16"]},
+	&"S16": {"title": "Слияние", "kind": &"modal", "back": &"close", "path": "res://src/ui/screens/s16_merge/MergeModal.gd", "links": []},
+	&"S17": {"title": "Открытие сундука", "kind": &"modal", "back": &"close", "path": "res://src/ui/screens/s17_chest_open/ChestOpenModal.gd", "links": []},
 	&"EXIT": {"title": "Выйти из игры?", "kind": &"modal", "back": &"close", "path": "res://src/ui/screens/exit/ExitModal.gd", "links": []},
 }
 
