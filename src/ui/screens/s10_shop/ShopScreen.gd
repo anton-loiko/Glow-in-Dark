@@ -10,6 +10,8 @@ var _basic_ad: GlowButton
 var _premium: GlowButton
 var _premium_x10: GlowButton
 var _full_hint: GlowButton
+var _starter: StarterPackCard
+var _price_buttons: Dictionary = {} ## product_id -> GlowButton
 
 
 func _ready() -> void:
@@ -30,21 +32,15 @@ func _ready() -> void:
 	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(list)
 
-	var starter: ShopProductDef = ConfigDB.get_product(&"starter_pack")
-	if starter != null and not GameManager.profile.starter_pack_bought:
-		var card: PanelContainer = _card(list)
-		var box: VBoxContainer = card.get_child(0) as VBoxContainer
-		box.add_child(UIKit.mono(tr("Только один раз"), UITokens.THREAT))
-		box.add_child(UIKit.label(tr("Набор Первого Света"), &"h2"))
-		box.add_child(UIKit.label(tr("Скин «Лунный Огонёк» · 500 кристаллов"), &"body_s", UITokens.TEXT_SECONDARY))
-		box.add_child(UIKit.button(StoreManager.backend.get_price_label(starter.store_sku), GlowButton.Variant.CRYSTAL, StoreManager.purchase.bind(&"starter_pack")))
+	if ConfigDB.get_product(&"starter_pack") != null and StoreManager.starter_pack_active():
+		_starter = StarterPackCard.new()
+		list.add_child(_starter)
 
 	var gift_card: PanelContainer = _card(list)
 	var gift_box: VBoxContainer = gift_card.get_child(0) as VBoxContainer
 	gift_box.add_child(UIKit.label(tr("Бесплатный дар"), &"h2"))
 	gift_box.add_child(UIKit.label(tr("300 искр · 1 раз в 8 ч"), &"body_s", UITokens.TEXT_SECONDARY))
-	_gift = UIKit.button(tr("Взять"), GlowButton.Variant.SECONDARY, AdManager.show_rewarded.bind(&"shop_free_gift"))
-	_gift.ad = true
+	_gift = UIKit.ad_button(tr("Взять"), GlowButton.Variant.SECONDARY, &"shop_free_gift")
 	gift_box.add_child(_gift)
 
 	_build_chests(list)
@@ -65,8 +61,14 @@ func _ready() -> void:
 		tile.add_child(tile_box)
 		if product.badge == &"hit":
 			tile_box.add_child(UIKit.mono(tr("Хит"), UITokens.LIGHT_500, HORIZONTAL_ALIGNMENT_CENTER))
+		var icon: Control = Control.new()
+		icon.custom_minimum_size = Vector2(0, 56)
+		icon.draw.connect(_draw_crystal_pile.bind(icon, grid.get_child_count()))
+		tile_box.add_child(icon)
 		tile_box.add_child(UIKit.label("◆ " + UIKit.format_number(int(product.grants.get("crystals", 0))), &"h2", UITokens.CRYSTAL_500, HORIZONTAL_ALIGNMENT_CENTER))
-		tile_box.add_child(UIKit.button(StoreManager.backend.get_price_label(product.store_sku), GlowButton.Variant.CRYSTAL, StoreManager.purchase.bind(id)))
+		var buy: GlowButton = UIKit.button("", GlowButton.Variant.CRYSTAL, StoreManager.purchase.bind(id))
+		_price_buttons[id] = buy
+		tile_box.add_child(buy)
 		grid.add_child(tile)
 
 	var tabs: GlowTabBar = GlowTabBar.new()
@@ -76,6 +78,26 @@ func _ready() -> void:
 	EventBus.currency_changed.connect(_on_currency_changed)
 	EventBus.inventory_changed.connect(_refresh_chests)
 	EventBus.ad_reward_granted.connect(_on_ad_reward)
+	EventBus.store_prices_updated.connect(_refresh_prices)
+	EventBus.purchase_completed.connect(_on_purchase_completed)
+	_refresh_chests()
+	_refresh_prices()
+
+
+## Цены — только локализованные строки стора (не хардкод). Пока стор не ответил — «…» и Disabled.
+func _refresh_prices() -> void:
+	for id: StringName in _price_buttons:
+		var price: String = StoreManager.price_label(id)
+		var b: GlowButton = _price_buttons[id]
+		b.set_label(price if not price.is_empty() else "…")
+		b.set_blocked(price.is_empty(), tr("Магазин недоступен"))
+	if _starter != null:
+		_starter.refresh()
+
+
+func _on_purchase_completed(product_id: StringName) -> void:
+	if product_id == &"starter_pack" and _starter != null:
+		_starter.refresh()
 	_refresh_chests()
 
 
@@ -101,8 +123,7 @@ func _build_chests(list: VBoxContainer) -> void:
 	_basic_sparks = UIKit.button("%s ✦" % UIKit.format_number(price), GlowButton.Variant.SECONDARY, _buy.bind(&"basic", 1))
 	_basic_sparks.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	basic_row.add_child(_basic_sparks)
-	_basic_ad = UIKit.button("", GlowButton.Variant.SECONDARY, AdManager.show_rewarded.bind(&"basic_chest"))
-	_basic_ad.ad = true
+	_basic_ad = UIKit.ad_button("", GlowButton.Variant.SECONDARY, &"basic_chest")
 	_basic_ad.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	basic_row.add_child(_basic_ad)
 	var premium: PanelContainer = _card(list)
@@ -136,12 +157,8 @@ func _refresh_chests() -> void:
 	_basic_sparks.set_blocked(full or profile.sparks < basic_price, full_text if full else tr("Нужно ещё %s ✦") % UIKit.format_number(basic_price - profile.sparks))
 	var ads_left: int = ChestService.basic_ads_left(profile)
 	_basic_ad.set_label(tr("Бесплатно · %d/3") % ads_left)
-	if full:
-		_basic_ad.set_blocked(true, full_text)
-	elif ads_left <= 0:
-		_basic_ad.set_blocked(true, tr("Завтра снова"))
-	else:
-		_basic_ad.set_blocked(not AdManager.is_rewarded_ready(&"basic_chest"), tr("Реклама недоступна"))
+	_basic_ad.ad_extra_reason = full_text if full else (tr("Завтра снова") if ads_left <= 0 else "")
+	_basic_ad.refresh_ad()
 	var premium_cfg: Dictionary = ChestService.config().get("premium", {}) as Dictionary
 	var p1: int = int((premium_cfg.get("price", {}) as Dictionary).get("crystals", 150))
 	var p10: int = int((premium_cfg.get("x10_price", {}) as Dictionary).get("crystals", 1200))
@@ -161,9 +178,8 @@ func _buy(chest: StringName, count: int) -> void:
 
 
 func _on_ad_reward(placement: StringName) -> void:
-	if placement != &"basic_chest" or ChestService.basic_ads_left(GameManager.profile) <= 0:
+	if placement != &"basic_chest":
 		return
-	ChestService.note_basic_ad(GameManager.profile)
 	_show_chest(&"basic", ChestService.open(GameManager.profile, &"basic", 1))
 
 
@@ -221,11 +237,23 @@ func _on_rates_input(event: InputEvent, overlay: Control) -> void:
 
 
 func _refresh_gift() -> void:
-	if StoreManager.free_gift_ready():
-		_gift.set_blocked(not AdManager.is_rewarded_ready(&"shop_free_gift"), tr("Реклама недоступна"))
-	else:
-		var left: int = StoreManager.free_gift_seconds_left()
-		_gift.set_blocked(true, tr("Через %d ч %d мин") % [floori(left / 3600.0), floori((left % 3600) / 60.0)])
+	_gift.refresh_ad()
+
+
+## Иконка пакета растёт с номиналом: один кристалл → друза (DS S10); $19.99 — «сокровище» с ореолом.
+func _draw_crystal_pile(icon: Control, tier: int) -> void:
+	var c: Vector2 = Vector2(icon.size.x * 0.5, icon.size.y - 6)
+	var count: int = [1, 2, 4, 7][clampi(tier, 0, 3)]
+	if tier >= 3:
+		for i: int in 4:
+			icon.draw_circle(c - Vector2(0, 20), 30.0 - i * 6, Color(UITokens.CRYSTAL_500, 0.06))
+	for i: int in count:
+		var angle: float = (float(i) / maxf(1.0, count - 1) - 0.5) * 1.6 if count > 1 else 0.0
+		var h: float = 34.0 - absf(angle) * 10.0 + (4.0 if i % 2 == 0 else 0.0)
+		var base: Vector2 = c + Vector2(angle * 26.0, 0)
+		var tip: Vector2 = base + Vector2.from_angle(-PI * 0.5 + angle * 0.5) * h
+		var side: Vector2 = Vector2(7, 0)
+		icon.draw_colored_polygon(PackedVector2Array([base - side, tip, base + side]), UITokens.CRYSTAL_700.lerp(UITokens.CRYSTAL_300, float(i % 3) / 2.0))
 
 
 func _card(parent: Control) -> PanelContainer:

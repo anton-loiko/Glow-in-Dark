@@ -20,10 +20,7 @@ func _ready() -> void:
 	column.add_child(_ring)
 	_ring.start(float((ConfigDB.get_balance().get("run", {}) as Dictionary).get("revive_countdown_s", 5.0)))
 	column.add_child(UIKit.spacer())
-	var revive: GlowButton = UIKit.button(tr("Разжечь снова"), GlowButton.Variant.PRIMARY, AdManager.show_rewarded.bind(&"revive"))
-	revive.ad = true
-	if not AdManager.is_rewarded_ready(&"revive"):
-		revive.set_blocked(true, tr("Реклама недоступна"))
+	var revive: GlowButton = UIKit.ad_button(tr("Разжечь снова"), GlowButton.Variant.PRIMARY, &"revive")
 	column.add_child(revive)
 	var cost: int = int((ConfigDB.get_balance().get("run", {}) as Dictionary).get("revive_crystal_cost", 30))
 	var crystal: GlowButton = UIKit.button(tr("Разжечь за %d ◆") % cost, GlowButton.Variant.CRYSTAL, _revive_crystal)

@@ -58,8 +58,7 @@ func _ready() -> void:
 	_cta.need_sparks.connect(_on_need_sparks)
 	_cta.maxed_pressed.connect(SceneRouter.go.bind(&"S04"))
 	column.add_child(_cta)
-	_gift = UIKit.button(tr("+300 Искр"), GlowButton.Variant.QUIET, AdManager.show_rewarded.bind(&"hub_sparks"))
-	_gift.ad = true
+	_gift = UIKit.ad_button(tr("+300 Искр"), GlowButton.Variant.QUIET, &"hub_sparks")
 	column.add_child(_gift)
 	column.add_child(UIKit.gap(UITokens.S8)) # Ember «В БОЙ» выступает над таб-баром
 
@@ -95,6 +94,8 @@ func _run_queue() -> void:
 	if not profile.skins_to_reveal.is_empty():
 		SceneRouter.open_modal(&"S14", {"skin": profile.skins_to_reveal[0]})
 		return
+	for item: PlayerProfile.GearItem in GearService.claim_pending_items(profile):
+		EventBus.toast_requested.emit(tr("Новый предмет: %s") % GearText.item_name(item), &"gear")
 	for reward: Dictionary in profile.pending_rewards:
 		if reward.has("chest"):
 			SceneRouter.open_modal(&"S17", {"pending": true})

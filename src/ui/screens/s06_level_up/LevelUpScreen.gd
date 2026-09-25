@@ -96,6 +96,9 @@ func _refresh_controls() -> void:
 	var used: int = run.slots_used()
 	_slots_label.text = "ПОЛНЫЙ БИЛД" if used >= max_slots else "СОБРАНО %d/%d" % [used, max_slots]
 	_take_all_button.visible = not run.take_all_used
+	if _take_all_button.visible:
+		_take_all_button.disabled = not AdManager.is_rewarded_ready(&"skill_take_all")
+		AdManager.note_opportunity(&"skill_take_all")
 	match _reroll_cost_type():
 		&"sparks":
 			var cost: int = _reroll_cfg("sparks", 50)
@@ -104,6 +107,7 @@ func _refresh_controls() -> void:
 		&"ad":
 			_reroll_button.text = "▶ Обновить"
 			_reroll_button.disabled = not AdManager.is_rewarded_ready(&"skill_reroll")
+			AdManager.note_opportunity(&"skill_reroll")
 		_:
 			var crystals: int = _reroll_cfg("crystals", 10)
 			_reroll_button.text = "Обновить · %d ◆" % crystals

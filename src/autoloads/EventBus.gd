@@ -55,6 +55,8 @@ signal skill_selected(skill_id: StringName, level_to: int)
 
 # --- Экономика и мета --------------------------------------------------------
 ## GameManager (grant/spend): sparks | crystals
+## Награды забега зачислены (S09 → «Забрать»).
+signal run_rewards_claimed(multiplier: int)
 signal currency_changed(currency: StringName, total: int, delta: int)
 ## BeaconService (task_6)
 signal beacon_level_changed(chapter_id: int, level: int)
@@ -78,6 +80,8 @@ signal ad_failed(placement: StringName)
 signal purchase_completed(product_id: StringName)
 ## StoreManager
 signal purchase_failed(product_id: StringName, reason: String)
+## Стор вернул локализованные цены — экраны обновляют подписи.
+signal store_prices_updated
 
 # --- Системные ---------------------------------------------------------------
 ## GameManager после загрузки или замены профиля

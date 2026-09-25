@@ -133,15 +133,8 @@ func _refresh() -> void:
 	var merges: int = GearService.available_merges(profile)
 	_merge_button.set_meta(&"count", merges)
 	_merge_button.queue_redraw()
-	_tabs.set_dot(&"S12", not profile.skins_new_badge.is_empty() or _has_new_items())
+	_tabs.refresh_dots()
 	_doll.queue_redraw()
-
-
-func _has_new_items() -> bool:
-	for it: PlayerProfile.GearItem in GameManager.profile.gear_inventory:
-		if it.is_new:
-			return true
-	return false
 
 
 # --- Кукла ---

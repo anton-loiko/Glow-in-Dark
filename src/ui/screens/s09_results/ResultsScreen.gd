@@ -28,12 +28,9 @@ func _ready() -> void:
 	column.add_child(UIKit.label(UIKit.format_number(result.run_sparks), &"display", UITokens.TEXT_ON_LIGHT, HORIZONTAL_ALIGNMENT_CENTER))
 	column.add_child(UIKit.mono(tr("Искр собрано"), UITokens.TEXT_ON_LIGHT, HORIZONTAL_ALIGNMENT_CENTER))
 	column.add_child(UIKit.spacer())
-	var triple: GlowButton = UIKit.button(tr("Забрать ×3 · %s") % UIKit.format_number(result.run_sparks * 3), GlowButton.Variant.PRIMARY, AdManager.show_rewarded.bind(&"run_x3"))
-	triple.ad = true
+	var triple: GlowButton = UIKit.ad_button(tr("Забрать ×3 · %s") % UIKit.format_number(result.run_sparks * 3), GlowButton.Variant.PRIMARY, &"run_x3")
 	triple.custom_minimum_size.y = 64
 	_invert(triple)
-	if not AdManager.is_rewarded_ready(&"run_x3"):
-		triple.set_blocked(true, tr("Реклама недоступна"))
 	column.add_child(triple)
 	var single: GlowButton = UIKit.button(tr("Забрать %s") % UIKit.format_number(result.run_sparks), GlowButton.Variant.QUIET, _claim.bind(1))
 	single.add_theme_color_override(&"font_color", UITokens.TEXT_ON_LIGHT)

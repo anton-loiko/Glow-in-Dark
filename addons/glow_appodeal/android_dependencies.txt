@@ -1,0 +1,20 @@
+# Appodeal SDK и адаптеры медиации (Android). Версии синхронизированы с Appodeal 4.3.0
+# (сверено с damnedpie/godot-appodeal SDK4.3.0rev1, 2026-09-08). Набор сетей — стартовый;
+# итоговый список — по рекомендации кабинета Appodeal для жанра и гео.
+com.appodeal.ads.sdk:core:4.3.0
+com.appodeal.ads.sdk.adapters:admob:25.2.0.0
+com.appodeal.ads.sdk.adapters:applovin:13.6.3.0
+com.appodeal.ads.sdk.adapters:applovin_max:13.6.3.1
+com.appodeal.ads.sdk.adapters:bidmachine:3.7.1.0
+com.appodeal.ads.sdk.adapters:bidon:0.14.0.0
+com.appodeal.ads.sdk.adapters:iab:1.8.1.0
+com.appodeal.ads.sdk.adapters:ironsource:9.4.4.0
+com.appodeal.ads.sdk.adapters:level_play:9.4.4.0
+com.appodeal.ads.sdk.adapters:meta:6.21.0.0
+com.appodeal.ads.sdk.adapters:mintegral:17.1.61.0
+com.appodeal.ads.sdk.adapters:my_target:5.47.1.0
+com.appodeal.ads.sdk.adapters:unity_ads:4.17.0.0
+com.appodeal.ads.sdk.adapters:vungle:7.7.4.0
+com.appodeal.ads.sdk.adapters:yandex:7.17.0.0
+# Выручка рекламы в Firebase; firebase-analytics 23.2.0 — та же версия, что в godot-x/firebase 3.1.
+com.appodeal.ads.sdk.adapters:firebase:23.2.0.0

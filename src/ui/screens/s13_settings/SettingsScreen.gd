@@ -6,6 +6,9 @@ extends Control
 const LONG_PRESS_MS: int = 600
 
 var _press_ms: int = -1
+var _cloud_row: HBoxContainer
+var _services_row: HBoxContainer
+var _connect: GlowButton
 
 
 func _ready() -> void:
@@ -41,11 +44,18 @@ func _ready() -> void:
 	column.add_child(numbers)
 
 	column.add_child(UIKit.mono(tr("Аккаунт")))
-	var cloud: String = {&"synced": tr("Синхронизировано"), &"syncing": tr("Синхронизация…"), &"offline": tr("Офлайн"), &"error": tr("Ошибка синхронизации")}.get(CloudManager.state, tr("Офлайн"))
-	column.add_child(_info_row(tr("Облачное сохранение"), cloud))
-	var services: String = GameServices.get_display_name() if GameServices.is_signed_in() else tr("Не подключено")
-	var platform: String = "Game Center" if OS.get_name() == "iOS" else "Play Games"
-	column.add_child(_info_row(platform, services))
+	_cloud_row = _info_row(tr("Облачное сохранение"), "")
+	column.add_child(_cloud_row)
+	_services_row = _info_row(_platform_name(), "")
+	column.add_child(_services_row)
+	_connect = UIKit.button(tr("Подключить"), GlowButton.Variant.SECONDARY, GameServices.sign_in_interactive)
+	_connect.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_services_row.add_child(_connect)
+	if AdManager.backend.privacy_options_required():
+		column.add_child(UIKit.button(tr("Настройки конфиденциальности"), GlowButton.Variant.QUIET, AdManager.backend.show_privacy_options))
+	_refresh_account()
+	EventBus.cloud_sync_state_changed.connect(_on_sync_state)
+	GameServices.signed_in_changed.connect(_on_signed_in)
 	var language: Button = Button.new()
 	language.theme_type_variation = &"ButtonQuiet"
 	language.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -58,6 +68,42 @@ func _ready() -> void:
 	footer.mouse_filter = Control.MOUSE_FILTER_STOP
 	footer.gui_input.connect(_on_footer_input)
 	column.add_child(footer)
+
+
+func _platform_name() -> String:
+	match GameServices.platform():
+		"game_center":
+			return "Game Center"
+		"play_games":
+			return "Play Games"
+	return "Game Center" if OS.get_name() == "iOS" else "Play Games"
+
+
+func _on_sync_state(_state: StringName) -> void:
+	_refresh_account()
+
+
+func _on_signed_in(_signed_in: bool) -> void:
+	_refresh_account()
+
+
+## «Синхронизировано · 2 мин назад» · имя игрока гейм-центра или «Не подключено» + «Подключить».
+func _refresh_account() -> void:
+	var cloud: String = {&"synced": tr("Синхронизировано"), &"syncing": tr("Синхронизация…"), &"offline": tr("Офлайн"), &"error": tr("Ошибка синхронизации")}.get(CloudManager.state, tr("Офлайн"))
+	if CloudManager.state == &"synced" and CloudManager.last_synced_at > 0:
+		cloud += " · " + ago_text(int(Time.get_unix_time_from_system()) - CloudManager.last_synced_at)
+	(_cloud_row.get_child(1) as Label).text = cloud
+	var signed_in: bool = GameServices.is_signed_in()
+	(_services_row.get_child(1) as Label).text = GameServices.get_display_name() if signed_in else tr("Не подключено")
+	_connect.visible = not signed_in and GameServices.platform() != "none"
+
+
+static func ago_text(seconds: int) -> String:
+	if seconds < 60:
+		return TranslationServer.translate("только что")
+	if seconds < 3600:
+		return TranslationServer.translate("%d мин назад") % floori(seconds / 60.0)
+	return TranslationServer.translate("%d ч назад") % floori(seconds / 3600.0)
 
 
 func _toggle_row(title: String, key: StringName, value: bool, caption: String = "") -> Control:

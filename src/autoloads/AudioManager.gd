@@ -20,6 +20,7 @@ var _music_player: AudioStreamPlayer
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _track_index: int = 0
 var _next_sfx: int = 0
+var _duck_tween: Tween
 
 
 func _ready() -> void:
@@ -46,6 +47,17 @@ func play_sfx(stream: AudioStream, pitch: float = 1.0) -> void:
 	player.stream = stream
 	player.pitch_scale = pitch
 	player.play()
+
+
+## Приглушить музыку (RV-реклама — на 60%, DS §06). amount 0 — вернуть громкость.
+func duck_music(amount: float, duration_s: float = 0.3) -> void:
+	if _music_player == null:
+		return
+	if _duck_tween != null and _duck_tween.is_valid():
+		_duck_tween.kill()
+	var target_db: float = linear_to_db(clampf(1.0 - amount, 0.001, 1.0))
+	_duck_tween = create_tween().set_ignore_time_scale(true).set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_duck_tween.tween_property(_music_player, ^"volume_db", target_db, duration_s)
 
 
 func apply_settings() -> void:

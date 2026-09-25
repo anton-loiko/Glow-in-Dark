@@ -39,6 +39,22 @@ static func merge(local: PlayerProfile, remote: PlayerProfile) -> PlayerProfile:
 		if result.find_gear(item.uid) == null:
 			result.gear_inventory.append(PlayerProfile.GearItem.from_dict(item.to_dict()))
 
+	_union_names(result.gear_slots_unlocked, older.gear_slots_unlocked)
+
+	# Лимиты рекламы: не даём обойти «3 в день» / «раз в 8 ч» сменой устройства.
+	for key: String in older.ad_cooldowns:
+		result.ad_cooldowns[key] = maxi(result.ad_cooldowns.get(key, 0), older.ad_cooldowns[key])
+	if older.ads_day_stamp > result.ads_day_stamp:
+		result.ads_day_stamp = older.ads_day_stamp
+		result.ads_today = older.ads_today.duplicate()
+	elif older.ads_day_stamp == result.ads_day_stamp:
+		for key: String in older.ads_today:
+			result.ads_today[key] = maxi(result.ads_today.get(key, 0), older.ads_today[key])
+
+	# FOMO-таймер стартер-пака — самый ранний показ.
+	if older.starter_pack_expires_at > 0 and (result.starter_pack_expires_at == 0 or older.starter_pack_expires_at < result.starter_pack_expires_at):
+		result.starter_pack_expires_at = older.starter_pack_expires_at
+
 	# Гарант сундука — максимум (не даём сбросить прогресс гаранта откатом).
 	result.premium_pity = maxi(result.premium_pity, older.premium_pity)
 

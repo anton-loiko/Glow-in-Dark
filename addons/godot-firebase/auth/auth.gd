@@ -7,7 +7,6 @@ class_name FirebaseAuth
 extends HTTPRequest
 
 const _API_VERSION : String = "v1"
-const _INAPP_PLUGIN : String = "GodotSvc"
 
 # Emitted for each Auth request issued.
 # `result_code` -> Either `1` if auth succeeded or `error_code` if unsuccessful auth request
@@ -291,10 +290,6 @@ func get_auth_with_redirect(provider: AuthProvider) -> void:
 	url_endpoint = _clean_url(url_endpoint)
 	if Utilities.is_web():
 		JavaScriptBridge.eval('window.location.replace("' + url_endpoint + '")')
-	elif Engine.has_singleton(_INAPP_PLUGIN) and OS.get_name() == "iOS":
-		#in app for ios if the iOS plugin exists
-		set_local_provider(provider)
-		Engine.get_singleton(_INAPP_PLUGIN).popup(url_endpoint)
 	else:
 		set_local_provider(provider)
 		OS.shell_open(url_endpoint)

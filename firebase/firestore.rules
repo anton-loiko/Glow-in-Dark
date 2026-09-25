@@ -1,0 +1,19 @@
+rules_version = '2';
+// Облачное сохранение (task_7 §6): пользователь читает и пишет только свой документ users/{uid}.
+// Документ — снимок профиля: profile_json (строка), schema_version, updated_at. Остальное запрещено.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['profile_json', 'schema_version', 'updated_at'])
+        && request.resource.data.profile_json is string
+        && request.resource.data.profile_json.size() < 500000
+        && request.resource.data.schema_version is int
+        && request.resource.data.updated_at is int;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

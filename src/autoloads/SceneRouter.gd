@@ -56,6 +56,7 @@ func _ready() -> void:
 	_fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade_layer.add_child(_fade_rect)
 	add_child(ToastHost.new())
+	add_child(PurchaseCelebration.new())
 
 
 func _notification(what: int) -> void:
@@ -81,6 +82,8 @@ func go(screen_id: StringName, params: Dictionary = {}) -> void:
 	_transitioning = true
 	close_all_modals()
 	var info: Dictionary = SCREENS[screen_id]
+	if info.get("tab", false) and screen_id != current_screen_id:
+		Telemetry.log_event(&"tab_open", {"tab": String(screen_id), "from": String(current_screen_id)})
 	var duration_ms: int = int(info.get("transition_ms", T_FAST_MS if info.get("tab", false) else T_SLOW_MS))
 	if current_screen_id != &"":
 		await _fade(1.0, duration_ms * 0.5)

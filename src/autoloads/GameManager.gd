@@ -55,7 +55,26 @@ func grant(currency: StringName, amount: int, reason: StringName) -> void:
 	_change(currency, amount, reason)
 
 
+## Причины начислений и трат (docs/economy.md). Динамические — по префиксу: shop_<product>, chest_<type>.
+const REASONS: Array[StringName] = [
+	&"run", &"run_x3", &"daily", &"ad_gift", &"iap", &"dismantle", &"merge_refund", &"beacon_reward",
+	&"beacon", &"gear_levelup", &"revive", &"skill_reroll", &"test",
+]
+const REASON_PREFIXES: Array[String] = ["shop_", "chest_"]
+
+
+static func is_known_reason(reason: StringName) -> bool:
+	if REASONS.has(reason):
+		return true
+	for prefix: String in REASON_PREFIXES:
+		if String(reason).begins_with(prefix):
+			return true
+	return false
+
+
 func _change(currency: StringName, delta: int, reason: StringName) -> void:
+	if OS.is_debug_build() and not is_known_reason(reason):
+		push_warning("[GameManager] unknown economy reason '%s' — добавьте в REASONS и docs/economy.md" % reason)
 	match currency:
 		SPARKS:
 			profile.sparks += delta
@@ -167,3 +186,4 @@ func apply_run_rewards(multiplier: int) -> void:
 	Telemetry.log_event(&"reward_multiplier", {"run_id": run.run_id, "multiplier": multiplier})
 	current_run = null
 	SaveManager.flush(true)
+	EventBus.run_rewards_claimed.emit(multiplier)

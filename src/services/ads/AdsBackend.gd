@@ -1,6 +1,6 @@
 class_name AdsBackend
 extends RefCounted
-## Интерфейс рекламного бэкенда. Реализация — своя обёртка над Appodeal SDK (task_7, D17).
+## Интерфейс рекламного бэкенда: AppodealBackend (своя обёртка над Appodeal SDK, D17) или MockAdsBackend.
 
 @warning_ignore("unused_signal")
 signal rewarded_finished(placement: StringName, rewarded: bool)
@@ -18,3 +18,12 @@ func is_rewarded_ready() -> bool:
 
 func show_rewarded(_placement: StringName) -> void:
 	pass
+
+
+## Форма настроек конфиденциальности (GDPR) — кнопка в S13, если требуется.
+func show_privacy_options() -> void:
+	pass
+
+
+func privacy_options_required() -> bool:
+	return false

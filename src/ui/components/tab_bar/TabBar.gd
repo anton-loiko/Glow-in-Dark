@@ -45,6 +45,29 @@ func _ready() -> void:
 	ember.position = Vector2(-ember.diameter * 0.5, -ember.diameter * 0.35)
 	ember.pressed.connect(_on_fight)
 	add_child(ember)
+	refresh_dots()
+	EventBus.inventory_changed.connect(refresh_dots)
+	EventBus.skin_equipped.connect(_on_skin_equipped)
+	EventBus.ad_reward_granted.connect(_on_ad_reward)
+
+
+## Красные точки «есть что забрать»: Магазин — бесплатный дар ▶; Экипировка — новые Огоньки и предметы.
+func refresh_dots() -> void:
+	if GameManager.profile == null:
+		return
+	set_dot(&"S10", StoreManager.free_gift_ready())
+	var has_new: bool = not GameManager.profile.skins_new_badge.is_empty()
+	for item: PlayerProfile.GearItem in GameManager.profile.gear_inventory:
+		has_new = has_new or item.is_new
+	set_dot(&"S12", has_new)
+
+
+func _on_skin_equipped(_id: StringName) -> void:
+	refresh_dots()
+
+
+func _on_ad_reward(_placement: StringName) -> void:
+	refresh_dots()
 
 
 func set_dot(tab_id: StringName, shown: bool) -> void:

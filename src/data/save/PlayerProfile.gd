@@ -35,8 +35,11 @@ var skins_to_reveal: Array[StringName] = []
 
 # chests
 var premium_pity: int = 0
-var basic_ads_today: int = 0
+
+# rewarded ads (лимиты AdManager): показы за день по плейсментам и кулдауны (unix-время последней награды)
 var ads_day_stamp: int = 0
+var ads_today: Dictionary[String, int] = {}
+var ad_cooldowns: Dictionary[String, int] = {}
 
 # skills archive
 var skills_seen: Array[StringName] = []
@@ -44,7 +47,6 @@ var skills_seen: Array[StringName] = []
 # daily gift
 var daily_streak_day: int = 0
 var daily_last_claim_day: int = 0
-var free_gift_ts: int = 0 ## последний бесплатный дар магазина (unix)
 ## Награды, которые выдаст система соответствующей задачи (предметы, сундуки — task_6).
 var pending_rewards: Array[Dictionary] = []
 
@@ -202,13 +204,10 @@ func to_dict() -> Dictionary:
 		},
 		"gear": {"equipped": equipped_dict, "inventory": inventory_list, "slots_unlocked": _names_to_strings(gear_slots_unlocked)},
 		"skins_to_reveal": _names_to_strings(skins_to_reveal),
-		"chests": {
-			"premium_pity": premium_pity,
-			"basic_ads_today": basic_ads_today,
-			"ads_day_stamp": ads_day_stamp,
-		},
+		"chests": {"premium_pity": premium_pity},
+		"ads": {"day_stamp": ads_day_stamp, "today": ads_today.duplicate(), "cooldowns": ad_cooldowns.duplicate()},
 		"skills_archive": {"seen": _names_to_strings(skills_seen)},
-		"daily": {"streak_day": daily_streak_day, "last_claim_day": daily_last_claim_day, "free_gift_ts": free_gift_ts},
+		"daily": {"streak_day": daily_streak_day, "last_claim_day": daily_last_claim_day},
 		"pending_rewards": pending_rewards.duplicate(true),
 		"purchases": {
 			"starter_pack": {"bought": starter_pack_bought, "expires_at": starter_pack_expires_at},
@@ -257,8 +256,17 @@ static func from_dict(d: Dictionary) -> PlayerProfile:
 
 	var chests: Dictionary = d.get("chests", {}) as Dictionary
 	p.premium_pity = int(chests.get("premium_pity", 0))
-	p.basic_ads_today = int(chests.get("basic_ads_today", 0))
-	p.ads_day_stamp = int(chests.get("ads_day_stamp", 0))
+	var ads: Dictionary = d.get("ads", {}) as Dictionary
+	p.ads_day_stamp = int(ads.get("day_stamp", chests.get("ads_day_stamp", 0)))
+	var today: Dictionary = ads.get("today", {}) as Dictionary
+	for key: Variant in today:
+		p.ads_today[str(key)] = int(today[key])
+	var cooldowns: Dictionary = ads.get("cooldowns", {}) as Dictionary
+	for key: Variant in cooldowns:
+		p.ad_cooldowns[str(key)] = int(cooldowns[key])
+	# Схема до task_7: счётчик базовых сундуков и таймер дара жили отдельными полями.
+	if chests.has("basic_ads_today") and not p.ads_today.has("basic_chest"):
+		p.ads_today["basic_chest"] = int(chests["basic_ads_today"])
 
 	var archive: Dictionary = d.get("skills_archive", {}) as Dictionary
 	p.skills_seen = DefUtil.to_string_names(archive.get("seen", []))
@@ -266,7 +274,8 @@ static func from_dict(d: Dictionary) -> PlayerProfile:
 	var daily: Dictionary = d.get("daily", {}) as Dictionary
 	p.daily_streak_day = int(daily.get("streak_day", 0))
 	p.daily_last_claim_day = int(daily.get("last_claim_day", 0))
-	p.free_gift_ts = int(daily.get("free_gift_ts", 0))
+	if daily.has("free_gift_ts") and not p.ad_cooldowns.has("shop_free_gift"):
+		p.ad_cooldowns["shop_free_gift"] = int(daily["free_gift_ts"])
 	for reward: Variant in d.get("pending_rewards", []):
 		p.pending_rewards.append(reward as Dictionary)
 

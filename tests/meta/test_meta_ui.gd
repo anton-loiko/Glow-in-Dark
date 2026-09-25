@@ -123,3 +123,12 @@ func test_skin_reveal_is_consumed_on_close() -> void:
 func test_gear_stat_text_signs() -> void:
 	assert_str(GearText.stat_text(&"decay_rate_pct", -3.4)).is_equal(tr("−%s%% затухания") % "3.4")
 	assert_str(GearText.stat_text(&"max_light", 12.0)).is_equal(tr("+%s макс. яркости") % "12")
+
+
+func test_daily_item_reward_goes_to_inventory() -> void:
+	p.pending_rewards.append({"item": "helmet", "rarity": "common", "label": "Шлем"})
+	p.pending_rewards.append({"chest": "epic"})
+	var items: Array[PlayerProfile.GearItem] = GearService.claim_pending_items(p)
+	assert_int(items.size()).is_equal(1)
+	assert_str(String(items[0].slot)).is_equal("head")
+	assert_int(p.pending_rewards.size()).is_equal(1)

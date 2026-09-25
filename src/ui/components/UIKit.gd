@@ -26,6 +26,14 @@ static func button(text: String, variant: GlowButton.Variant, action: Callable, 
 	return b
 
 
+## Кнопка ▶ Rewarded: глиф, показ рекламы по плейсменту, авто-Disabled по лимиту и готовности.
+static func ad_button(text: String, variant: GlowButton.Variant, placement: StringName) -> GlowButton:
+	var b: GlowButton = button(text, variant, AdManager.show_rewarded.bind(placement))
+	b.ad = true
+	b.ad_placement = placement
+	return b
+
+
 static func vbox(separation: int = UITokens.S3, align: BoxContainer.AlignmentMode = BoxContainer.ALIGNMENT_BEGIN) -> VBoxContainer:
 	var box: VBoxContainer = VBoxContainer.new()
 	box.add_theme_constant_override(&"separation", separation)

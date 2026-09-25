@@ -18,7 +18,13 @@ const VARIATIONS: Dictionary = {
 @export var ad: bool = false
 @export var disabled_reason: String = ""
 
+## Плейсмент RV: кнопка сама следит за лимитом и готовностью рекламы и логирует ad_opportunity_shown.
+var ad_placement: StringName = &""
+## Причина блокировки от экрана (например, «Инвентарь полон») — важнее причин рекламы.
+var ad_extra_reason: String = ""
+
 var _label_text: String = ""
+var _ad_poll_s: float = 0.0
 
 
 func _ready() -> void:
@@ -33,6 +39,28 @@ func _ready() -> void:
 	_refresh_text()
 	pressed.connect(_on_pressed)
 	gui_input.connect(_on_gui_input)
+	set_process(ad_placement != &"")
+	if ad_placement != &"":
+		ad = true
+		_refresh_text()
+		refresh_ad()
+		AdManager.note_opportunity(ad_placement)
+
+
+func _process(delta: float) -> void:
+	_ad_poll_s -= delta
+	if _ad_poll_s <= 0.0:
+		_ad_poll_s = 0.5
+		refresh_ad()
+
+
+## Пересчитать доступность ▶: причина экрана → лимит/таймер → «Реклама недоступна».
+func refresh_ad() -> void:
+	if ad_placement == &"":
+		return
+	var reason: String = ad_extra_reason if not ad_extra_reason.is_empty() else AdManager.blocked_reason(ad_placement)
+	if disabled != not reason.is_empty() or disabled_reason != reason:
+		set_blocked(not reason.is_empty(), reason)
 
 
 func set_label(value: String) -> void:

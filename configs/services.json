@@ -1,4 +1,8 @@
 {
-  "_doc": "Внешние сервисы. Облако выключено, пока не подключён Firebase-проект Glow in the Dark (task_7): текущий addons/godot-firebase/.env указывает на чужой проект mc-game-8ee20.",
-  "cloud_sync_enabled": false
+  "_doc": "Внешние сервисы (task_7). Облако выключено, пока не подключён Firebase-проект Glow in the Dark: текущий addons/godot-firebase/.env указывает на чужой проект mc-game-8ee20. play_games_* — вход Play Games → Firebase: сначала signInWithIdp (прототип), при неудаче — Cloud Function обмена server auth code на custom token.",
+  "cloud_sync_enabled": false,
+  "sync_timeout_s": 6.0,
+  "push_debounce_s": 3.0,
+  "play_games_server_client_id": "",
+  "play_games_token_exchange_url": ""
 }

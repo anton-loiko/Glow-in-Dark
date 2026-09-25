@@ -15,7 +15,10 @@ func _ready() -> void:
 	var profile: PlayerProfile = GameManager.profile
 	var today_day: int = DailyGiftService.current_day(profile)
 	var claimed_today: bool = not DailyGiftService.is_available(profile)
-	var note: Label = UIKit.label(tr("Серия прервётся, если пропустить день"), &"body_s", UITokens.TEXT_MUTED)
+	var note_text: String = tr("Серия прервётся, если пропустить день")
+	if claimed_today:
+		note_text += " · " + tr("до сброса %d ч") % ceili(_seconds_to_midnight() / 3600.0)
+	var note: Label = UIKit.label(note_text, &"body_s", UITokens.TEXT_MUTED)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	content.add_child(note)
 	var grid: GridContainer = GridContainer.new()
@@ -33,16 +36,19 @@ func _ready() -> void:
 			state = &"now"
 		grid.add_child(_tile(day, days[i] as Dictionary, state))
 	_claim = UIKit.button(tr("Забрать"), GlowButton.Variant.PRIMARY, _claim_reward.bind(1))
-	_double = UIKit.button(tr("Забрать ×2"), GlowButton.Variant.SECONDARY, AdManager.show_rewarded.bind(&"daily_x2"))
-	_double.ad = true
+	_double = UIKit.ad_button(tr("Забрать ×2"), GlowButton.Variant.SECONDARY, &"daily_x2")
 	content.add_child(_claim)
 	content.add_child(_double)
 	if claimed_today:
 		_claim.set_blocked(true, tr("Уже получено сегодня"))
 		_double.visible = false
-	elif not AdManager.is_rewarded_ready(&"daily_x2"):
-		_double.set_blocked(true, tr("Реклама недоступна"))
 	EventBus.ad_reward_granted.connect(_on_ad_reward)
+
+
+## День считается по локальной полуночи (DailyGiftService.today).
+func _seconds_to_midnight() -> int:
+	var now: Dictionary = Time.get_datetime_dict_from_system()
+	return 86400 - (int(now["hour"]) * 3600 + int(now["minute"]) * 60 + int(now["second"]))
 
 
 func _on_ad_reward(placement: StringName) -> void:

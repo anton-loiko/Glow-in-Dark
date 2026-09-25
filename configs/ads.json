@@ -1,5 +1,8 @@
 {
-  "_doc": "Rewarded-плейсменты (task_7 §1, D15, D17). Лимиты применяет AdManager в task_7.",
+  "_doc": "Rewarded-плейсменты (task_7 §1, D15, D17). limit: per_run | per_day | cooldown_h | shared (with — чей лимит общий). Лимиты применяет AdManager.",
+  "app_keys": {"android": "", "ios": ""},
+  "test_mode_in_debug": true,
+  "music_duck": 0.6,
   "placements": {
     "revive": {"limit": "per_run", "count": 1},
     "run_x3": {"limit": "per_run", "count": 1},

@@ -230,3 +230,30 @@ static func available_merges(profile: PlayerProfile) -> int:
 	for n: Variant in groups.values():
 		count += floori(float(n) / merge_count())
 	return count
+
+
+const ITEM_ALIASES: Dictionary = {"helmet": &"head", "core": &"core", "boots": &"feet", "amulet": &"amulet"}
+
+
+## Предметы из pending_rewards (Дар дня: {"item": "helmet", "rarity": "common"}) → инвентарь.
+## Сундуки остаются в очереди — их открывает S17. Возвращает выданные предметы.
+static func claim_pending_items(profile: PlayerProfile) -> Array[PlayerProfile.GearItem]:
+	var granted: Array[PlayerProfile.GearItem] = []
+	var slot_items: Dictionary = config().get("slot_items", {}) as Dictionary
+	var i: int = 0
+	while i < profile.pending_rewards.size():
+		var reward: Dictionary = profile.pending_rewards[i]
+		if not reward.has("item"):
+			i += 1
+			continue
+		profile.pending_rewards.remove_at(i)
+		var slot: String = String(ITEM_ALIASES.get(str(reward["item"]), StringName(str(reward["item"]))))
+		var bases: Array = slot_items.get(slot, [])
+		if bases.is_empty():
+			continue
+		var item: PlayerProfile.GearItem = create_item(StringName(str(bases[0])), StringName(str(reward.get("rarity", "common"))))
+		add_item(profile, item)
+		granted.append(item)
+	if not granted.is_empty():
+		SaveManager.request_save(true)
+	return granted

@@ -13,18 +13,8 @@ static func rates(chest: StringName) -> Array:
 	return (config().get(String(chest), {}) as Dictionary).get("rates", [100, 0, 0, 0, 0])
 
 
-static func basic_ads_left(profile: PlayerProfile) -> int:
-	var limit: int = int((config().get("basic", {}) as Dictionary).get("ad_per_day", 3))
-	if profile.ads_day_stamp != DailyGiftService.today():
-		return limit
-	return maxi(0, limit - profile.basic_ads_today)
-
-
-static func note_basic_ad(profile: PlayerProfile) -> void:
-	if profile.ads_day_stamp != DailyGiftService.today():
-		profile.ads_day_stamp = DailyGiftService.today()
-		profile.basic_ads_today = 0
-	profile.basic_ads_today += 1
+static func basic_ads_left(_profile: PlayerProfile) -> int:
+	return AdManager.remaining(&"basic_chest")
 
 
 ## Открыть count сундуков типа chest. rng — для тестов; по умолчанию — глобальный.

@@ -49,3 +49,25 @@ func test_crystal_spend_is_saved_even_during_run() -> void:
 	assert_int(SaveManager.write_count).is_equal(before)
 	GameManager.spend(GameManager.CRYSTALS, 30, &"revive")
 	assert_int(SaveManager.write_count).is_equal(before + 1)
+
+
+func test_every_literal_economy_reason_is_known() -> void:
+	var regex: RegEx = RegEx.create_from_string("(?:grant|spend)\\([^\\n]*, &\"([a-z_0-9]+)\"\\)")
+	var unknown: Array[String] = []
+	for path: String in _all_scripts("res://src"):
+		for m: RegExMatch in regex.search_all(FileAccess.get_file_as_string(path)):
+			if not GameManager.is_known_reason(StringName(m.get_string(1))):
+				unknown.append(m.get_string(1))
+	assert_array(unknown).is_empty()
+	assert_bool(GameManager.is_known_reason(&"shop_crystals_80")).is_true()
+	assert_bool(GameManager.is_known_reason(&"free_money")).is_false()
+
+
+func _all_scripts(dir: String) -> Array[String]:
+	var out: Array[String] = []
+	for f: String in DirAccess.get_files_at(dir):
+		if f.ends_with(".gd"):
+			out.append(dir.path_join(f))
+	for d: String in DirAccess.get_directories_at(dir):
+		out.append_array(_all_scripts(dir.path_join(d)))
+	return out

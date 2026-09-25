@@ -9,6 +9,8 @@ extends Resource
 @export var grants: Dictionary = {}
 @export var one_time: bool = false
 @export var badge: StringName
+## FOMO-таймер оффера в часах от первого показа (0 — без таймера).
+@export var offer_timer_h: float = 0.0
 
 
 func apply_dict(d: Dictionary) -> void:
@@ -19,6 +21,7 @@ func apply_dict(d: Dictionary) -> void:
 	grants = d.get("grants", grants) as Dictionary
 	one_time = bool(d.get("one_time", one_time))
 	badge = StringName(d.get("badge", badge))
+	offer_timer_h = float(d.get("offer_timer_h", offer_timer_h))
 
 
 func is_real_money() -> bool:
