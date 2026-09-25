@@ -99,6 +99,9 @@ func _run_queue() -> void:
 	if not profile.skins_to_reveal.is_empty():
 		SceneRouter.open_modal(&"S14", {"skin": profile.skins_to_reveal[0]})
 		return
+	if GameManager.should_suggest_ghost():
+		profile.contact_death_streak = 0
+		EventBus.toast_requested.emit(tr("Попробуй Призрачного: враги наносят на 30% меньше урона"), &"skin")
 	for item: PlayerProfile.GearItem in GearService.claim_pending_items(profile):
 		EventBus.toast_requested.emit(tr("Новый предмет: %s") % GearText.item_name(item), &"gear")
 	for reward: Dictionary in profile.pending_rewards:

@@ -35,7 +35,8 @@ var skins_to_reveal: Array[StringName] = []
 
 # chests
 var premium_pity: int = 0
-var chests_opened: int = 0 ## после 10 — доступно «Быстрое открытие» (Gear DS §03)
+var chests_opened: int = 0
+var contact_death_streak: int = 0 ## смерти подряд от касаний → подсказка «Попробуй Призрачного» ## после 10 — доступно «Быстрое открытие» (Gear DS §03)
 
 # rewarded ads (лимиты AdManager): показы за день по плейсментам и кулдауны (unix-время последней награды)
 var ads_day_stamp: int = 0
@@ -209,6 +210,7 @@ func to_dict() -> Dictionary:
 		"gear": {"equipped": equipped_dict, "inventory": inventory_list, "slots_unlocked": _names_to_strings(gear_slots_unlocked)},
 		"skins_to_reveal": _names_to_strings(skins_to_reveal),
 		"chests": {"premium_pity": premium_pity, "opened": chests_opened},
+		"hints": {"contact_death_streak": contact_death_streak},
 		"ads": {"day_stamp": ads_day_stamp, "today": ads_today.duplicate(), "cooldowns": ad_cooldowns.duplicate()},
 		"skills_archive": {"seen": _names_to_strings(skills_seen)},
 		"daily": {"streak_day": daily_streak_day, "last_claim_day": daily_last_claim_day},
@@ -261,6 +263,7 @@ static func from_dict(d: Dictionary) -> PlayerProfile:
 	var chests: Dictionary = d.get("chests", {}) as Dictionary
 	p.premium_pity = int(chests.get("premium_pity", 0))
 	p.chests_opened = int(chests.get("opened", 0))
+	p.contact_death_streak = int((d.get("hints", {}) as Dictionary).get("contact_death_streak", 0))
 	var ads: Dictionary = d.get("ads", {}) as Dictionary
 	p.ads_day_stamp = int(ads.get("day_stamp", chests.get("ads_day_stamp", 0)))
 	var today: Dictionary = ads.get("today", {}) as Dictionary

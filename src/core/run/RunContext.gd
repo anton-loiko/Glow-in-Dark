@@ -31,6 +31,8 @@ var run_chests: Array[StringName] = []
 var result: RunResult
 ## Доп. источники света боя сверх света игрока (task_8 §2).
 var light_budget: LightBudget
+## Последний источник урона по игроку (&"contact" / &"slam" / …) — для подсказки «Попробуй Призрачного».
+var last_damage_source: StringName = &""
 
 
 func _init(p_chapter_id: int, p_seed: int, p_stats: StatBlock) -> void:

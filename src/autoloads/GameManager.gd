@@ -15,6 +15,7 @@ func _ready() -> void:
 	set_process(false)
 	set_profile(SaveManager.load_profile())
 	EventBus.ad_reward_granted.connect(_on_ad_reward_granted)
+	EventBus.player_damaged.connect(_on_player_damaged)
 
 
 ## Подменяет профиль (загрузка, слияние с облаком).
@@ -143,6 +144,24 @@ func request_revive(source: StringName) -> bool:
 	return true
 
 
+func _on_player_damaged(_amount: float, source: StringName) -> void:
+	if current_run != null:
+		current_run.last_damage_source = source
+
+
+## Серия смертей от касаний (DS Meta §03: подсказка «Попробуй Призрачного» после 3 подряд).
+func track_contact_deaths(reason: StringName, last_source: StringName) -> void:
+	if reason == RunResult.REASON_DEATH and last_source == &"contact":
+		profile.contact_death_streak += 1
+	else:
+		profile.contact_death_streak = 0
+
+
+## Подсказка хаба: 3 смерти подряд от касаний, Призрачный открыт и не надет. Показывается один раз на серию.
+func should_suggest_ghost() -> bool:
+	return profile.contact_death_streak >= 3 and profile.skins_unlocked.has(&"ghost") and profile.skin_equipped != &"ghost"
+
+
 func _on_ad_reward_granted(placement: StringName) -> void:
 	if placement == &"revive":
 		request_revive(&"ad")
@@ -154,6 +173,7 @@ func end_run(result: RunResult) -> void:
 		return
 	result.run_sparks = current_run.run_sparks
 	result.kills = current_run.kills
+	track_contact_deaths(result.reason, current_run.last_damage_source)
 	result.player_level = current_run.player_level
 	result.chests = current_run.run_chests.duplicate()
 	var best: float = profile.best_time_s.get(current_run.chapter_id, 0.0)

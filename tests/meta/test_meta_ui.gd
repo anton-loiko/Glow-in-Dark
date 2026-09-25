@@ -166,3 +166,17 @@ func test_chests_opened_counts_and_roundtrips() -> void:
 	var back: PlayerProfile = PlayerProfile.from_dict(p.to_dict())
 	assert_int(back.chests_opened).is_equal(3)
 	assert_bool(back.settings.fast_chests).is_true()
+
+
+func test_ghost_hint_after_three_contact_deaths() -> void:
+	p.skins_unlocked.append(&"ghost")
+	GameManager.track_contact_deaths(RunResult.REASON_DEATH, &"contact")
+	GameManager.track_contact_deaths(RunResult.REASON_DEATH, &"slam")
+	assert_int(p.contact_death_streak).is_equal(0) # удар босса серию сбрасывает
+	for i: int in 3:
+		GameManager.track_contact_deaths(RunResult.REASON_DEATH, &"contact")
+	assert_bool(GameManager.should_suggest_ghost()).is_true()
+	var restored: PlayerProfile = PlayerProfile.from_dict(p.to_dict())
+	assert_int(restored.contact_death_streak).is_equal(3)
+	p.skin_equipped = &"ghost"
+	assert_bool(GameManager.should_suggest_ghost()).is_false()
