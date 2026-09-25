@@ -12,7 +12,8 @@ config_version=5
 
 config/name="Glow in the Dark"
 config/version="1.0.0"
-run/main_scene="uid://b7wd40ndx4jhr"
+run/main_scene="res://src/app/Boot.tscn"
+config/quit_on_go_back=false
 config/features=PackedStringArray("4.7", "Mobile")
 boot_splash/bg_color=Color(0.039215688, 0.05882353, 0.09411765, 1)
 boot_splash/stretch_mode=4
@@ -21,43 +22,94 @@ boot_splash/image="uid://81ffxjynrwpg"
 
 [autoload]
 
-EventBus="*uid://bo706m6ji856k"
+EventBus="*res://src/autoloads/EventBus.gd"
+ConfigDB="*res://src/autoloads/ConfigDB.gd"
+SaveManager="*res://src/autoloads/SaveManager.gd"
+Telemetry="*res://src/autoloads/Telemetry.gd"
+GameManager="*res://src/autoloads/GameManager.gd"
+TimeService="*res://src/autoloads/TimeService.gd"
+SceneRouter="*res://src/autoloads/SceneRouter.gd"
+SkillsManager="*res://src/autoloads/SkillsManager.gd"
+DamagePool="*res://src/autoloads/DamagePool.gd"
+AudioManager="*res://src/autoloads/AudioManager.gd"
+FeedbackManager="*res://src/autoloads/FeedbackManager.gd"
+AdManager="*res://src/autoloads/AdManager.gd"
+StoreManager="*res://src/autoloads/StoreManager.gd"
 Firebase="*uid://cvb26atjckwlq"
-GameBalanceManager="*uid://5ggpehv2731g"
-GameManager="*uid://djfsslhpvdsue"
-SkillsManager="*uid://bxy20p3y7k6cv"
-AudioManager="*uid://hy5665oy5ce"
-AdManager="*uid://bgiahtvfs3bjc"
-StoreManager="*uid://wkhdbx05icvs"
-LeaderboardManager="*uid://cuurm57rs6ekr"
-CloudManager="*uid://h3q8um1ptes4"
-DamagePool="*uid://bs4hm0f3uc8wy"
+GameServices="*res://src/autoloads/GameServices.gd"
+CloudManager="*res://src/autoloads/CloudManager.gd"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/inferred_declaration=1
+gdscript/warnings/unsafe_property_access=1
+gdscript/warnings/unsafe_method_access=1
+gdscript/warnings/exclude_addons=true
 
 [display]
 
-window/size/viewport_width=270
-window/size/viewport_height=480
-window/size/window_width_override=1280
-window/size/window_height_override=2856
+window/size/viewport_width=390
+window/size/viewport_height=844
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
-[editor]
-
-movie_writer/movie_file="/Users/admin/tech/code/games/mc_game/build/movie/movie.avi"
-
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg", "res://addons/virtual_joystick/plugin.cfg")
+enabled=PackedStringArray("res://addons/admob/plugin.cfg", "res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
+
+[input]
+
+move_left={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_right={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_up={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194320,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_down={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194322,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+pause={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":80,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+ui_back={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194308,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
 
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
 
-[physics]
+[layer_names]
 
-3d/physics_engine="Jolt Physics"
+2d_physics/layer_1="world"
+2d_physics/layer_2="player"
+2d_physics/layer_3="enemy"
+2d_physics/layer_4="enemy_hitbox"
+2d_physics/layer_5="pickup"
+2d_physics/layer_6="player_light_area"
+2d_physics/layer_7="projectile_enemy"
 
 [rendering]
 

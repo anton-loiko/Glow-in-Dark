@@ -1,0 +1,13 @@
+{
+  "_doc": "Rewarded-плейсменты (task_7 §1, D15, D17). Лимиты применяет AdManager в task_7.",
+  "placements": {
+    "revive": {"limit": "per_run", "count": 1},
+    "run_x3": {"limit": "per_run", "count": 1},
+    "skill_reroll": {"limit": "per_run", "count": 1},
+    "skill_take_all": {"limit": "per_run", "count": 1},
+    "daily_x2": {"limit": "per_day", "count": 1},
+    "shop_free_gift": {"limit": "cooldown_h", "hours": 8, "grants": {"sparks": 300}},
+    "basic_chest": {"limit": "per_day", "count": 3},
+    "hub_sparks": {"limit": "shared", "with": "shop_free_gift"}
+  }
+}

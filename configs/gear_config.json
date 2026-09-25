@@ -1,0 +1,25 @@
+{
+  "_doc": "Экипировка (Gear DS §04, D8). Cost = ROUND(base_cost × multiplier^(level−1)); Item_Stat = Base_Stat + Level × Stat_Step.",
+  "slots": ["head", "core", "feet", "amulet", "amulet_2"],
+  "rarities": ["common", "uncommon", "rare", "epic", "legendary"],
+  "rarity": {
+    "common": {"max_lv": 10, "base_cost": 50},
+    "uncommon": {"max_lv": 15, "base_cost": 100},
+    "rare": {"max_lv": 20, "base_cost": 200},
+    "epic": {"max_lv": 25, "base_cost": 400},
+    "legendary": {"max_lv": 30, "base_cost": 800}
+  },
+  "cost_multiplier": 1.4,
+  "merge": {"count": 3, "max_result": "epic", "refund_pct": 100},
+  "dismantle_refund_pct": 100,
+  "inventory_size": 40,
+  "items": [
+    {
+      "_todo": "B3: каталог предметов; этот — пример из gear_system.md",
+      "base_id": "hood_lamplighter",
+      "slot": "head",
+      "stat": "max_light",
+      "stats": {"rare": {"base": 30, "step": 2}}
+    }
+  ]
+}

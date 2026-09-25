@@ -1,0 +1,40 @@
+{
+  "_doc": "Базовые статы Огонька и параметры забега. Проценты модификаторов считаются от этих значений (Meta DS §00).",
+  "player": {
+    "_todo": "Калибровка значений без источника в DS — плейтесты task_2",
+    "max_light": 100.0,
+    "light_radius_screen_pct": 0.55,
+    "decay_per_s": 0.6,
+    "move_speed": 110.0,
+    "acceleration": 12.0,
+    "friction": 16.0,
+    "magnet_radius": 60.0,
+    "aura_dps": 20.0,
+    "aura_tick_s": 0.25,
+    "fuel_heal": 40.0,
+    "revive_light_pct": 0.5,
+    "invuln_after_revive_s": 2.0,
+    "invuln_after_levelup_s": 1.5
+  },
+  "all_stats_keys": ["max_light", "move_speed", "magnet_radius", "aura_dps", "fuel_efficiency"],
+  "xp_curve": {
+    "_todo": "B2: первый левел-ап ≤ 30 с",
+    "base": 5,
+    "growth": 1.25
+  },
+  "run": {
+    "revive_countdown_s": 5.0,
+    "revive_crystal_cost": 30,
+    "reroll_spark_cost": 50,
+    "reroll_crystal_cost": 10
+  },
+  "world": {
+    "_todo": "Размер чанка «5×5 м» в pt — task_2",
+    "chunk_size_pt": 480
+  },
+  "damage_numbers": {
+    "accumulate_s": 0.4,
+    "pool_size": 40,
+    "max_visible": 12
+  }
+}

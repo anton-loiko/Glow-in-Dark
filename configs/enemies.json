@@ -1,0 +1,12 @@
+{
+  "_doc": "Бестиарий V1, глава 1, минута 0 (Enemy DS §03, §07). Урон касания — % от максимального света.",
+  "scaling_per_minute": {"hp": 1.18, "damage": 1.08, "speed": 1.0},
+  "elite": {"size_mul": 1.4, "hp_mul": 5.0, "damage_mul": 1.5, "speed_mul": 1.1, "sparks_mul": 5, "fuel_chance": 1.0, "stun_immune": true, "eye_count": 4, "lethal_number_scale": 1.8},
+  "enemies": [
+    {"id": "whisper", "enabled": true, "size_class": "S", "hp": 10, "speed": 70, "contact_damage_pct": 4, "sparks": 1, "fuel_chance": 0.01, "embers": 6, "hit_stop_ms": 0, "lethal_number_scale": 1.0, "eye_count": 2, "telegraph_ms": 0, "unlock_time_s": 0, "screen_limit": 120, "pool_size": 160, "knockback_resist": 0.0, "attack": {"id": "contact"}},
+    {"id": "reaper", "enabled": true, "size_class": "M", "hp": 35, "speed": 60, "contact_damage_pct": 10, "sparks": 3, "fuel_chance": 0.04, "embers": 8, "hit_stop_ms": 0, "lethal_number_scale": 1.5, "eye_count": 2, "telegraph_ms": 500, "unlock_time_s": 90, "screen_limit": 8, "pool_size": 16, "knockback_resist": 0.0, "attack": {"id": "dash", "approach_pt": 200, "dash_pt": 180, "dash_speed": 320, "cooldown_s": 3.0}},
+    {"id": "devourer", "enabled": true, "size_class": "L", "hp": 180, "speed": 35, "contact_damage_pct": 18, "sparks": 10, "fuel_chance": 0.20, "embers": 12, "hit_stop_ms": 30, "lethal_number_scale": 1.5, "eye_count": 3, "telegraph_ms": 700, "unlock_time_s": 180, "screen_limit": 4, "pool_size": 16, "knockback_resist": 0.7, "attack": {"id": "slam", "radius_mul": 1.5, "spawn_on_death": {"whisper": 3}}},
+    {"id": "extinguisher", "enabled": true, "size_class": "XL", "hp": 600, "speed": 45, "contact_damage_pct": 0, "sparks": 40, "fuel_chance": 1.0, "embers": 24, "hit_stop_ms": 60, "lethal_number_scale": 2.0, "eye_count": 4, "telegraph_ms": 0, "unlock_time_s": 300, "screen_limit": 1, "pool_size": 4, "knockback_resist": 1.0, "attack": {"id": "dark_aura", "radius_mul": 3.0, "light_drain_pct": 30, "burst_hp_pct": 25, "burst_disable_s": 3.0}},
+    {"id": "mourner", "enabled": false, "size_class": "M", "hp": 50, "speed": 50, "contact_damage_pct": 6, "sparks": 4, "fuel_chance": 0.05, "embers": 8, "hit_stop_ms": 0, "lethal_number_scale": 1.5, "eye_count": 2, "telegraph_ms": 600, "unlock_time_s": 150, "screen_limit": 4, "pool_size": 16, "knockback_resist": 0.0, "attack": {"id": "spit", "keep_distance_pt": 260, "interval_s": 2.5, "projectile_speed": 140, "burn_in_light_s": 0.3}}
+  ]
+}

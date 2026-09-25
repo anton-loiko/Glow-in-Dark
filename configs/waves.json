@@ -1,0 +1,17 @@
+{
+  "_doc": "Директор волн (Enemy DS §05). Таймлайн плотностей заполняет task_3.",
+  "_todo": "Плотности спавна по отрезкам — task_3",
+  "loop": [
+    {"phase": "calm", "duration_s": 45},
+    {"phase": "tension", "duration_s": 30},
+    {"phase": "reward", "duration_s": 15, "spawn_pause_s": 5}
+  ],
+  "final_tension_from_s": 540,
+  "extinguisher_at_s": [300, 480, 590],
+  "spawn_ring_screens": 1.2,
+  "max_side_share": 0.4,
+  "movement_bias": 1.5,
+  "ambush_pairs": [12, 20],
+  "limits": {"total": 150, "whisper": 120, "reaper": 8, "mourner": 4, "devourer": 4, "elite": 2, "extinguisher": 1},
+  "max_markers": 6
+}

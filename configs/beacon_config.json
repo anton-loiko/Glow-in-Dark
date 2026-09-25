@@ -1,0 +1,36 @@
+{
+  "_doc": "Маяк (Meta DS §00, §04). Баффы суммируются по всем главам, проценты — от базовых статов (D5).",
+  "levels": 100,
+  "levels_per_tier": 10,
+  "cost": {"base": 60, "growth": 1.04, "round": 10},
+  "hold": {"start_ms": 600, "min_ms": 150, "ramp_ms": 2000},
+  "milestones": [25, 50, 75, 100],
+  "tiers": [
+    {"tier": 1, "buff": {"max_light": 10}, "hub_light": 0.20},
+    {"tier": 2, "buff": {"fuel_efficiency_pct": 10}, "hub_light": 0.26},
+    {"tier": 3, "buff": {"decay_rate_pct": -5}, "hub_light": 0.32},
+    {"tier": 4, "buff": {"magnet_radius_pct": 15}, "hub_light": 0.38},
+    {"tier": 5, "buff": {"max_light": 15}, "hub_light": 0.45},
+    {"tier": 6, "buff": {"spark_income_pct": 10}, "hub_light": 0.52},
+    {"tier": 7, "buff": {"decay_rate_pct": -10}, "hub_light": 0.60},
+    {"tier": 8, "buff": {"fuel_efficiency_pct": 20}, "hub_light": 0.70},
+    {"tier": 9, "buff": {"spark_income_pct": 20}, "hub_light": 0.85},
+    {"tier": 10, "buff": {"all_stats_pct": 30}, "hub_light": 1.40}
+  ],
+  "rewards": {
+    "1": {
+      "1": {"skin": "ghost"},
+      "2": {"skin": "plasma"},
+      "3": {"crystals": 100},
+      "4": {"skin": "blue"},
+      "5": {"gear_slot": "amulet_2"},
+      "6": {"skin": "pink"},
+      "7": {"chest": "epic"},
+      "8": {"skin": "inferno"},
+      "9": {"crystals": 500},
+      "10": {"skin": "solar", "chapter_unlock": 2}
+    },
+    "2": {"_todo": "B1: награды глав 2–3 вместо скинов", "10": {"chapter_unlock": 3}},
+    "3": {"_todo": "B1"}
+  }
+}

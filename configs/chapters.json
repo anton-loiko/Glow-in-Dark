@@ -1,0 +1,8 @@
+{
+  "_doc": "Главы V1 (GDD 3.2, Enemy DS §03).",
+  "chapters": [
+    {"id": 1, "name_key": "CHAPTER_1_NAME", "biome": "flooded_city", "duration_s": 600, "unlock": {}},
+    {"id": 2, "name_key": "CHAPTER_2_NAME", "biome": "sleeping_forest", "duration_s": 600, "unlock": {"beacon_chapter": 1, "level": 100}},
+    {"id": 3, "name_key": "CHAPTER_3_NAME", "biome": "rusty_port", "duration_s": 600, "unlock": {"beacon_chapter": 2, "level": 100}}
+  ]
+}

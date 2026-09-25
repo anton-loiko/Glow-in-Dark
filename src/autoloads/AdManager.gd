@@ -1,87 +1,64 @@
 extends Node
+## Rewarded Video по плейсментам (GDD 5.3, D15, D17). Интерстишалов нет.
+## Каждый потребитель получает только СВОЙ плейсмент: EventBus.ad_reward_granted(placement).
+## Лимиты (1 за забег, 3 в день, раз в 8 ч) — task_7.
 
-signal reward_earned()
-signal ad_closed
-signal ad_failed
+var backend: AdsBackend = MockAdsBackend.new()
+var _showing: StringName = &""
 
-var admob = null
-var is_rewarded_loaded: bool = false
-var is_interstitial_loaded: bool = false
-
-# Официальные тестовые ID от Google (заменишь на свои реальные перед релизом)
-const REWARDED_ID = "ca-app-pub-3940256099942544/5224354917"
-const INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712"
 
 func _ready() -> void:
-	if Engine.has_singleton("GodotAdMob"):
-		admob = Engine.get_singleton("GodotAdMob")
-		admob.init(true, get_instance_id()) # Инициализация с тестовым режимом (true)
-		
-		admob.rewarded_ad_loaded.connect(func(): is_rewarded_loaded = true)
-		admob.rewarded_ad_closed.connect(_on_rewarded_closed)
-		admob.rewarded_ad_failed_to_load.connect(_on_rewarded_ad_failed_to_load)
-		admob.rewarded_user_earned_reward.connect(_on_rewarded_user_earned_reward)
-		
-		admob.interstitial_loaded.connect(func(): is_interstitial_loaded = true)
-		admob.interstitial_closed.connect(_on_interstitial_closed)
-		
-		_load_all_ads()
-	else:
-		print("GodotAdMob плагин не найден. Режим симуляции рекламы (ПК).")
-		is_rewarded_loaded = true
-		is_interstitial_loaded = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
+	set_backend(backend)
 
-func _load_all_ads() -> void:
-	if admob:
-		admob.load_rewarded_ad(REWARDED_ID)
-		admob.load_interstitial(INTERSTITIAL_ID)
 
-func show_rewarded_ad() -> void:
-	# FIXME: Probably it should be for "Foreced AD", not for rewarded.
-	#if GameManager.has_no_ads:
-		#reward_earned.emit()
-		#return
-		
-	if admob and is_rewarded_loaded:
-		is_rewarded_loaded = false
-		admob.show_rewarded_ad()
-	elif not admob:
-		print("Симуляция просмотра Rewarded (ПК): Успешно")
-		var timer = get_tree().create_timer(1.0)
-		timer.timeout.connect(func():
-			reward_earned.emit()
-			ad_closed.emit()
-		)
-	else:
-		ad_failed.emit()
-		_load_all_ads()
+func set_backend(new_backend: AdsBackend) -> void:
+	if backend != null and backend.rewarded_finished.is_connected(_on_rewarded_finished):
+		backend.rewarded_finished.disconnect(_on_rewarded_finished)
+		backend.rewarded_failed.disconnect(_on_rewarded_failed)
+	backend = new_backend
+	backend.rewarded_finished.connect(_on_rewarded_finished)
+	backend.rewarded_failed.connect(_on_rewarded_failed)
+	backend.initialize()
 
-func show_interstitial_ad() -> void:
-	if GameManager.has_no_ads:
+
+func is_known_placement(placement: StringName) -> bool:
+	var placements: Dictionary = ConfigDB.get_config("ads").get("placements", {}) as Dictionary
+	return placements.has(String(placement))
+
+
+func is_rewarded_ready(placement: StringName) -> bool:
+	return is_known_placement(placement) and _showing == &"" and backend.is_rewarded_ready()
+
+
+## Показывается только из кнопок с глифом ▶ (DS правило 4).
+func show_rewarded(placement: StringName) -> void:
+	if not is_known_placement(placement):
+		push_error("[AdManager] unknown placement '%s'" % placement)
+		EventBus.ad_failed.emit(placement)
 		return
-		
-	if admob and is_interstitial_loaded:
-		is_interstitial_loaded = false
-		admob.show_interstitial()
-	elif not admob:
-		print("Симуляция просмотра Interstitial (ПК): Успешно")
-		var timer = get_tree().create_timer(1.0)
-		timer.timeout.connect(func():
-			ad_closed.emit()
-		)
+	if _showing != &"":
+		EventBus.ad_failed.emit(placement)
+		return
+	_showing = placement
+	Telemetry.log_event(&"ad_started", {"placement": String(placement)})
+	TimeService.pause_world(&"ad")
+	backend.show_rewarded(placement)
 
-func _on_rewarded_closed() -> void:
-	ad_closed.emit()
-	_load_all_ads()
 
-func _on_interstitial_closed() -> void:
-	ad_closed.emit()
-	_load_all_ads()
+func _on_rewarded_finished(placement: StringName, rewarded: bool) -> void:
+	_showing = &""
+	TimeService.resume_world(&"ad")
+	Telemetry.log_event(&"ad_completed", {"placement": String(placement), "rewarded": rewarded})
+	if rewarded:
+		EventBus.ad_reward_granted.emit(placement)
+	else:
+		EventBus.ad_failed.emit(placement)
 
-func _on_rewarded_ad_failed_to_load(err) -> void:
-	print("[ERROR]::[_on_rewarded_ad_failed_to_load]:::: ", err)
-	ad_failed.emit()
-	
-func _on_rewarded_user_earned_reward(reward_type, amount) -> void:
-	print("[_on_rewarded_user_earned_reward]::[reward_type]::::", reward_type, "::[amount]:: ", amount)
-	reward_earned.emit()
+
+func _on_rewarded_failed(placement: StringName, reason: String) -> void:
+	_showing = &""
+	TimeService.resume_world(&"ad")
+	Telemetry.log_event(&"ad_failed", {"placement": String(placement), "reason": reason})
+	EventBus.ad_failed.emit(placement)

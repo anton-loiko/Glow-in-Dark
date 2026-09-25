@@ -1,179 +1,100 @@
 extends Node
+## Облачное сохранение профиля (Firestore через REST-аддон godot-firebase, D16).
+## Работает только со снимком профиля: не знает его полей, слияние — ProfileMerge.
+## Авторизация: Firebase Anonymous (сессия хранится аддоном); привязка к гейм-центрам — task_7.
 
-signal login_success
-signal sync_completed
+const COLLECTION: String = "users"
+const FIELD_PROFILE: String = "profile_json"
+const SYNC_TIMEOUT_S: float = 6.0
 
-var cloud_user_id: String = ""
-var users_collection: FirestoreCollection
-var current_document: FirestoreDocument
+var state: StringName = &"offline"
+var _syncing: bool = false
 
-var sync_in_porgress: bool = false
 
-# Наш собственный файл для хранения "фейкового" аккаунта
-const SECRET_AUTH_FILE = "user://secret_auth.cfg"
+func _ready() -> void:
+	set_process(false)
 
-func authenticate_player() -> void:
-	sync_in_porgress = true
 
-	if not Firebase.Auth.login_succeeded.is_connected(_on_login_succeeded):
-		Firebase.Auth.login_succeeded.connect(_on_login_succeeded)
-	if not Firebase.Auth.login_failed.is_connected(_on_login_failed):
-		Firebase.Auth.login_failed.connect(_on_login_failed)
-		
-	# Подключаем сигнал для успешной регистрации
-	if not Firebase.Auth.signup_succeeded.is_connected(_on_signup_succeeded):
-		Firebase.Auth.signup_succeeded.connect(_on_signup_succeeded)
-	
-	# Читаем наш файл
-	var config = ConfigFile.new()
-	var error = config.load(SECRET_AUTH_FILE)
-	
-	if error == OK:
-		# Аккаунт уже был создан ранее. Берем логин и пароль.
-		var fake_email = config.get_value("auth", "email", "")
-		var fake_pwd = config.get_value("auth", "password", "")
-		
-		Firebase.Auth.login_with_email_and_password(fake_email, fake_pwd)
-	else:
-		# Первый запуск игры! Генерируем случайные данные
-		var random_id = str(Time.get_unix_time_from_system()).replace(".", "") + str(randi() % 10000)
-		var fake_email = "player_" + random_id + "@lightinthedark.com"
-		var fake_pwd = "Pass" + random_id + "!"
-		
-		# НАВСЕГДА сохраняем этот email и пароль на телефон игрока
-		config.set_value("auth", "email", fake_email)
-		config.set_value("auth", "password", fake_pwd)
-		config.save(SECRET_AUTH_FILE)
-		
-		# Отправляем регистрацию в Firebase
-		Firebase.Auth.signup_with_email_and_password(fake_email, fake_pwd)
+func is_available() -> bool:
+	return is_instance_valid(Firebase) and _auth() != null and _firestore() != null
 
-# Если регистрация прошла успешно, мы перенаправляем ее в логин
-func _on_signup_succeeded(auth_info) -> void:
-	_on_login_succeeded(auth_info)
 
-func _on_login_succeeded(auth_info) -> void:
-	cloud_user_id = auth_info.localid	
-	users_collection = Firebase.Firestore.collection("users")
-	
-	login_success.emit()
-	sync_data()
+func _auth() -> FirebaseAuth:
+	return Firebase.get(&"Auth") as FirebaseAuth
 
-func _on_login_failed(error_code, message) -> void:
-	print("[ERROR: ]:::: error_code: ", error_code, "; message: ", message)
-	_sync_complete()
 
-func sync_data() -> void:
-	current_document = await users_collection.get_doc(cloud_user_id)
-	sync_in_porgress = true
+func _firestore() -> FirebaseFirestore:
+	return Firebase.get(&"Firestore") as FirebaseFirestore
 
-	if current_document != null and current_document.document != null and not current_document.document.is_empty():
-		var cloud_data = current_document.document
-		var need_cloud_update: bool = false
-		
-		# --- 1. РАСПАКОВКА УРОВНЯ ---
-		if cloud_data.has("unlocked_level"):
-			var cloud_lvl: int = 1
-			# Ищем внутри коробки ярлык integerValue или doubleValue
-			if cloud_data["unlocked_level"].has("integerValue"):
-				cloud_lvl = int(cloud_data["unlocked_level"]["integerValue"])
-			elif cloud_data["unlocked_level"].has("doubleValue"):
-				cloud_lvl = int(cloud_data["unlocked_level"]["doubleValue"])
-				
-			if cloud_lvl > GameManager.unlocked_level:
-				GameManager.unlocked_level = cloud_lvl
-			elif GameManager.unlocked_level > cloud_lvl:
-				need_cloud_update = true
-		
-		# --- 2. РАСПАКОВКА СКИНОВ (МАССИВ) ---
-		if cloud_data.has("owned_skins"):
-			var cloud_skins: Array = []
-			# Проверяем сложную структуру массива REST API
-			if cloud_data["owned_skins"].has("arrayValue") and cloud_data["owned_skins"]["arrayValue"].has("values"):
-				# Перебираем элементы внутри values
-				for item in cloud_data["owned_skins"]["arrayValue"]["values"]:
-					if item.has("stringValue"):
-						cloud_skins.append(item["stringValue"])
-						
-			for skin in cloud_skins:
-				if not GameManager.owned_skins.has(skin):
-					GameManager.owned_skins.append(skin)
-					
-			if GameManager.owned_skins.size() > cloud_skins.size():
-				need_cloud_update = true
-					
-		# --- 3. РАСПАКОВКА РЕКЛАМЫ ---
-		if cloud_data.has("has_no_ads"):
-			var cloud_ads: bool = false
-			if cloud_data["has_no_ads"].has("booleanValue"):
-				cloud_ads = bool(cloud_data["has_no_ads"]["booleanValue"])
-				
-			if cloud_ads == true:
-				GameManager.has_no_ads = true
-			elif GameManager.has_no_ads and not cloud_ads:
-				need_cloud_update = true
-				
-		# --- 4. РАСПАКОВКА ИСКР (ВАЛЮТЫ) ---
-		if cloud_data.has("sparks"):
-			var cloud_sparks: int = 0
-			if cloud_data["sparks"].has("integerValue"):
-				cloud_sparks = int(cloud_data["sparks"]["integerValue"])
-			elif cloud_data["sparks"].has("doubleValue"):
-				cloud_sparks = int(cloud_data["sparks"]["doubleValue"])
-				
-			if cloud_sparks > GameManager.sparks:
-				GameManager.sparks = cloud_sparks
-			elif GameManager.sparks > cloud_sparks:
-				need_cloud_update = true
-		
-		# Фиксируем изменения на жестком диске телефона
-		GameManager.save_game()
-		
-		if need_cloud_update:
-			await save_to_cloud()
-	else:
-		await save_to_cloud()
-		
-	_sync_complete()
 
-func save_to_cloud() -> void:
-	if cloud_user_id == "": 
-		return 
-		
-	# 1. Сценарий обновления существующего документа (UPDATE)
-	if current_document != null and current_document.document != null and not current_document.document.is_empty():
-		
-		# Вручную упаковываем массив скинов в формат REST API
-		var skins_firebase_array: Array = []
-		for skin in GameManager.owned_skins:
-			skins_firebase_array.append({"stringValue": skin})
-			
-		# Вручную упаковываем остальные переменные
-		var firebase_formatted_data = {
-			"unlocked_level": {"integerValue": GameManager.unlocked_level},
-			"owned_skins": {"arrayValue": {"values": skins_firebase_array}},
-			"has_no_ads": {"booleanValue": GameManager.has_no_ads},
-			"sparks": {"integerValue": GameManager.sparks}
-		}
-		
-		# Заменяем внутренности документа на наши правильно упакованные данные
-		current_document.document = firebase_formatted_data
-		
-		# Отправляем готовый документ на сервер
-		current_document = await users_collection.update(current_document)
-		
-	# 2. Сценарий создания абсолютно нового профиля (ADD)
-	else:
-		# Для функции add() плагин умеет сам упаковывать обычный словарь Godot
-		var normal_data = {
-			"unlocked_level": GameManager.unlocked_level,
-			"owned_skins": GameManager.owned_skins,
-			"has_no_ads": GameManager.has_no_ads,
-			"sparks": GameManager.sparks
-		}
-		
-		current_document = await users_collection.add(cloud_user_id, normal_data)
+func _uid(auth: FirebaseAuth) -> String:
+	return str(auth.auth.get("localid", ""))
 
-func _sync_complete() -> void:
-	sync_completed.emit()
-	sync_in_porgress = false
+
+## Полный цикл: вход → чтение облака → слияние → запись. Никогда не блокирует игру дольше таймаута.
+func sync() -> void:
+	if _syncing:
+		return
+	if not is_available():
+		_set_state(&"offline")
+		return
+	_syncing = true
+	_set_state(&"syncing")
+	var uid: String = await _ensure_auth()
+	if uid.is_empty():
+		_syncing = false
+		_set_state(&"offline")
+		return
+	var collection: FirestoreCollection = _firestore().collection(COLLECTION)
+	var remote_doc: FirestoreDocument = await collection.get_doc(uid)
+	if remote_doc != null and remote_doc.get_value(FIELD_PROFILE) != null:
+		var parsed: Variant = JSON.parse_string(str(remote_doc.get_value(FIELD_PROFILE)))
+		if parsed is Dictionary:
+			var remote_data: Dictionary = parsed
+			var remote: PlayerProfile = PlayerProfile.from_dict(SaveManager.migrate_dict(remote_data))
+			var merged: PlayerProfile = ProfileMerge.merge(GameManager.profile, remote)
+			GameManager.set_profile(merged)
+			SaveManager.request_save(true)
+	await _push(collection, uid)
+	_syncing = false
+	_set_state(&"synced")
+
+
+## Записать текущий профиль в облако (после S09, покупок, кат-сцен Маяка).
+func push() -> void:
+	if not is_available() or not _auth().is_logged_in():
+		return
+	var uid: String = _uid(_auth())
+	if uid.is_empty():
+		return
+	await _push(_firestore().collection(COLLECTION), uid)
+
+
+func _push(collection: FirestoreCollection, uid: String) -> void:
+	var profile: PlayerProfile = GameManager.profile
+	await collection.set_doc(uid, {
+		FIELD_PROFILE: JSON.stringify(profile.to_dict()),
+		"schema_version": profile.schema_version,
+		"updated_at": profile.updated_at,
+	})
+
+
+func _ensure_auth() -> String:
+	var auth: FirebaseAuth = _auth()
+	if auth.is_logged_in():
+		return _uid(auth)
+	if auth.load_auth():
+		return _uid(auth)
+	auth.login_anonymous()
+	var timer: SceneTreeTimer = get_tree().create_timer(SYNC_TIMEOUT_S, true, false, true)
+	while not auth.is_logged_in() and timer.time_left > 0.0:
+		await get_tree().process_frame
+	if not auth.is_logged_in():
+		return ""
+	auth.save_auth(auth.auth)
+	return _uid(auth)
+
+
+func _set_state(new_state: StringName) -> void:
+	state = new_state
+	EventBus.cloud_sync_state_changed.emit(new_state)

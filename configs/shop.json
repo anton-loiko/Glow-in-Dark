@@ -1,0 +1,13 @@
+{
+  "_doc": "Каталог магазина (DS S10, D9, D15, D18). kind: iap — реальные деньги; crystals/sparks — внутриигровая цена.",
+  "products": [
+    {"id": "starter_pack", "kind": "iap", "store_sku": "com.forwardmobile.lightinthedark.starter_pack", "one_time": true, "offer_timer_h": 24, "grants": {"skin": "moon", "crystals": 500}},
+    {"id": "crystals_80", "kind": "iap", "store_sku": "com.forwardmobile.lightinthedark.crystals_80", "grants": {"crystals": 80}},
+    {"id": "crystals_280", "kind": "iap", "store_sku": "com.forwardmobile.lightinthedark.crystals_280", "grants": {"crystals": 280}},
+    {"id": "crystals_550", "kind": "iap", "store_sku": "com.forwardmobile.lightinthedark.crystals_550", "badge": "hit", "grants": {"crystals": 550}},
+    {"id": "crystals_2600", "kind": "iap", "store_sku": "com.forwardmobile.lightinthedark.crystals_2600", "grants": {"crystals": 2600}},
+    {"id": "chest_basic", "kind": "sparks", "price": {"sparks": 500}, "grants": {"chest": "basic"}},
+    {"id": "chest_premium", "kind": "crystals", "price": {"crystals": 150}, "grants": {"chest": "premium"}},
+    {"id": "chest_premium_x10", "kind": "crystals", "price": {"crystals": 1200}, "grants": {"chest": "premium", "count": 10}}
+  ]
+}

@@ -1,29 +1,65 @@
 extends Node
+## Пул цифр урона (GDD 3.4, DS §02): 40 объектов без роста, не больше 12 видимых одновременно
+## (старейшая гасится). Слушает EventBus.damage_dealt — враги не знают о пуле.
+## Сцена забега вызывает bind_world(container) при старте и unbind() на выходе.
 
-const POOL_SIZE: int = 40
-var damage_number_scene: PackedScene = preload("res://src/core_loop/HUD/game_ui/damage_number/DamageNumber.tscn")
-var pool: Array[Node2D] = []
-var world_container: Node = null
+var pool_size: int = 40
+var max_visible: int = 12
 
-# Эту функцию нужно будет вызывать на _ready() в скрипте уровня (например, в LevelRoot.gd)
-func init_pool(container: Node) -> void:
-	world_container = container
-	pool.clear()
-	for i in range(POOL_SIZE):
-		var number_instance = damage_number_scene.instantiate()
-		world_container.add_child(number_instance)
-		pool.append(number_instance)
+var _pool: ObjectPool
+var _container: Node2D
 
-func show_damage(amount: int, global_pos: Vector2, is_lethal: bool) -> void:
-	if not world_container or not is_instance_valid(world_container):
+
+func _ready() -> void:
+	set_process(false)
+	var cfg: Dictionary = ConfigDB.get_balance().get("damage_numbers", {}) as Dictionary
+	pool_size = int(cfg.get("pool_size", pool_size))
+	max_visible = int(cfg.get("max_visible", max_visible))
+	EventBus.damage_dealt.connect(_on_damage_dealt)
+
+
+func bind_world(container: Node2D) -> void:
+	unbind()
+	_container = container
+	_pool = ObjectPool.new()
+	_pool.prewarm(_create_number, pool_size, container)
+
+
+func unbind() -> void:
+	if _pool != null:
+		_pool.clear()
+	_pool = null
+	_container = null
+
+
+func show_damage(amount: int, world_pos: Vector2, style: DamageNumber.Style) -> void:
+	if _pool == null:
 		return
-		
-	for number in pool:
-		if not number.visible:
-			number.play(amount, global_pos, is_lethal)
-			return
-	
-	var new_number = damage_number_scene.instantiate()
-	world_container.add_child(new_number)
-	pool.append(new_number)
-	new_number.play(amount, global_pos, is_lethal)
+	var mode: int = GameManager.profile.settings.damage_numbers if GameManager.profile != null else 1
+	if mode == 0:
+		return
+	if _pool.active_count() >= max_visible:
+		_pool.release(_pool.oldest_active())
+	var number: DamageNumber = _pool.acquire() as DamageNumber
+	if number == null:
+		return
+	number.play(amount, world_pos, style, 1.25 if mode == 2 else 1.0)
+
+
+func visible_count() -> int:
+	return 0 if _pool == null else _pool.active_count()
+
+
+func _create_number() -> Node:
+	var number: DamageNumber = DamageNumber.new()
+	number.finished.connect(_on_number_finished)
+	return number
+
+
+func _on_number_finished(number: DamageNumber) -> void:
+	if _pool != null:
+		_pool.release(number)
+
+
+func _on_damage_dealt(amount: int, world_pos: Vector2, style: int) -> void:
+	show_damage(amount, world_pos, style as DamageNumber.Style)

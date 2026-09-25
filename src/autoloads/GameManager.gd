@@ -1,131 +1,145 @@
 extends Node
+## Фасад профиля игрока, экономики и жизненного цикла забега.
+## Единственное место, где меняются валюты (grant/spend); сериализацией занимается SaveManager.
 
-const SAVE_PATH: String = "user://save_data.cfg"
+const SPARKS: StringName = &"sparks"
+const CRYSTALS: StringName = &"crystals"
 
-var sparks: int = 0
-var active_skills: Dictionary = {} # Навыки внутри забега (Core Loop)
-var permanent_skills: Dictionary = {} # Прокачанные навыки в Хабе (Meta Loop)
+var profile: PlayerProfile
+## Текущий забег; null вне забега.
+var current_run: RunContext
 
-var current_level: int = 1
-var unlocked_level: int = 1
-
-var owned_skins: Array = ["default"]
-var equipped_skin: String = "default"
-var has_no_ads: bool = false
-
-var sound_enabled: bool = true
-var music_enabled: bool = true
-var vibration_enabled: bool = true
 
 func _ready() -> void:
-	load_game()
-	if Engine.has_singleton("CloudManager"):
-		CloudManager.authenticate_player()
-	current_level = unlocked_level
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
+	set_profile(SaveManager.load_profile())
 
-func save_game() -> void:
-	var config = ConfigFile.new()
-	
-	config.set_value("progress", "unlocked_level", unlocked_level)
-	config.set_value("purchases", "has_no_ads", has_no_ads)
-	
-	config.set_value("inventory", "owned_skins", owned_skins)
-	config.set_value("inventory", "equipped_skin", equipped_skin)
-	config.set_value("inventory", "sparks", sparks)
-	config.set_value("inventory", "permanent_skills", permanent_skills)
-	
-	config.set_value("settings", "sound_enabled", sound_enabled)
-	config.set_value("settings", "music_enabled", music_enabled)
-	config.set_value("settings", "vibration_enabled", vibration_enabled)
-	
-	var error = config.save(SAVE_PATH)
-	if error != OK:
-		print("The game could not be saved. Error code: ", error)
 
-func load_game() -> void:
-	var config = ConfigFile.new()
-	var error = config.load(SAVE_PATH)
-	
-	if error != OK:
-		print("Local save not found. Creating a new profile...")
-		save_game() 
-		return
-		
-	unlocked_level = config.get_value("progress", "unlocked_level", 1)
-	has_no_ads = config.get_value("purchases", "has_no_ads", false)
-	owned_skins = config.get_value("inventory", "owned_skins", ["default"])
-	equipped_skin = config.get_value("inventory", "equipped_skin", "default")
-	sparks = config.get_value("inventory", "sparks", 0)
-	permanent_skills = config.get_value("inventory", "permanent_skills", {})
-	
-	sound_enabled = config.get_value("settings", "sound_enabled", true)
-	music_enabled = config.get_value("settings", "music_enabled", true)
-	vibration_enabled = config.get_value("settings", "vibration_enabled", true)
+## Подменяет профиль (загрузка, слияние с облаком).
+func set_profile(new_profile: PlayerProfile) -> void:
+	profile = new_profile
+	SaveManager.bind_profile(profile)
+	EventBus.profile_loaded.emit()
 
-func complete_level():
-	current_level += 1
-	if current_level > unlocked_level:
-		unlocked_level = current_level
-		save_game()
-		if Engine.has_singleton("CloudManager"):
-			CloudManager.save_to_cloud()
 
-func next_level() -> void:
-	load_level(current_level) 
+# --- Экономика ---------------------------------------------------------------
 
-func load_level(level_number: int) -> void:
-	current_level = level_number
-	reset_run_state()
-	get_tree().change_scene_to_file("res://src/core_loop/levels/LevelRoot.tscn")
+func get_balance(currency: StringName) -> int:
+	match currency:
+		SPARKS:
+			return profile.sparks
+		CRYSTALS:
+			return profile.crystals
+	push_error("[GameManager] unknown currency '%s'" % currency)
+	return 0
 
-func reset_run_state() -> void:
-	active_skills = {}
 
-func is_level_exists(_level_number: int) -> bool:
+func can_afford(currency: StringName, amount: int) -> bool:
+	return amount >= 0 and get_balance(currency) >= amount
+
+
+## Списание валюты. Возвращает false, если не хватает. Трата Кристаллов сохраняется сразу,
+## даже во время забега (реальная ценность), Искры — по обычным правилам SaveManager.
+func spend(currency: StringName, amount: int, reason: StringName) -> bool:
+	if amount < 0 or not can_afford(currency, amount):
+		return false
+	_change(currency, -amount, reason)
 	return true
 
-func go_to_main_menu() -> void:
-	get_tree().change_scene_to_file("res://src/ui/main_menu/MainMenu.tscn")
 
-func get_equipped_skin_color() -> Color:
-	if StoreManager.SKINS_DB.has(equipped_skin):
-		return StoreManager.SKINS_DB[equipped_skin]["color"]
-	return StoreManager.SKINS_DB["default"]["color"]
+func grant(currency: StringName, amount: int, reason: StringName) -> void:
+	if amount <= 0:
+		return
+	_change(currency, amount, reason)
 
-func add_sparks(amount: int) -> void:
-	sparks += amount
-	EventBus.sparks_changed.emit(sparks)
-	save_game()
 
-func withdraw_sparks(amount: int) -> void:
-	sparks -= amount
-	EventBus.sparks_changed.emit(sparks)
-	save_game()
+func _change(currency: StringName, delta: int, reason: StringName) -> void:
+	match currency:
+		SPARKS:
+			profile.sparks += delta
+		CRYSTALS:
+			profile.crystals += delta
+		_:
+			push_error("[GameManager] unknown currency '%s'" % currency)
+			return
+	var total: int = get_balance(currency)
+	EventBus.currency_changed.emit(currency, total, delta)
+	Telemetry.log_economy(currency, delta, reason, total)
+	SaveManager.request_save(currency == CRYSTALS)
 
-func apply_skill(skill_id: String) -> void:
-	EventBus.skill_applied.emit(skill_id)
-	
-	if active_skills.has(skill_id):
-		var cur = active_skills[skill_id]
-		cur.count += 1
-		active_skills[skill_id] = cur
-	else:
-		active_skills[skill_id] = {
-			"count": 1,
-		}
 
-func upgrade_permanent_skill(skill_id: String) -> void:
-	if permanent_skills.has(skill_id):
-		permanent_skills[skill_id] += 1
-	else:
-		permanent_skills[skill_id] = 1
-	save_game()
+# --- Настройки ---------------------------------------------------------------
 
-func reset_progress() -> void:
-	unlocked_level = 1
-	current_level = 1
-	sparks = 0
-	permanent_skills = {}
-	save_game()
-	if Engine.has_singleton("CloudManager"):
-		CloudManager.save_to_cloud()
+func set_setting(key: StringName, value: Variant) -> void:
+	if not key in profile.settings:
+		push_error("[GameManager] unknown setting '%s'" % key)
+		return
+	profile.settings.set(key, value)
+	EventBus.settings_changed.emit(key, value)
+	Telemetry.log_event(&"settings_changed", {"key": String(key), "value": str(value)})
+	SaveManager.request_save()
+
+
+# --- Забег -------------------------------------------------------------------
+
+func is_run_active() -> bool:
+	return current_run != null and current_run.result == null
+
+
+## Создаёт RunContext со статами из профиля и переводит игру в S05.
+func start_run(chapter_id: int, run_seed: int = -1) -> RunContext:
+	if current_run != null:
+		push_warning("[GameManager] previous run was not finished, discarding it")
+	if run_seed < 0:
+		run_seed = randi()
+	var stats: StatBlock = StatsResolver.build_for(profile)
+	current_run = RunContext.new(chapter_id, run_seed, stats)
+	profile.current_chapter = chapter_id
+	SaveManager.flush()
+	SaveManager.set_run_active(true)
+	EventBus.run_started.emit(current_run.run_id, chapter_id)
+	Telemetry.log_event(&"run_started", {
+		"run_id": current_run.run_id,
+		"chapter": chapter_id,
+		"skin": String(profile.skin_equipped),
+	})
+	SceneRouter.go(&"S05")
+	return current_run
+
+
+## Фиксирует итог забега. Награды зачисляются отдельно, после выбора на S09.
+func end_run(result: RunResult) -> void:
+	if not is_run_active():
+		return
+	result.run_sparks = current_run.run_sparks
+	result.kills = current_run.kills
+	result.player_level = current_run.player_level
+	result.chests = current_run.run_chests.duplicate()
+	var best: float = profile.best_time_s.get(current_run.chapter_id, 0.0)
+	result.is_record = result.time_s > best
+	current_run.result = result
+	TimeService.reset()
+	var params: Dictionary = result.to_telemetry()
+	params["run_id"] = current_run.run_id
+	EventBus.run_ended.emit(result)
+	Telemetry.log_event(&"run_ended", params)
+	SceneRouter.go(&"S09")
+
+
+## Зачисляет награды забега (×1 или ×3 за рекламу) одной транзакцией и закрывает забег.
+func apply_run_rewards(multiplier: int) -> void:
+	if current_run == null or current_run.result == null:
+		push_warning("[GameManager] no finished run to reward")
+		return
+	var run: RunContext = current_run
+	SaveManager.set_run_active(false)
+	var best: float = profile.best_time_s.get(run.chapter_id, 0.0)
+	profile.best_time_s[run.chapter_id] = maxf(best, run.result.time_s)
+	for skill_id: StringName in run.skills:
+		if not profile.skills_seen.has(skill_id):
+			profile.skills_seen.append(skill_id)
+	grant(SPARKS, run.run_sparks * maxi(1, multiplier), &"run_x3" if multiplier > 1 else &"run")
+	Telemetry.log_event(&"reward_multiplier", {"run_id": run.run_id, "multiplier": multiplier})
+	current_run = null
+	SaveManager.flush(true)

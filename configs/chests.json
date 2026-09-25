@@ -1,0 +1,7 @@
+{
+  "_doc": "Сундуки (Gear DS §03, D8). rates — по rarities из gear_config.",
+  "basic": {"price": {"sparks": 500}, "ad_per_day": 3, "rates": [80, 18, 2, 0, 0]},
+  "premium": {"price": {"crystals": 150}, "x10_price": {"crystals": 1200}, "x10_min_rarity": "rare", "rates": [45, 32, 17, 5, 1], "legendary_pity": 60},
+  "run": {"rates": [85, 15, 0, 0, 0]},
+  "epic": {"rates": [0, 0, 0, 100, 0]}
+}

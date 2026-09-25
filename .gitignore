@@ -7,3 +7,6 @@ build
 firebase.json
 addons/**/.env
 
+
+# gdUnit4 reports
+reports/

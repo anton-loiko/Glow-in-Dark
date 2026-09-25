@@ -1,0 +1,29 @@
+{
+  "_doc": "Тюнинг выборки навыков (Skills DS §04). Описания уровней — Skills DS §03, заполняются в task_4.",
+  "base_weight": 100,
+  "owned_mul": 1.30,
+  "magnet_mul": [3.0, 1.5, 1.0],
+  "magnet_mul_until_player_level": 5,
+  "magnet_guarantee_level": 5,
+  "active_boost": 2.5,
+  "active_boost_until_levelup": 2,
+  "max_passive_in_offer": 2,
+  "fresh_mul": 0.7,
+  "max_slots": 6,
+  "max_level": 5,
+  "input_lock_ms": 400,
+  "skills": [
+    {"id": "aura", "category": "attack", "type": "active", "synergies": ["lens", "capacity"], "tags": ["dot", "radius"]},
+    {"id": "pulsar", "category": "attack", "type": "active", "synergies": ["lens", "cooldown"], "tags": ["aoe", "knockback", "cd"]},
+    {"id": "trail", "category": "attack", "type": "active", "synergies": ["haste", "freeze"], "tags": ["zone", "movement"]},
+    {"id": "beam", "category": "attack", "type": "active", "synergies": ["cooldown", "lens"], "tags": ["single", "crit", "cd"]},
+    {"id": "orbs", "category": "attack", "type": "active", "synergies": ["lens"], "tags": ["orbit", "own_light"]},
+    {"id": "capacity", "category": "defense", "type": "passive", "synergies": ["aura", "shield"], "tags": ["max_hp", "radius"]},
+    {"id": "shield", "category": "defense", "type": "passive", "synergies": ["capacity"], "tags": ["reduction", "regen"]},
+    {"id": "freeze", "category": "defense", "type": "passive", "synergies": ["trail", "aura"], "tags": ["slow", "cc"]},
+    {"id": "magnet", "category": "utility", "type": "passive", "synergies": ["haste"], "tags": ["pickup", "early_priority"]},
+    {"id": "haste", "category": "utility", "type": "passive", "synergies": ["trail", "magnet"], "tags": ["move_speed"]},
+    {"id": "lens", "category": "utility", "type": "passive", "synergies": ["aura", "pulsar", "orbs", "beam"], "tags": ["scale", "global"]},
+    {"id": "cooldown", "category": "utility", "type": "passive", "synergies": ["beam", "pulsar"], "tags": ["cd_reduction"]}
+  ]
+}
