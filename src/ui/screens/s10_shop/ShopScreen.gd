@@ -115,6 +115,7 @@ func _build_chests(list: VBoxContainer) -> void:
 	head.add_child(UIKit.button("i", GlowButton.Variant.ICON, _show_rates))
 	var basic: PanelContainer = _card(list)
 	var basic_box: VBoxContainer = basic.get_child(0) as VBoxContainer
+	_add_chest_art(basic_box, &"basic")
 	basic_box.add_child(UIKit.label(tr("Базовый сундук"), &"h2"))
 	basic_box.add_child(UIKit.label(tr("Обычные и необычные предметы, изредка редкие"), &"body_s", UITokens.TEXT_SECONDARY))
 	var basic_row: HBoxContainer = UIKit.hbox(UITokens.S2)
@@ -128,6 +129,7 @@ func _build_chests(list: VBoxContainer) -> void:
 	basic_row.add_child(_basic_ad)
 	var premium: PanelContainer = _card(list)
 	var premium_box: VBoxContainer = premium.get_child(0) as VBoxContainer
+	_add_chest_art(premium_box, &"premium")
 	premium_box.add_child(UIKit.label(tr("Премиум-сундук"), &"h2", UITokens.CRYSTAL_300))
 	premium_box.add_child(UIKit.label(tr("Шанс Легендарного · гарант за 60 открытий"), &"body_s", UITokens.TEXT_SECONDARY))
 	var premium_row: HBoxContainer = UIKit.hbox(UITokens.S2)
@@ -144,6 +146,19 @@ func _build_chests(list: VBoxContainer) -> void:
 	premium_box.add_child(UIKit.mono(tr("×10: минимум один Редкий"), UITokens.TEXT_MUTED))
 	_full_hint = UIKit.button(tr("Слить или разобрать"), GlowButton.Variant.SECONDARY, SceneRouter.go.bind(&"S12"))
 	list.add_child(_full_hint)
+
+
+func _add_chest_art(box: VBoxContainer, chest: StringName) -> void:
+	var tex: Texture2D = load("res://src/assets/chests/chest_%s_closed.png" % chest) as Texture2D
+	if tex == null:
+		return
+	var art: TextureRect = TextureRect.new()
+	art.texture = tex
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art.custom_minimum_size = Vector2(0, 72)
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(art)
 
 
 func _refresh_chests() -> void:

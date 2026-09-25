@@ -139,9 +139,26 @@ func _burst() -> void:
 	t.tween_callback(column.queue_free)
 
 
+## Спрайт сундука (tools/art/gen_sprites.lua): src/assets/chests/chest_<тип>_<closed|open>.png, 320×240 → 160×120pt.
+static func chest_texture(chest: StringName, open: bool) -> Texture2D:
+	var path: String = "res://src/assets/chests/chest_%s_%s.png" % [chest, "open" if open else "closed"]
+	return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+
 func _draw_chest() -> void:
 	var s: Vector2 = _chest_box.size
 	var o: Vector2 = Vector2(_shake_x, 0)
+	var tex: Texture2D = chest_texture(_chest, _lid_open)
+	if tex != null:
+		if _lid_open:
+			_chest_box.draw_circle(o + Vector2(s.x * 0.5, s.y * 0.42), s.x * 0.34, Color(_seam_color, 0.28))
+		_chest_box.draw_texture_rect(tex, Rect2(o, s), false)
+		if not _lid_open:
+			# Шов светится цветом лучшей редкости внутри (C2).
+			var lid_y: float = s.y * 0.467
+			_chest_box.draw_line(o + Vector2(s.x * 0.14, lid_y), o + Vector2(s.x * 0.86, lid_y), Color(_seam_color, 0.9), 3.0)
+			_chest_box.draw_line(o + Vector2(s.x * 0.14, lid_y), o + Vector2(s.x * 0.86, lid_y), Color(_seam_color, 0.3), 9.0)
+		return
 	var body: Rect2 = Rect2(o + Vector2(0, s.y * 0.4), Vector2(s.x, s.y * 0.6))
 	var color: Color = UITokens.CRYSTAL_700 if _chest == &"premium" else (UITokens.EPIC if _chest == &"epic" else UITokens.GOLD_700)
 	_chest_box.draw_rect(body, color.darkened(0.45))

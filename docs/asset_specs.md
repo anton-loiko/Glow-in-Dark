@@ -44,8 +44,8 @@
 
 | Файл | Размер | Статус |
 |---|---|---|
-| `pedestal_p{0..4}.png` + `_n` (ruins, cracked, runes, armored, radiant) | 320×200 | 🟨 (`BeaconStage` рисует процедурно) |
-| `crystal_{shards,dim,bright,white}_sheet.png` — 24 кадра вращения | 96×160 кадр | 🟨 |
+| `pedestal_{ruins,cracked,runes,armored,radiant}.png` (свет запечён) | 320×160 | 🟨 (генератор) |
+| `crystal_{shards,dim,bright,white}.png` — 12 кадров вращения | 96×160 кадр | 🟨 (генератор) |
 | `rune_{off,on}.png` | 24×24 | 🟨 |
 | `hub_diorama_ch{1..3}.png` + маска `hub_light` | 780×1100 | ⬜ |
 | `beam.png`, `aura.png`, `mote.png` | 64–256 | 🟨 |
@@ -57,7 +57,7 @@
 | `gear_frame_{common,uncommon,rare,epic,legendary}.png` 9-slice, `texture_margin` 24 | 96×96 | 🟨 (`GearCell` рисует процедурно) |
 | `gear_glow.png` (blend add, `modulate` = цвет 500) | 128×128 | ⬜ |
 | `src/assets/ui/gear/<base_id>.png` — иконки предметов, белые под `modulate` цветом редкости | 128×128 | 🟨 (4 базовые вещи, SVG-генератор) |
-| `chest_{basic,premium,run,epic}_{closed,open}.png` + шов-маска | 320×240 | 🟨 |
+| `chest_{basic,premium,run,epic}_{closed,open}.png` (шов рисует код цветом лучшей редкости) | 320×240 | 🟨 (генератор) |
 | `card_back.png` | 240×320 | 🟨 |
 
 ## 6. UI-иконки (`src/assets/ui/icons/*.svg`) — DS §02

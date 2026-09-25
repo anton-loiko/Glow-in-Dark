@@ -62,9 +62,6 @@ local function render(w, h, frames, shape)
         local ox = f * w + x
         if c.a > 0 then
           local col = c.e.albedo or { 0.05, 0.05, 0.08 }
-          local px = pc.rgba(math.floor(col[1] * 255), math.floor(col[2] * 255), math.floor(col[3] * 255), math.floor(c.a * 255))
-          sheet:drawPixel(ox, y, px)
-          img:drawPixel(x, y, px)
           local hl = height[idx - (x > 0 and 1 or 0)] or 0
           local hr = height[idx + (x < w - 1 and 1 or 0)] or 0
           local hu = height[idx - (y > 0 and w or 0)] or 0
@@ -72,6 +69,18 @@ local function render(w, h, frames, shape)
           local k = c.e.normal_strength or ENEMY_NORMAL_STRENGTH
           local nx, ny, nz = -(hr - hl) * k, (hd - hu) * k, 1
           local nl = math.sqrt(nx * nx + ny * ny + nz * nz)
+          if c.e.bake then
+            -- UI-ассет: свет сверху-слева (OpenGL: Y+ вверх), мягкий спекуляр, эмиссия не затемняется.
+            local lx, ly, lz = -0.45, 0.55, 0.7
+            local ndl = math.max(0, (nx * lx + ny * ly + nz * lz) / nl)
+            local spec = math.max(0, (nz / nl) * 0.2 + ndl - 0.85) * 1.6
+            local em = c.e.emission or 0
+            local k = lerp(0.35 + 0.8 * ndl, 1, em)
+            col = { clamp(col[1] * k + spec * 0.25, 0, 1), clamp(col[2] * k + spec * 0.22, 0, 1), clamp(col[3] * k + spec * 0.18, 0, 1) }
+          end
+          local px = pc.rgba(math.floor(col[1] * 255), math.floor(col[2] * 255), math.floor(col[3] * 255), math.floor(c.a * 255))
+          sheet:drawPixel(ox, y, px)
+          img:drawPixel(x, y, px)
           nmap:drawPixel(ox, y, pc.rgba(math.floor((nx / nl * 0.5 + 0.5) * 255), math.floor((ny / nl * 0.5 + 0.5) * 255), math.floor((nz / nl * 0.5 + 0.5) * 255), math.floor(c.a * 255)))
           mask:drawPixel(ox, y, pc.rgba(math.floor(clamp(c.e.eyes or 0, 0, 1) * 255), math.floor(clamp(c.e.cracks or 0, 0, 1) * 255), 0, math.floor(c.a * 255)))
         end
@@ -84,12 +93,12 @@ end
 
 local function ensure_dir(path) app.fs.makeAllDirectories(path) end
 
-local function save_asset(dir, name, w, h, frames, shape, with_mask)
+local function save_asset(dir, name, w, h, frames, shape, with_mask, baked)
   local sheet, nmap, mask, imgs = render(w, h, frames, shape)
   ensure_dir(ROOT .. "/" .. dir)
   ensure_dir(ROOT .. "/art")
   sheet:saveAs(ROOT .. "/" .. dir .. "/" .. name .. ".png")
-  nmap:saveAs(ROOT .. "/" .. dir .. "/" .. name .. "_n.png")
+  if not baked then nmap:saveAs(ROOT .. "/" .. dir .. "/" .. name .. "_n.png") end -- UI с запечённым светом нормали не нужны
   if with_mask then mask:saveAs(ROOT .. "/" .. dir .. "/" .. name .. "_mask.png") end
   -- Исходник с кадрами для ручной доработки художником.
   local spr = Sprite(w, h, ColorMode.RGB)
@@ -289,6 +298,130 @@ local function prop_rubble(x, y, f)
   return -1, { albedo = { v, v, v * 1.04 }, relief = rock, normal_strength = 7, height_override = rock }
 end
 
+
+-- ---------------------------------------------------------------- Маяк (Meta DS §01), UI: свет запечён
+local STONE = { 0.24, 0.26, 0.32 }
+local RUNE = { 1.0, 0.906, 0.69 }
+local GOLD = { 0.72, 0.38, 0.1 }
+local function stone_col(x, y, s)
+  local v = (fbm(x / 8, y / 8, s) - 0.5) * 0.1
+  return { STONE[1] + v, STONE[2] + v, STONE[3] + v * 1.2 }
+end
+
+-- Постамент 320×160: ступенчатая плита; kind — ruins | cracked | runes | armored | radiant.
+local function pedestal(kind)
+  return function(x, y, f)
+    local cx = 160
+    local top = sd_ellipse(x, y, cx, 92, 108, 26)
+    local body = math.max(math.abs(x - cx) - 120 + (y - 92) * 0.12, math.abs(y - 118) - 30)
+    local d = smin(top, body, 8)
+    local e = { albedo = stone_col(x, y, 81), dome = 30, normal_strength = 14, bake = true }
+    if kind == "ruins" then
+      -- груда обломков: несколько камней вместо плиты
+      d = 99
+      for i = 0, 6 do
+        local rx, ry = 40 + i * 40 + (hash(i, 1, 83) - 0.5) * 20, 120 + (hash(i, 2, 83) - 0.5) * 18
+        d = math.min(d, sd_ellipse(x, y, rx, ry, 22 + hash(i, 3, 83) * 14, 14 + hash(i, 4, 83) * 10))
+      end
+      d = d + (fbm(x / 6, y / 6, 85) - 0.5) * 6
+      e.dome = 14
+      return d, e
+    end
+    local crack = cracks_at(x, y, 87, 24) * smoothstep(0, -6, d)
+    if kind == "cracked" then
+      e.albedo = { e.albedo[1] * (1 - crack * 0.6), e.albedo[2] * (1 - crack * 0.6), e.albedo[3] * (1 - crack * 0.6) }
+      e.relief = -crack
+    end
+    if kind == "runes" or kind == "armored" or kind == "radiant" then
+      -- 4 гравированные руны на лицевой грани, светятся янтарно-белым
+      for i = 0, 3 do
+        local rd = sd_circle(x, y, cx - 66 + i * 44, 124, 7)
+        if rd < 0 then e.albedo = RUNE e.emission = 1 end
+      end
+    end
+    if kind == "armored" or kind == "radiant" then
+      -- металлические пояса
+      local band = math.min(math.abs(y - 104), math.abs(y - 140))
+      if band < 3.5 and body < 0 then
+        e.albedo = kind == "radiant" and GOLD or { 0.42, 0.45, 0.52 }
+        e.relief = 0.4
+      end
+    end
+    if kind == "radiant" and top < 0 and top > -5 then e.albedo = { 1.0, 0.82, 0.5 } e.emission = 0.8 end
+    return d, e
+  end
+end
+
+-- Кристалл 96×160: огранённый ромб; кадры — поворот вокруг оси (ширина по cos). shards — 3 осколка.
+local function crystal(kind)
+  local base = ({ dim = { 0.35, 0.3, 0.26 }, bright = { 1.0, 0.8, 0.45 }, white = { 1.0, 0.98, 0.92 } })[kind]
+  local em = ({ dim = 0.15, bright = 0.85, white = 1.0 })[kind]
+  return function(x, y, f)
+    if kind == "shards" then
+      -- три наклонённых осколка-ромба у подножия
+      local d = 99
+      local shards = { { 26, 132, 9, 22, -0.35 }, { 50, 124, 11, 30, 0.1 }, { 73, 134, 8, 19, 0.45 } }
+      for _, sh in ipairs(shards) do
+        local ca, sa = math.cos(sh[5]), math.sin(sh[5])
+        local dx, dy = x - sh[1], y - sh[2]
+        local rx, ry = dx * ca + dy * sa, -dx * sa + dy * ca
+        d = math.min(d, (math.abs(rx) / sh[3] + math.abs(ry) / sh[4] - 1) * math.min(sh[3], sh[4]))
+      end
+      return d, { albedo = { 0.32, 0.29, 0.27 }, dome = 6, normal_strength = 8, bake = true }
+    end
+    local turn = math.cos(f / 12 * math.pi * 2)
+    local w = 36 * (0.55 + 0.45 * math.abs(turn))
+    local cx, top, mid, bot = 48, 8, 62, 152
+    local d
+    if y < mid then d = math.abs(x - cx) - w * (y - top) / (mid - top) else d = math.abs(x - cx) - w * (bot - y) / (bot - mid) end
+    d = math.max(d, top - y, y - bot)
+    -- грань: светлая сторона смещается с поворотом
+    local facet = (x - cx) / math.max(1, w) * turn
+    local k = 0.8 + 0.35 * facet
+    local col = { clamp(base[1] * k, 0, 1), clamp(base[2] * k, 0, 1), clamp(base[3] * k, 0, 1) }
+    return d, { albedo = col, dome = 18, normal_strength = 6, bake = true, emission = em }
+  end
+end
+
+-- ---------------------------------------------------------------- Сундуки (Gear DS §03), 320×240
+-- closed/open: у открытого крышка откинута назад и изнутри льётся свет (шов рисует код цветом лучшей редкости).
+local CHESTS = {
+  basic = { body = { 0.36, 0.22, 0.12 }, band = { 0.3, 0.32, 0.36 }, trim = { 1.0, 0.71, 0.28 } },
+  premium = { body = { 0.08, 0.1, 0.16 }, band = { 0.2, 0.62, 0.7 }, trim = { 0.44, 0.89, 0.94 } },
+  run = { body = { 0.22, 0.23, 0.26 }, band = { 0.32, 0.34, 0.38 }, trim = { 0.56, 0.6, 0.67 } },
+  epic = { body = { 0.24, 0.12, 0.34 }, band = { 0.72, 0.38, 0.1 }, trim = { 0.83, 0.69, 1.0 } },
+}
+local function chest(kind, open)
+  local c = CHESTS[kind]
+  return function(x, y, f)
+    local body = math.max(math.abs(x - 160) - 118, math.abs(y - 168) - 58)
+    local lid
+    if open then
+      lid = math.max(math.abs(x - 160) - 112, math.abs(y - 62) - 18) -- откинута назад, видна тонкой полосой
+    else
+      lid = math.max(sd_ellipse(x, y, 160, 112, 124, 52), y - 112)
+    end
+    local d = math.min(body - 2, lid)
+    local col = c.body
+    local wood = (fbm(x / 30, y / 4, 91) - 0.5) * 0.12
+    col = { col[1] + wood, col[2] + wood * 0.8, col[3] + wood * 0.6 }
+    local e = { dome = 26, normal_strength = 10, bake = true }
+    -- металлические пояса и уголки
+    local band = math.min(math.abs(x - 90), math.abs(x - 230))
+    if band < 9 then col = c.band e.relief = 0.3 end
+    local corner = math.min(len(x - 46, y - 222), len(x - 274, y - 222))
+    if corner < 14 then col = c.band end
+    -- замок
+    if math.abs(x - 160) < 14 and math.abs(y - 128) < 16 then col = c.trim e.emission = kind == "premium" and 0.9 or 0.3 end
+    -- неоновые кромки премиума
+    if kind == "premium" and d < 0 and d > -3 then col = c.trim e.emission = 1 end
+    -- открытый: внутренность — тёплое свечение из проёма
+    if open and body < 0 and y < 124 then col = { 1.0, 0.85, 0.55 } e.emission = 1 end
+    e.albedo = { clamp(col[1], 0, 1), clamp(col[2], 0, 1), clamp(col[3], 0, 1) }
+    return d, e
+  end
+end
+
 -- ---------------------------------------------------------------- запуск
 local only = ONLY
 local function want(name) return only == nil or only == name end
@@ -303,6 +436,21 @@ if want("world") then
   for i = 1, 4 do save_asset("src/assets/world/common", "floor_" .. i, 128, 128, 1, floor_tile(100 + i * 17), false) end
   save_asset("src/assets/world/common", "prop_slab", 256, 256, 1, prop_slab, false)
   save_asset("src/assets/world/common", "prop_rubble", 256, 256, 1, prop_rubble, false)
+end
+if want("beacon") then
+  for _, kind in ipairs({ "ruins", "cracked", "runes", "armored", "radiant" }) do
+    save_asset("src/assets/beacon", "pedestal_" .. kind, 320, 160, 1, pedestal(kind), false, true)
+  end
+  save_asset("src/assets/beacon", "crystal_shards", 96, 160, 1, crystal("shards"), false, true)
+  for _, kind in ipairs({ "dim", "bright", "white" }) do
+    save_asset("src/assets/beacon", "crystal_" .. kind, 96, 160, 12, crystal(kind), false, true)
+  end
+end
+if want("chests") then
+  for _, kind in ipairs({ "basic", "premium", "run", "epic" }) do
+    save_asset("src/assets/chests", "chest_" .. kind .. "_closed", 320, 240, 1, chest(kind, false), false, true)
+    save_asset("src/assets/chests", "chest_" .. kind .. "_open", 320, 240, 1, chest(kind, true), false, true)
+  end
 end
 if want("hero") then
   save_asset("src/assets/hero", "hero_body", 170, 170, 1, hero_body, false)

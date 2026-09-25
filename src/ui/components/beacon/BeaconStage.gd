@@ -9,6 +9,18 @@ var pulse: float = 0.0 ## вспышка кристалла на каждое в
 
 var _level: int = 0
 
+## Hi-res ассеты (tools/art/gen_sprites.lua, свет запечён): постамент 160×80pt, кристалл 48×80pt × 12 кадров вращения.
+const ART_DIR: String = "res://src/assets/beacon/"
+const CRYSTAL_FRAMES: int = 12
+static var _art: Dictionary = {}
+
+
+static func art(file: String) -> Texture2D:
+	if not _art.has(file):
+		var path: String = ART_DIR + file + ".png"
+		_art[file] = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	return _art[file]
+
 
 func refresh() -> void:
 	_level = BeaconService.level(GameManager.profile, chapter_id)
@@ -72,6 +84,10 @@ func _draw() -> void:
 
 
 func _draw_pedestal(base: Vector2, kind: String) -> void:
+	var tex: Texture2D = art("pedestal_" + kind)
+	if tex != null:
+		draw_texture_rect(tex, Rect2(base - Vector2(80, 74), Vector2(160, 80)), false)
+		return
 	var body: Color = UITokens.INK_600
 	match kind:
 		"ruins":
@@ -107,6 +123,16 @@ func _draw_runes(base: Vector2) -> void:
 
 
 func _draw_crystal(c: Vector2, kind: String, emission: float, rot_s: float, t: float) -> void:
+	var tex: Texture2D = art("crystal_" + kind)
+	if tex != null:
+		var glow: float = 1.0 + pulse * 0.3 + emission * 0.1
+		if kind == "shards":
+			draw_texture_rect(tex, Rect2(c + Vector2(-24, 2), Vector2(48, 80)), false)
+			return
+		var frame: int = int(t / rot_s * CRYSTAL_FRAMES) % CRYSTAL_FRAMES if rot_s > 0.0 else 0
+		var fw: float = tex.get_width() / float(CRYSTAL_FRAMES)
+		draw_texture_rect_region(tex, Rect2(c - Vector2(24, 40), Vector2(48, 80)), Rect2(frame * fw, 0, fw, tex.get_height()), Color(glow, glow, glow, 1.0))
+		return
 	if kind == "shards":
 		for offset: Vector2 in [Vector2(-30, 70), Vector2(4, 74), Vector2(34, 68)]:
 			var s: Vector2 = c + offset
