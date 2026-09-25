@@ -40,6 +40,8 @@ var burn_after_exit_left: float = 0.0
 var far_t: float = 0.0
 ## Появился из раскола Пожирателя — единственный спавн, которому можно быть в кадре (Enemy DS §03).
 var from_split: bool = false
+## Оцепенение при первом входе в свет уже сработало (Заморозка ур.5).
+var entry_freeze_done: bool = false
 
 var _slows: Dictionary[StringName, float] = {}
 var _freeze_left: float = 0.0
@@ -90,6 +92,7 @@ func activate(p_def: EnemyDef, pos: Vector2, elite: bool, hp_mul: float, damage_
 	burn_after_exit_left = 0.0
 	far_t = 0.0
 	from_split = false
+	entry_freeze_done = false
 	_slows.clear()
 	_freeze_left = 0.0
 	_stun_left = 0.0

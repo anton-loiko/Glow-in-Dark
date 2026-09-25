@@ -13,6 +13,11 @@ var fuel_efficiency: float = 1.0
 var spark_income_mult: float = 1.0
 var aura_dps: float = 20.0
 var aura_slow_pct: float = 0.0
+var aura_tick_s: float = 0.25
+## Заморозка ур.5: оцепенение при первом входе врага в свет.
+var light_entry_freeze_s: float = 0.0
+## Ускорение ур.5: иммунитет к замедлению окружения.
+var env_slow_immune: bool = false
 var area_scale: float = 1.0
 var cooldown_mult: float = 1.0
 var revive_light_pct: float = 0.5

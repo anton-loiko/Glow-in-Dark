@@ -75,7 +75,7 @@ func can_spawn(id: StringName, elite: bool = false) -> bool:
 	return true
 
 
-func spawn(id: StringName, pos: Vector2, elite: bool = false, eyes_only_s: float = 0.0) -> Enemy:
+func spawn(id: StringName, pos: Vector2, elite: bool = false, eyes_only_s: float = 0.0, from_split: bool = false) -> Enemy:
 	if not can_spawn(id, elite):
 		return null
 	var enemy: Enemy = _pools[id].acquire() as Enemy
@@ -87,6 +87,9 @@ func spawn(id: StringName, pos: Vector2, elite: bool = false, eyes_only_s: float
 	var dmg_mul: float = pow(float(scaling.get("damage", 1.08)), minutes)
 	enemy.activate(ConfigDB.get_enemy(id), pos, elite, hp_mul, dmg_mul, self, eyes_only_s)
 	enemy.rim_color = _rim_color()
+	if from_split:
+		enemy.from_split = true
+		enemy.state_t = 1.0 # раскол: без анимации открытия глаз
 	_active.append(enemy)
 	_counts[id] += 1
 	if elite:
@@ -118,6 +121,35 @@ func active_enemies() -> Array[Enemy]:
 func retreat_all() -> void:
 	for enemy: Enemy in _active:
 		enemy.start_retreat()
+
+
+# --- Запросы для навыков (task_4) -------------------------------------------------
+
+func enemies_in_radius(center: Vector2, radius: float) -> Array[Enemy]:
+	var result: Array[Enemy] = []
+	for enemy: Enemy in _active:
+		if enemy.is_targetable() and enemy.global_position.distance_to(center) <= radius + enemy.radius:
+			result.append(enemy)
+	return result
+
+
+## Цели Луча Света: сначала ближайшие, при равных — тяжёлые (L/XL); только в пределах max_range.
+func pick_targets(center: Vector2, count: int, max_range: float) -> Array[Enemy]:
+	var candidates: Array[Enemy] = enemies_in_radius(center, max_range)
+	candidates.sort_custom(func(a: Enemy, b: Enemy) -> bool: return _target_score(a, center) < _target_score(b, center))
+	return candidates.slice(0, count)
+
+
+func _target_score(enemy: Enemy, center: Vector2) -> float:
+	var heavy: bool = enemy.def.size_class == &"L" or enemy.def.size_class == &"XL" or enemy.is_elite
+	return enemy.global_position.distance_to(center) - (60.0 if heavy else 0.0)
+
+
+## Дополнительный урон всем врагам в свете (Аура ур.5 — усиленный тик).
+func damage_in_light(amount: float) -> void:
+	for i: int in range(_active.size() - 1, -1, -1):
+		if i < _active.size() and _active[i].in_light:
+			_active[i].take_damage(amount)
 
 
 # --- Сервисы для врагов --------------------------------------------------------
@@ -199,6 +231,9 @@ func _physics_process(delta: float) -> void:
 		enemy.tick(delta, to_player, light_radius)
 		if not enemy.is_alive():
 			continue
+		if enemy.in_light and not enemy.entry_freeze_done and player.stats.light_entry_freeze_s > 0.0:
+			enemy.entry_freeze_done = true
+			enemy.apply_freeze(player.stats.light_entry_freeze_s)
 		if slow_pct > 0.0:
 			if enemy.in_light:
 				enemy.apply_slow(slow_pct, &"skin_aura")
@@ -207,6 +242,7 @@ func _physics_process(delta: float) -> void:
 		_update_despawn(enemy, to_player, despawn_dist, delta)
 		_update_numbers(enemy, delta)
 	player.aura_radius_mult = _light_drain
+	_burn_tick = player.stats.aura_tick_s
 	_burn_acc += delta
 	while _burn_acc >= _burn_tick:
 		_burn_acc -= _burn_tick
@@ -335,10 +371,7 @@ func on_enemy_killed(enemy: Enemy) -> void:
 func _spawn_children_later(id: StringName, count: int, pos: Vector2) -> void:
 	await get_tree().create_timer(0.3, false).timeout
 	for i: int in count:
-		var enemy: Enemy = spawn(id, pos + Vector2.from_angle(TAU * i / count) * 20.0)
-		if enemy != null:
-			enemy.from_split = true
-			enemy.state_t = 1.0 # раскол: без анимации открытия глаз
+		spawn(id, pos + Vector2.from_angle(TAU * i / count) * 20.0, false, 0.0, true)
 
 
 func _extinguisher_reward() -> void:

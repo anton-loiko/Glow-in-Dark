@@ -18,9 +18,14 @@ var kills: int = 0
 
 var skills: Dictionary[StringName, int] = {} ## id навыка → уровень
 var offer_history: Array[Array] = [] ## показанные оферы по левел-апам
+var current_offer: Array[SkillOffer] = []
+var last_rejected: Array[StringName] = [] ## показаны и не выбраны на прошлом левел-апе (M_fresh)
+var magnet_seen: bool = false
+var reroll_idx: int = 0 ## рероллы текущего левел-апа (для seed)
 var reroll_count: int = 0
 var revive_used: bool = false
 var take_all_used: bool = false
+var ad_reroll_used: bool = false
 var run_chests: Array[StringName] = []
 
 var result: RunResult

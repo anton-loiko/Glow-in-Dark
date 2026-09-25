@@ -13,6 +13,7 @@ var magnet_radius: float = 60.0
 var magnet_pulls_fuel: bool = false ## Магнит ур.4 (task_4)
 var collect_radius: float = 18.0
 var fly_speed: float = 360.0
+var fly_speed_base: float = 360.0
 var fly_accel: float = 1400.0
 var spark_lifetime: float = 20.0
 var merge_threshold: int = 60
@@ -34,6 +35,7 @@ func setup(p_player: Player, balance: Dictionary) -> void:
 	magnet_radius = player.stats.magnet_radius
 	collect_radius = float(cfg.get("collect_radius_pt", collect_radius))
 	fly_speed = float(cfg.get("fly_speed", fly_speed))
+	fly_speed_base = fly_speed
 	fly_accel = float(cfg.get("fly_accel", fly_accel))
 	spark_lifetime = float(cfg.get("spark_lifetime_s", spark_lifetime))
 	merge_threshold = int(cfg.get("spark_merge_threshold", merge_threshold))

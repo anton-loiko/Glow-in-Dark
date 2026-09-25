@@ -40,6 +40,8 @@ func _init() -> void:
 	print("[bot] END reason=%s t=%.1f kills=%s level=%s levelups=%d first_levelup=%.1fs" % [result.get("reason") if result else "?", _t(), kills_by, gm.get("current_run").get("player_level") if gm.get("current_run") else "?", levelups, first_level_up])
 	print("[bot] phases=", phase_log.slice(0, 14))
 	print("[bot] max_total=%d max_counts=%s violations=%d" % [max_total, max_counts, violations])
+	if gm.get("current_run") != null:
+		print("[bot] skills=", gm.get("current_run").get("skills"))
 	quit()
 
 func _t() -> float:
@@ -53,6 +55,11 @@ func _tick() -> void:
 	var lm: Object = player.get("light_model")
 	lm.set("current", lm.get("max_value"))
 	if router.call("modal_stack").has(&"S06"):
+		var run: Object = gm.get("current_run")
+		var offer: Array = run.get("current_offer")
+		if not offer.is_empty():
+			var pick: int = randi() % offer.size()
+			root.get_node(^"SkillsManager").call("choose", run, offer[pick], pick, 0)
 		router.call("close_top")
 	if router.call("modal_stack").has(&"S08"):
 		router.call("close_top")

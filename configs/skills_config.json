@@ -1,8 +1,12 @@
 {
   "_doc": "Тюнинг выборки навыков (Skills DS §04). Описания уровней — Skills DS §03, заполняются в task_4.",
   "base_weight": 100,
-  "owned_mul": 1.30,
-  "magnet_mul": [3.0, 1.5, 1.0],
+  "owned_mul": 1.3,
+  "magnet_mul": [
+    3.0,
+    1.5,
+    1.0
+  ],
   "magnet_mul_until_player_level": 5,
   "magnet_guarantee_level": 5,
   "active_boost": 2.5,
@@ -13,17 +17,568 @@
   "max_level": 5,
   "input_lock_ms": 400,
   "skills": [
-    {"id": "aura", "category": "attack", "type": "active", "synergies": ["lens", "capacity"], "tags": ["dot", "radius"]},
-    {"id": "pulsar", "category": "attack", "type": "active", "synergies": ["lens", "cooldown"], "tags": ["aoe", "knockback", "cd"]},
-    {"id": "trail", "category": "attack", "type": "active", "synergies": ["haste", "freeze"], "tags": ["zone", "movement"]},
-    {"id": "beam", "category": "attack", "type": "active", "synergies": ["cooldown", "lens"], "tags": ["single", "crit", "cd"]},
-    {"id": "orbs", "category": "attack", "type": "active", "synergies": ["lens"], "tags": ["orbit", "own_light"]},
-    {"id": "capacity", "category": "defense", "type": "passive", "synergies": ["aura", "shield"], "tags": ["max_hp", "radius"]},
-    {"id": "shield", "category": "defense", "type": "passive", "synergies": ["capacity"], "tags": ["reduction", "regen"]},
-    {"id": "freeze", "category": "defense", "type": "passive", "synergies": ["trail", "aura"], "tags": ["slow", "cc"]},
-    {"id": "magnet", "category": "utility", "type": "passive", "synergies": ["haste"], "tags": ["pickup", "early_priority"]},
-    {"id": "haste", "category": "utility", "type": "passive", "synergies": ["trail", "magnet"], "tags": ["move_speed"]},
-    {"id": "lens", "category": "utility", "type": "passive", "synergies": ["aura", "pulsar", "orbs", "beam"], "tags": ["scale", "global"]},
-    {"id": "cooldown", "category": "utility", "type": "passive", "synergies": ["beam", "pulsar"], "tags": ["cd_reduction"]}
-  ]
+    {
+      "id": "aura",
+      "category": "attack",
+      "type": "active",
+      "synergies": [
+        "lens",
+        "capacity"
+      ],
+      "tags": [
+        "dot",
+        "radius"
+      ],
+      "name": "Базовая Аура",
+      "label": "Урон светом",
+      "levels": [
+        {
+          "dps_pct": 20,
+          "tick_s": 0.25,
+          "value": "+20%"
+        },
+        {
+          "dps_pct": 40,
+          "tick_s": 0.25,
+          "value": "+40%"
+        },
+        {
+          "dps_pct": 60,
+          "tick_s": 0.2,
+          "value": "+60%",
+          "note": "тик 200 мс"
+        },
+        {
+          "dps_pct": 80,
+          "tick_s": 0.2,
+          "value": "+80%"
+        },
+        {
+          "dps_pct": 100,
+          "tick_s": 0.2,
+          "triple_every_s": 3.0,
+          "value": "+100%",
+          "note": "раз в 3 с тик ×3"
+        }
+      ]
+    },
+    {
+      "id": "pulsar",
+      "category": "attack",
+      "type": "active",
+      "synergies": [
+        "lens",
+        "cooldown"
+      ],
+      "tags": [
+        "aoe",
+        "knockback",
+        "cd"
+      ],
+      "name": "Пульсар",
+      "label": "Вспышка",
+      "levels": [
+        {
+          "cooldown_s": 4.0,
+          "damage": 25,
+          "knockback_pt": 80,
+          "waves": 1,
+          "stun_s": 0.6,
+          "radius_pct": 60,
+          "value": "25 урона · 4 с"
+        },
+        {
+          "cooldown_s": 4.0,
+          "damage": 40,
+          "knockback_pt": 80,
+          "waves": 1,
+          "stun_s": 0.6,
+          "radius_pct": 60,
+          "value": "40 урона"
+        },
+        {
+          "cooldown_s": 3.2,
+          "damage": 40,
+          "knockback_pt": 120,
+          "waves": 1,
+          "stun_s": 0.6,
+          "radius_pct": 60,
+          "value": "КД 3.2 с"
+        },
+        {
+          "cooldown_s": 3.2,
+          "damage": 40,
+          "knockback_pt": 120,
+          "waves": 2,
+          "stun_s": 0.6,
+          "radius_pct": 60,
+          "value": "две волны"
+        },
+        {
+          "cooldown_s": 3.2,
+          "damage": 40,
+          "knockback_pt": 120,
+          "waves": 2,
+          "stun_s": 1.2,
+          "radius_pct": 60,
+          "value": "оглушение 1.2 с"
+        }
+      ]
+    },
+    {
+      "id": "trail",
+      "category": "attack",
+      "type": "active",
+      "synergies": [
+        "haste",
+        "freeze"
+      ],
+      "tags": [
+        "zone",
+        "movement"
+      ],
+      "name": "Огненный след",
+      "label": "След",
+      "levels": [
+        {
+          "life_s": 1.5,
+          "damage": 8,
+          "width_pt": 10,
+          "value": "8 урона · 1.5 с"
+        },
+        {
+          "life_s": 2.0,
+          "damage": 8,
+          "width_pt": 14,
+          "value": "живёт 2 с"
+        },
+        {
+          "life_s": 2.0,
+          "damage": 12,
+          "width_pt": 14,
+          "value": "12 урона"
+        },
+        {
+          "life_s": 3.0,
+          "damage": 12,
+          "width_pt": 20,
+          "value": "3 с, шире ×1.5"
+        },
+        {
+          "life_s": 3.0,
+          "damage": 12,
+          "width_pt": 20,
+          "tail_explosion": 40,
+          "value": "хвост взрывается (40)"
+        }
+      ]
+    },
+    {
+      "id": "beam",
+      "category": "attack",
+      "type": "active",
+      "synergies": [
+        "cooldown",
+        "lens"
+      ],
+      "tags": [
+        "single",
+        "crit",
+        "cd"
+      ],
+      "name": "Луч Света",
+      "label": "Лучи",
+      "levels": [
+        {
+          "count": 1,
+          "damage": 60,
+          "cooldown_s": 2.5,
+          "value": "1 луч · крит"
+        },
+        {
+          "count": 2,
+          "damage": 60,
+          "cooldown_s": 2.5,
+          "value": "2 луча"
+        },
+        {
+          "count": 3,
+          "damage": 60,
+          "cooldown_s": 2.5,
+          "value": "3 луча"
+        },
+        {
+          "count": 4,
+          "damage": 60,
+          "cooldown_s": 2.5,
+          "value": "4 луча"
+        },
+        {
+          "count": 5,
+          "damage": 60,
+          "cooldown_s": 2.5,
+          "value": "5 лучей залпом"
+        }
+      ]
+    },
+    {
+      "id": "orbs",
+      "category": "attack",
+      "type": "active",
+      "synergies": [
+        "lens"
+      ],
+      "tags": [
+        "orbit",
+        "own_light"
+      ],
+      "name": "Орбитальные Сферы",
+      "label": "Сферы",
+      "levels": [
+        {
+          "count": 1,
+          "damage": 30,
+          "period_s": 2.0,
+          "value": "1 сфера · 30"
+        },
+        {
+          "count": 1,
+          "damage": 40,
+          "period_s": 1.7,
+          "value": "40 урона"
+        },
+        {
+          "count": 1,
+          "damage": 50,
+          "period_s": 1.4,
+          "value": "50 урона"
+        },
+        {
+          "count": 1,
+          "damage": 65,
+          "period_s": 1.2,
+          "value": "65 урона"
+        },
+        {
+          "count": 2,
+          "damage": 65,
+          "period_s": 1.2,
+          "value": "вторая сфера"
+        }
+      ]
+    },
+    {
+      "id": "capacity",
+      "category": "defense",
+      "type": "passive",
+      "synergies": [
+        "aura",
+        "shield"
+      ],
+      "tags": [
+        "max_hp",
+        "radius"
+      ],
+      "name": "Энергоёмкость",
+      "label": "Макс. свет",
+      "levels": [
+        {
+          "max_light_pct": 10,
+          "value": "+10%"
+        },
+        {
+          "max_light_pct": 20,
+          "value": "+20%"
+        },
+        {
+          "max_light_pct": 30,
+          "value": "+30%"
+        },
+        {
+          "max_light_pct": 40,
+          "value": "+40%"
+        },
+        {
+          "max_light_pct": 50,
+          "lethal_saves": 1,
+          "value": "+50%",
+          "note": "спасение от смертельного удара"
+        }
+      ]
+    },
+    {
+      "id": "shield",
+      "category": "defense",
+      "type": "passive",
+      "synergies": [
+        "capacity"
+      ],
+      "tags": [
+        "reduction",
+        "regen"
+      ],
+      "name": "Щит",
+      "label": "Урон касаний",
+      "levels": [
+        {
+          "reduction_pct": 10,
+          "value": "−10%"
+        },
+        {
+          "reduction_pct": 15,
+          "value": "−15%"
+        },
+        {
+          "reduction_pct": 20,
+          "value": "−20%"
+        },
+        {
+          "reduction_pct": 30,
+          "value": "−30%"
+        },
+        {
+          "reduction_pct": 30,
+          "regen_per_5s": 1,
+          "value": "−30%",
+          "note": "+1 света / 5 с"
+        }
+      ]
+    },
+    {
+      "id": "freeze",
+      "category": "defense",
+      "type": "passive",
+      "synergies": [
+        "trail",
+        "aura"
+      ],
+      "tags": [
+        "slow",
+        "cc"
+      ],
+      "name": "Замораживающий свет",
+      "label": "Замедление в свете",
+      "levels": [
+        {
+          "slow_pct": 10,
+          "value": "10%"
+        },
+        {
+          "slow_pct": 15,
+          "value": "15%"
+        },
+        {
+          "slow_pct": 20,
+          "value": "20%"
+        },
+        {
+          "slow_pct": 25,
+          "value": "25%"
+        },
+        {
+          "slow_pct": 25,
+          "stupor_s": 0.8,
+          "value": "25%",
+          "note": "оцепенение 0.8 с"
+        }
+      ]
+    },
+    {
+      "id": "magnet",
+      "category": "utility",
+      "type": "passive",
+      "synergies": [
+        "haste"
+      ],
+      "tags": [
+        "pickup",
+        "early_priority"
+      ],
+      "name": "Магнит Искр",
+      "label": "Радиус сбора",
+      "levels": [
+        {
+          "radius_pct": 40,
+          "value": "+40%"
+        },
+        {
+          "radius_pct": 70,
+          "value": "+70%"
+        },
+        {
+          "radius_pct": 100,
+          "fly_mul": 1.3,
+          "value": "+100%"
+        },
+        {
+          "radius_pct": 130,
+          "fly_mul": 1.3,
+          "pulls_fuel": true,
+          "value": "+130%",
+          "note": "тянет Топливо"
+        },
+        {
+          "radius_pct": 160,
+          "fly_mul": 1.3,
+          "pulls_fuel": true,
+          "vacuum_every_s": 20.0,
+          "value": "+160%",
+          "note": "всасывание раз в 20 с"
+        }
+      ]
+    },
+    {
+      "id": "haste",
+      "category": "utility",
+      "type": "passive",
+      "synergies": [
+        "trail",
+        "magnet"
+      ],
+      "tags": [
+        "move_speed"
+      ],
+      "name": "Ускорение",
+      "label": "Скорость",
+      "levels": [
+        {
+          "speed_pct": 5,
+          "value": "+5%"
+        },
+        {
+          "speed_pct": 10,
+          "value": "+10%"
+        },
+        {
+          "speed_pct": 15,
+          "value": "+15%"
+        },
+        {
+          "speed_pct": 20,
+          "value": "+20%"
+        },
+        {
+          "speed_pct": 25,
+          "env_slow_immune": true,
+          "value": "+25%",
+          "note": "иммунитет к замедлению"
+        }
+      ]
+    },
+    {
+      "id": "lens",
+      "category": "utility",
+      "type": "passive",
+      "synergies": [
+        "aura",
+        "pulsar",
+        "orbs",
+        "beam"
+      ],
+      "tags": [
+        "scale",
+        "global"
+      ],
+      "name": "Фокусная Линза",
+      "label": "Масштаб света",
+      "levels": [
+        {
+          "scale_pct": 10,
+          "value": "+10%"
+        },
+        {
+          "scale_pct": 20,
+          "value": "+20%"
+        },
+        {
+          "scale_pct": 30,
+          "value": "+30%"
+        },
+        {
+          "scale_pct": 40,
+          "value": "+40%"
+        },
+        {
+          "scale_pct": 50,
+          "value": "+50%"
+        }
+      ]
+    },
+    {
+      "id": "cooldown",
+      "category": "utility",
+      "type": "passive",
+      "synergies": [
+        "beam",
+        "pulsar"
+      ],
+      "tags": [
+        "cd_reduction"
+      ],
+      "name": "Перезарядка",
+      "label": "Кулдауны",
+      "levels": [
+        {
+          "cd_pct": 8,
+          "value": "−8%"
+        },
+        {
+          "cd_pct": 16,
+          "value": "−16%"
+        },
+        {
+          "cd_pct": 24,
+          "value": "−24%"
+        },
+        {
+          "cd_pct": 32,
+          "value": "−32%"
+        },
+        {
+          "cd_pct": 40,
+          "reset_on_burst": true,
+          "value": "−40%",
+          "note": "сброс КД после Взрыва"
+        }
+      ]
+    }
+  ],
+  "fallbacks": [
+    {
+      "id": "fallback_sparks",
+      "name": "Искры",
+      "label": "Искры забега",
+      "value": "+50",
+      "category": "utility",
+      "grants": {
+        "run_sparks": 50
+      }
+    },
+    {
+      "id": "fallback_light",
+      "name": "Разжечь",
+      "label": "Свет",
+      "value": "+30%",
+      "category": "attack",
+      "grants": {
+        "light_pct": 30
+      }
+    }
+  ],
+  "evolutions": [
+    {
+      "_note": "Только данные в V1 (Art Direction §03); выпадение — за фича-флагом",
+      "id": "supernova",
+      "name": "Сверхновая",
+      "requires": {
+        "aura": 5,
+        "lens": 5
+      },
+      "effect": "Каждые 8 с — Взрыв Света без топлива"
+    }
+  ],
+  "reroll": {
+    "sparks": 50,
+    "crystals": 10
+  }
 }

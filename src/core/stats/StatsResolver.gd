@@ -75,6 +75,7 @@ static func build(profile: PlayerProfile, balance: Dictionary, tiers: Array[Beac
 	block.aura_dps = _resolve(float(base.get("aura_dps", 20.0)), "aura_dps", pct, flat)
 	block.spawn_rate_mult = _resolve(1.0, "spawn_rate_mult", pct, flat)
 	block.revive_light_pct = float(base.get("revive_light_pct", 0.5))
+	block.aura_tick_s = float(base.get("aura_tick_s", 0.25))
 
 	if skin != null:
 		block.skin_flags = skin.flags.duplicate(true)

@@ -28,9 +28,13 @@ func test_pause_modal_pauses_world_and_back_closes_it() -> void:
 
 
 func test_back_is_ignored_on_level_up() -> void:
+	var stats: StatBlock = StatsResolver.build(PlayerProfile.new(), ConfigDB.get_balance(), ConfigDB.get_beacon_tiers(), null, ConfigDB.get_gear_config())
+	GameManager.current_run = RunContext.new(1, 3, stats)
+	GameManager.current_run.level_up_idx = 1
 	SceneRouter.open_modal(&"S06")
 	SceneRouter.handle_back()
 	assert_str(String(SceneRouter.top_screen_id())).is_equal("S06")
+	GameManager.current_run = null
 
 
 func test_pause_reasons_stack() -> void:

@@ -13,6 +13,7 @@ extends Node2D
 @export var director: RunDirector
 @export var enemies: EnemyManager
 @export var waves: WaveDirector
+@export var skills: SkillHost
 
 
 func _ready() -> void:
@@ -36,6 +37,7 @@ func on_screen_enter(_params: Dictionary) -> void:
 	director.setup(run, chapter, balance)
 	enemies.setup(player, pickups, streamer, camera, run)
 	waves.setup(run, enemies, pickups, streamer, player, camera)
+	skills.setup(player, enemies, pickups, camera, run)
 	DamagePool.bind_world(fx_layer)
 
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/run/RunScene.gd" id="1_scene"]
 [ext_resource type="Script" path="res://src/gameplay/world/ChapterEnvironment.gd" id="2_env"]
@@ -12,8 +12,9 @@
 [ext_resource type="Script" path="res://src/ui/hud/FloatingJoystick.gd" id="10_joystick"]
 [ext_resource type="Script" path="res://src/gameplay/enemies/EnemyManager.gd" id="11_enemies"]
 [ext_resource type="Script" path="res://src/gameplay/waves/WaveDirector.gd" id="12_waves"]
+[ext_resource type="Script" path="res://src/gameplay/skills/SkillHost.gd" id="13_skills"]
 
-[node name="RunScene" type="Node2D" node_paths=PackedStringArray("chapter_environment", "streamer", "pickups", "player", "camera", "burst", "fx_layer", "director", "enemies", "waves")]
+[node name="RunScene" type="Node2D" node_paths=PackedStringArray("chapter_environment", "streamer", "pickups", "player", "camera", "burst", "fx_layer", "director", "enemies", "waves", "skills")]
 script = ExtResource("1_scene")
 chapter_environment = NodePath("ChapterEnvironment")
 streamer = NodePath("World/ChunkStreamer")
@@ -25,6 +26,7 @@ fx_layer = NodePath("World/FX")
 director = NodePath("RunDirector")
 enemies = NodePath("World/Enemies")
 waves = NodePath("WaveDirector")
+skills = NodePath("World/Skills")
 
 [node name="ChapterEnvironment" type="Node" parent="." node_paths=PackedStringArray("canvas_modulate", "world_environment")]
 script = ExtResource("2_env")
@@ -51,6 +53,9 @@ script = ExtResource("11_enemies")
 
 [node name="Camera" type="Camera2D" parent="World/Player"]
 script = ExtResource("6_camera")
+
+[node name="Skills" type="Node2D" parent="World"]
+script = ExtResource("13_skills")
 
 [node name="Burst" type="Node2D" parent="World" node_paths=PackedStringArray("player", "camera", "pickups", "flash_rect")]
 script = ExtResource("7_burst")
