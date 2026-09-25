@@ -4,6 +4,8 @@
 
 Обновлено: 2026-09-25.
 
+> **D19:** V1 — только iOS (минимум iOS 17). Всё, что касается Android, перенесено в раздел 5 «После V1» и релиз не блокирует.
+
 ## 1. Решения (нужен ответ)
 
 | # | Вопрос | Контекст | Варианты | Откуда |
@@ -21,21 +23,17 @@
 | # | Что | Зачем | Куда положить |
 |---|---|---|---|
 | A1 | Firebase-проект игры: `google-services.json`, `GoogleService-Info.plist`, ключи для `addons/godot-firebase/.env` | Облако, Analytics, Crashlytics. Сейчас `.env` указывает на чужой проект mc-game-8ee20, облако выключено флагом `configs/services.json → cloud_sync_enabled` | корень проекта; затем `cloud_sync_enabled: true`, выложить `firebase/firestore.rules` |
-| A2 | App Key Appodeal (Android, iOS) | Реклама | `configs/ads.json → app_keys` |
-| A3 | Google Play Console: приложение, товары (5 SKU из `configs/shop.json`), license testers | Тестовые покупки | — |
+| A2 | App Key Appodeal (iOS) | Реклама | `configs/ads.json → app_keys` |
 | A4 | App Store Connect: приложение, товары, sandbox-аккаунт, Game Center | Покупки и вход Game Center | — |
-| A5 | Play Games Services: OAuth server client ID | Вход Play Games → Firebase | `configs/services.json → play_games_server_client_id` |
-| A6 | (при необходимости) URL Cloud Function обмена кода Play Games на custom token | Если `signInWithIdp` для Play Games не заработает | `configs/services.json → play_games_token_exchange_url` |
 
 ## 3. Работа, заблокированная аккаунтами или устройствами
 
 - **iOS-обёртка Appodeal** (SwiftGodot + ATT) по контракту `docs/research/appodeal_wrapper.md` — после A2, нужен iOS 17+.
-- **Прототип интеграций на устройствах** (шаги 1–5 `docs/research/native_plugins.md`): сборки Android/iOS со всеми плагинами, тестовые покупки, вход в гейм-центры и привязка к Firebase, DebugView, форма согласий Appodeal — после A1–A5.
-- **Вход Play Games → Firebase через REST `signInWithIdp`** не подтверждён документацией. При неудаче — Cloud Function (A6).
+- **Прототип интеграций на устройствах** (шаги 1–5 `docs/research/native_plugins.md`): сборка iOS со всеми плагинами, тестовые покупки, вход в гейм-центры и привязка к Firebase, DebugView, форма согласий Appodeal — после A1–A5.
 - **`setUserProperty` в godot-x/firebase** отсутствует → форк или PR в плагин. Пока user properties дублируются в Crashlytics custom keys.
 - **Критерии приёмки task_7**, которые проверяются только на устройствах: покупки sandbox/license, восстановление покупок, переустановка + вход в гейм-центр, DebugView за полный цикл S01 → S10.
 
-- **Замер производительности на Redmi 9 и iPhone XR** (стресс 150 врагов, `PerfOverlay`). Логика врагов на Mac — 2,2 мс p50; на слабом Android ожидаемо в 4–6 раз медленнее, бюджет 5 мс. Если не влезет — перенос тика врагов в пакетные массивы или GDExtension.
+- **Замер производительности на iPhone XR** (стресс 150 врагов, `PerfOverlay`). Логика врагов на Mac — 2,2 мс p50; на iPhone XR ожидаемо в 2–3 раза медленнее, бюджет 5 мс. Если не влезет — перенос тика врагов в пакетные массивы или GDExtension.
 - **iOS:** экспорт Xcode-проекта, проверка на симуляторе, подпись и профили (нужен Apple Developer-аккаунт).
 - **Реальный AdMob App ID** из кабинета Appodeal вместо тестового Google в `configs/ads.json → admob_app_id` (без него адаптер AdMob роняет приложение).
 
@@ -44,3 +42,10 @@
 - task_6: механики Огоньков в забеге (Плазменный, Синее Пламя, Инферно, Лунный `MoonPhaseModifier`), rim врагов и перекраска света хаба скином, отдельная хореография вех 25/50/75/100% и «История Маяка», инверсия палитры хаба на тире 10, поток искр в кристалл, drag-n-drop на слот и тултип сравнения в S12, «Быстрое открытие» сундуков, подсказка «Попробуй Призрачного».
 - task_5: контраст скриптом, системный Reduce Motion, safe area на устройствах, ревью дизайнером side-by-side.
 - task_8: финальный звук; нативная хаптика iOS и энергосбережение; скриншоты сторов; политика конфиденциальности и рейтинг.
+
+## 5. После V1 (Android, D19)
+
+Код в репозитории заморожен, не удалять: `GooglePlayBillingBackend`, `PlayGamesBackend`, Android-обёртка Appodeal (`plugins/appodeal/android`, `addons/glow_appodeal`), Android-пресет экспорта, job `android` в CI (`if: false`).
+
+- Google Play Console: приложение, товары, license testers; вход Play Games → Firebase (`signInWithIdp` или Cloud Function); замер 60 FPS на Redmi 9.
+- Проверка на Android-эмуляторе уже проходила (S01 → забег, исправлен краш AdMob APPLICATION_ID) — повторить перед релизом Android.

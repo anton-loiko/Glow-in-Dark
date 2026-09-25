@@ -1,5 +1,5 @@
 # CI (task_8 §6): строгая проверка скриптов, юнит-тесты gdUnit4, RunBot (10:00 и стресс 150 врагов),
-# сборка Android debug APK. Отчёты тестов и бота — артефакты.
+# сборка Android debug APK (выключена до V1.1, D19). Отчёты тестов и бота — артефакты.
 name: CI
 
 on:
@@ -53,7 +53,9 @@ jobs:
           name: reports
           path: reports/
 
+  # D19: V1 — только iOS. Сборка Android заморожена до V1.1 (включить — убрать `if: false`).
   android:
+    if: false
     runs-on: ubuntu-24.04
     needs: test
     timeout-minutes: 40
