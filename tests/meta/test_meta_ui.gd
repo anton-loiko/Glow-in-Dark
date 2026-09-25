@@ -132,3 +132,12 @@ func test_daily_item_reward_goes_to_inventory() -> void:
 	assert_int(items.size()).is_equal(1)
 	assert_str(String(items[0].slot)).is_equal("head")
 	assert_int(p.pending_rewards.size()).is_equal(1)
+
+
+func test_spark_flow_expires() -> void:
+	var flow: SparkFlow = auto_free(SparkFlow.new())
+	add_child(flow)
+	flow.emit(Vector2.ZERO, Vector2(100, 100), 5)
+	assert_int(flow._sparks.size()).is_equal(5)
+	flow._process(2.0)
+	assert_int(flow._sparks.size()).is_equal(0)

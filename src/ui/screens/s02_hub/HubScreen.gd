@@ -14,6 +14,8 @@ var _next_label: Label
 var _daily_button: GlowButton
 var _tab_bar: GlowTabBar
 var _cutscene: BeaconCutscene
+var _sparks_pill: CurrencyPill
+var _flow: SparkFlow
 
 
 func _ready() -> void:
@@ -24,7 +26,8 @@ func _ready() -> void:
 	var settings: GlowButton = UIKit.button("⚙", GlowButton.Variant.ICON, SceneRouter.go.bind(&"S13"))
 	top.add_child(settings)
 	top.add_child(UIKit.spacer(false))
-	top.add_child(_pill(GameManager.SPARKS))
+	_sparks_pill = _pill(GameManager.SPARKS)
+	top.add_child(_sparks_pill)
 	top.add_child(_pill(GameManager.CRYSTALS))
 
 	var chapter_row: HBoxContainer = UIKit.hbox(UITokens.S2, BoxContainer.ALIGNMENT_CENTER)
@@ -65,6 +68,8 @@ func _ready() -> void:
 	_tab_bar = GlowTabBar.new()
 	_tab_bar.active = &"S02"
 	column.add_child(_tab_bar)
+	_flow = SparkFlow.new()
+	add_child(_flow)
 	EventBus.screen_changed.connect(_on_screen_changed)
 	EventBus.currency_changed.connect(_on_currency_changed)
 	EventBus.cloud_sync_state_changed.connect(_on_sync_state)
@@ -120,6 +125,10 @@ func _on_cutscene_finished(skipped: bool, milestone: int) -> void:
 
 func _on_deposited(_levels: int) -> void:
 	_stage.flash_rune()
+	# Поток искр: пилюля → кристалл; при удержании поток гуще.
+	var from: Vector2 = _sparks_pill.get_global_rect().get_center() - global_position
+	var to: Vector2 = _stage.global_position - global_position + Vector2(_stage.size.x * 0.5, _stage.size.y * 0.78 - 100.0)
+	_flow.emit(from, to, 10 if _cta.state == BeaconCTA.State.HOLDING else 5)
 	_refresh()
 	if BeaconService.pending_milestone(GameManager.profile, _chapter_id) > 0 \
 			and not BeaconService.is_tier_ready(GameManager.profile, _chapter_id):
