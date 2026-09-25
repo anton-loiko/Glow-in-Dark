@@ -22,6 +22,7 @@ func _ready() -> void:
 func set_profile(new_profile: PlayerProfile) -> void:
 	profile = new_profile
 	SaveManager.bind_profile(profile)
+	sync_system_reduce_motion()
 	EventBus.profile_loaded.emit()
 
 
@@ -97,9 +98,22 @@ func set_setting(key: StringName, value: Variant) -> void:
 		push_error("[GameManager] unknown setting '%s'" % key)
 		return
 	profile.settings.set(key, value)
+	if key == &"no_flashes":
+		profile.settings.no_flashes_explicit = true
 	EventBus.settings_changed.emit(key, value)
 	Telemetry.log_event(&"settings_changed", {"key": String(key), "value": str(value)})
 	SaveManager.request_save()
+
+
+## Подхватывает системный Reduce Motion (iOS «Уменьшение движения») при загрузке и возврате в приложение.
+func sync_system_reduce_motion(reduce: bool = DisplayServer.accessibility_should_reduce_animation()) -> void:
+	if profile != null and profile.settings.apply_system_reduce_motion(reduce):
+		EventBus.settings_changed.emit(&"no_flashes", profile.settings.no_flashes)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		sync_system_reduce_motion()
 
 
 # --- Забег -------------------------------------------------------------------

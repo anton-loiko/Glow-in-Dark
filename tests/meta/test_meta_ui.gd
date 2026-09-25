@@ -180,3 +180,15 @@ func test_ghost_hint_after_three_contact_deaths() -> void:
 	assert_int(restored.contact_death_streak).is_equal(3)
 	p.skin_equipped = &"ghost"
 	assert_bool(GameManager.should_suggest_ghost()).is_false()
+
+
+func test_system_reduce_motion_sets_no_flashes_until_user_chooses() -> void:
+	GameManager.sync_system_reduce_motion(true)
+	assert_bool(p.settings.no_flashes).is_true()
+	GameManager.sync_system_reduce_motion(false)
+	assert_bool(p.settings.no_flashes).is_false()
+	GameManager.set_setting(&"no_flashes", true)
+	GameManager.sync_system_reduce_motion(false)
+	assert_bool(p.settings.no_flashes).is_true() # выбор игрока важнее системы
+	var restored: PlayerProfile.Settings = PlayerProfile.Settings.from_dict(p.settings.to_dict())
+	assert_bool(restored.no_flashes_explicit).is_true()

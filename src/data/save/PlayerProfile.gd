@@ -123,6 +123,7 @@ class Settings:
 	var sfx: bool = true
 	var vibration: bool = true
 	var no_flashes: bool = false
+	var no_flashes_explicit: bool = false ## игрок сам переключал — системный Reduce Motion больше не влияет
 	var camera_shake: bool = true
 	var damage_numbers: int = 1 ## 0 выкл · 1 обычные · 2 крупные
 	var fast_chests: bool = false ## «Быстрое открытие» сундуков
@@ -134,6 +135,7 @@ class Settings:
 			"sfx": sfx,
 			"vibration": vibration,
 			"no_flashes": no_flashes,
+			"no_flashes_explicit": no_flashes_explicit,
 			"camera_shake": camera_shake,
 			"damage_numbers": damage_numbers,
 			"fast_chests": fast_chests,
@@ -146,11 +148,19 @@ class Settings:
 		s.sfx = bool(d.get("sfx", true))
 		s.vibration = bool(d.get("vibration", true))
 		s.no_flashes = bool(d.get("no_flashes", false))
+		s.no_flashes_explicit = bool(d.get("no_flashes_explicit", false))
 		s.camera_shake = bool(d.get("camera_shake", true))
 		s.damage_numbers = int(d.get("damage_numbers", 1))
 		s.fast_chests = bool(d.get("fast_chests", false))
 		s.language = str(d.get("language", ""))
 		return s
+
+	## DS §08: системный Reduce Motion → «Без белых вспышек», пока игрок не выбрал сам. true — значение изменилось.
+	func apply_system_reduce_motion(reduce: bool) -> bool:
+		if no_flashes_explicit or no_flashes == reduce:
+			return false
+		no_flashes = reduce
+		return true
 
 
 func _init() -> void:
