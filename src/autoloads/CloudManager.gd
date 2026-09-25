@@ -16,6 +16,8 @@ func _ready() -> void:
 
 
 func is_available() -> bool:
+	if not bool(ConfigDB.get_config("services").get("cloud_sync_enabled", false)):
+		return false
 	return is_instance_valid(Firebase) and _auth() != null and _firestore() != null
 
 

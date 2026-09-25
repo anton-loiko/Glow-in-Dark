@@ -1,41 +1,33 @@
+class_name SafeAreaContainer
 extends MarginContainer
+## Безопасная зона устройства (вырез, Dynamic Island, home indicator) + боковые поля экрана.
+## Отступы пересчитываются при изменении размера окна.
+
+@export var side_margin: int = 0
+@export var extra_top: int = 8
+@export var extra_bottom: int = 8
+
 
 func _ready() -> void:
-	# Проверяем операционную систему. Вырезы актуальны только для мобильных устройств.
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	get_viewport().size_changed.connect(_update)
+	_update()
+
+
+func _update() -> void:
+	var insets: Dictionary = {"left": 0, "top": 0, "right": 0, "bottom": 0}
 	var os_name: String = OS.get_name()
 	if os_name == "Android" or os_name == "iOS":
-		_update_margins_for_safe_area()
-
-func _update_margins_for_safe_area() -> void:
-	# 1. Получаем безопасную зону в физических пикселях устройства.
-	var safe_area: Rect2i = DisplayServer.get_display_safe_area()
-	
-	# 2. Получаем общий физический размер всего экрана телефона.
-	var screen_size: Vector2i = DisplayServer.screen_get_size()
-	
-	# 3. Вычисляем масштаб (отношение логических пикселей Godot к физическим).
-	var scale_x: float = size.x / screen_size.x
-	var scale_y: float = size.y / screen_size.y
-	
-	# 4. Вычисляем отступы для всех четырех сторон экрана.
-	# Левый отступ: позиция безопасной зоны по X, умноженная на масштаб.
-	var margin_left: int = roundi(safe_area.position.x * scale_x)
-	
-	# Верхний отступ: позиция безопасной зоны по Y, умноженная на масштаб.
-	var margin_top: int = roundi(safe_area.position.y * scale_y)
-	
-	# Правый отступ: (Общая ширина) минус (Конец безопасной зоны по X). Умножаем на масштаб.
-	var margin_right: int = roundi((screen_size.x - (safe_area.position.x + safe_area.size.x)) * scale_x)
-	
-	# Нижний отступ: (Общая высота) минус (Конец безопасной зоны по Y). Умножаем на масштаб.
-	var margin_bottom: int = roundi((screen_size.y - (safe_area.position.y + safe_area.size.y)) * scale_y)
-	print("save area left: ", margin_left)
-	print("save area right: ", margin_right)
-	print("save area top: ", margin_top)
-	print("save area bottom: ", margin_bottom)
-	
-	# 5. Применяем вычисленные отступы к MarginContainer через переопределение темы.
-	#add_theme_constant_override("margin_left", margin_left)
-	add_theme_constant_override("margin_top", margin_top)
-	#add_theme_constant_override("margin_right", margin_right)
-	#add_theme_constant_override("margin_bottom", margin_bottom)
+		var safe: Rect2i = DisplayServer.get_display_safe_area()
+		var screen: Vector2i = DisplayServer.screen_get_size()
+		var visible_size: Vector2 = get_viewport().get_visible_rect().size
+		var scale_factor: Vector2 = visible_size / Vector2(maxi(1, screen.x), maxi(1, screen.y))
+		insets["left"] = roundi(safe.position.x * scale_factor.x)
+		insets["top"] = roundi(safe.position.y * scale_factor.y)
+		insets["right"] = roundi((screen.x - safe.end.x) * scale_factor.x)
+		insets["bottom"] = roundi((screen.y - safe.end.y) * scale_factor.y)
+	add_theme_constant_override(&"margin_left", int(insets["left"]) + side_margin)
+	add_theme_constant_override(&"margin_right", int(insets["right"]) + side_margin)
+	add_theme_constant_override(&"margin_top", int(insets["top"]) + extra_top)
+	add_theme_constant_override(&"margin_bottom", int(insets["bottom"]) + extra_bottom)

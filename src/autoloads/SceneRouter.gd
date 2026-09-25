@@ -6,24 +6,24 @@ extends Node
 ##   none — игнор · close — закрыть модал · hub — в S02 · pause — открыть S07 · exit — диалог выхода.
 
 const SCREENS: Dictionary = {
-	&"S01": {"title": "Сплэш", "kind": &"screen", "back": &"none", "path": "", "links": [&"S02", &"S03"]},
-	&"S02": {"title": "Хаб · Маяк", "kind": &"screen", "back": &"exit", "path": "", "links": [&"S05", &"S04", &"S03", &"S10", &"S11", &"S12", &"S13"]},
-	&"S03": {"title": "Дар дня", "kind": &"modal", "back": &"close", "path": "", "links": []},
-	&"S04": {"title": "Выбор главы", "kind": &"screen", "back": &"hub", "path": "", "links": [&"S05"]},
+	&"S01": {"title": "Сплэш", "kind": &"screen", "back": &"none", "path": "res://src/ui/screens/s01_splash/SplashScreen.gd", "links": [&"S02", &"S03"]},
+	&"S02": {"title": "Хаб · Маяк", "kind": &"screen", "back": &"exit", "path": "res://src/ui/screens/s02_hub/HubScreen.gd", "links": [&"S05", &"S04", &"S03", &"S10", &"S11", &"S12", &"S13"]},
+	&"S03": {"title": "Дар дня", "kind": &"modal", "back": &"close", "path": "res://src/ui/screens/s03_daily/DailyGiftModal.gd", "links": []},
+	&"S04": {"title": "Выбор главы", "kind": &"screen", "back": &"hub", "path": "res://src/ui/screens/s04_chapters/ChaptersScreen.gd", "links": [&"S05"]},
 	&"S05": {"title": "Забег · HUD", "kind": &"screen", "back": &"pause", "path": "res://src/gameplay/run/RunScene.tscn", "transition_ms": 600, "links": [&"S06", &"S07", &"S08", &"S09"]},
 	&"S06": {"title": "Левел-ап", "kind": &"modal", "back": &"none", "pauses_world": true, "path": "res://src/ui/screens/s06_level_up/LevelUpScreen.tscn", "links": []},
-	&"S07": {"title": "Пауза", "kind": &"modal", "back": &"close", "pauses_world": true, "path": "", "links": [&"S09"]},
-	&"S08": {"title": "Свет угас", "kind": &"modal", "back": &"none", "pauses_world": true, "path": "", "links": [&"S09"]},
-	&"S09": {"title": "Итоги забега", "kind": &"screen", "back": &"none", "path": "", "links": [&"S02"]},
-	&"S10": {"title": "Магазин", "kind": &"screen", "back": &"hub", "tab": true, "path": "", "links": []},
-	&"S11": {"title": "Навыки · Архив", "kind": &"screen", "back": &"hub", "tab": true, "path": "", "links": []},
-	&"S12": {"title": "Экипировка", "kind": &"screen", "back": &"hub", "tab": true, "path": "", "links": [&"S14", &"S15", &"S16", &"S17"]},
-	&"S13": {"title": "Настройки", "kind": &"screen", "back": &"hub", "path": "", "links": []},
+	&"S07": {"title": "Пауза", "kind": &"modal", "back": &"close", "pauses_world": true, "path": "res://src/ui/screens/s07_pause/PauseScreen.gd", "links": [&"S09"]},
+	&"S08": {"title": "Свет угас", "kind": &"modal", "back": &"none", "pauses_world": true, "path": "res://src/ui/screens/s08_light_out/LightOutScreen.gd", "links": [&"S09"]},
+	&"S09": {"title": "Итоги забега", "kind": &"screen", "back": &"none", "path": "res://src/ui/screens/s09_results/ResultsScreen.gd", "links": [&"S02"]},
+	&"S10": {"title": "Магазин", "kind": &"screen", "back": &"hub", "tab": true, "path": "res://src/ui/screens/s10_shop/ShopScreen.gd", "links": []},
+	&"S11": {"title": "Навыки · Архив", "kind": &"screen", "back": &"hub", "tab": true, "path": "res://src/ui/screens/s11_skills/ArchiveScreen.gd", "links": []},
+	&"S12": {"title": "Экипировка", "kind": &"screen", "back": &"hub", "tab": true, "path": "res://src/ui/screens/s12_gear/GearScreen.gd", "links": [&"S14", &"S15", &"S16", &"S17"]},
+	&"S13": {"title": "Настройки", "kind": &"screen", "back": &"hub", "path": "res://src/ui/screens/s13_settings/SettingsScreen.gd", "links": []},
 	&"S14": {"title": "Новый Огонёк", "kind": &"modal", "back": &"close", "path": "", "links": []},
 	&"S15": {"title": "Лист предмета", "kind": &"sheet", "back": &"close", "path": "", "links": [&"S16"]},
 	&"S16": {"title": "Слияние", "kind": &"modal", "back": &"close", "path": "", "links": []},
 	&"S17": {"title": "Открытие сундука", "kind": &"modal", "back": &"close", "path": "", "links": []},
-	&"EXIT": {"title": "Выйти из игры?", "kind": &"modal", "back": &"close", "path": "", "links": []},
+	&"EXIT": {"title": "Выйти из игры?", "kind": &"modal", "back": &"close", "path": "res://src/ui/screens/exit/ExitModal.gd", "links": []},
 }
 
 ## Длительности переходов (DS §05): вкладки — t.fast, экраны — t.slow.
@@ -55,6 +55,7 @@ func _ready() -> void:
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade_layer.add_child(_fade_rect)
+	add_child(ToastHost.new())
 
 
 func _notification(what: int) -> void:
@@ -179,8 +180,13 @@ func _swap_scene(screen_id: StringName, params: Dictionary) -> void:
 func _instantiate(screen_id: StringName) -> Node:
 	var path: String = SCREENS[screen_id]["path"]
 	if not path.is_empty() and ResourceLoader.exists(path):
-		var scene: PackedScene = load(path) as PackedScene
-		return scene.instantiate()
+		var resource: Resource = load(path)
+		if resource is PackedScene:
+			return (resource as PackedScene).instantiate()
+		if resource is GDScript:
+			var node: Node = (resource as GDScript).new() as Node
+			node.name = String(screen_id)
+			return node
 	return ScreenStub.new(screen_id, SCREENS[screen_id])
 
 

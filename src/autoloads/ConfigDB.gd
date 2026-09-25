@@ -18,6 +18,8 @@ const REQUIRED_KEYS: Dictionary = {
 	"chapters": ["chapters"],
 	"skins": ["skins"],
 	"ads": ["placements"],
+	"daily": ["days"],
+	"services": ["cloud_sync_enabled"],
 }
 
 var _raw: Dictionary = {}

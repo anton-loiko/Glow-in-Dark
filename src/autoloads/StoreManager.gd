@@ -6,9 +6,34 @@ extends Node
 var backend: StoreBackend = MockStoreBackend.new()
 
 
+const FREE_GIFT_PLACEMENTS: Array[StringName] = [&"shop_free_gift", &"hub_sparks"]
+
+
 func _ready() -> void:
 	set_process(false)
 	set_backend(backend)
+	EventBus.ad_reward_granted.connect(_on_ad_reward)
+
+
+## Бесплатный дар ▶ (300 Искр раз в 8 ч; общий для Магазина и хаба). task_7 §1.
+func free_gift_ready() -> bool:
+	return free_gift_seconds_left() <= 0
+
+
+func free_gift_seconds_left() -> int:
+	var cfg: Dictionary = (ConfigDB.get_config("ads").get("placements", {}) as Dictionary).get("shop_free_gift", {}) as Dictionary
+	var cooldown: int = int(float(cfg.get("hours", 8)) * 3600.0)
+	return maxi(0, GameManager.profile.free_gift_ts + cooldown - int(Time.get_unix_time_from_system()))
+
+
+func _on_ad_reward(placement: StringName) -> void:
+	if not FREE_GIFT_PLACEMENTS.has(placement) or not free_gift_ready():
+		return
+	var cfg: Dictionary = (ConfigDB.get_config("ads").get("placements", {}) as Dictionary).get("shop_free_gift", {}) as Dictionary
+	var grants: Dictionary = cfg.get("grants", {"sparks": 300}) as Dictionary
+	GameManager.profile.free_gift_ts = int(Time.get_unix_time_from_system())
+	GameManager.grant(GameManager.SPARKS, int(grants.get("sparks", 300)), &"ad_gift")
+	EventBus.toast_requested.emit(tr("+%d Искр") % int(grants.get("sparks", 300)), &"sparks")
 
 
 func set_backend(new_backend: StoreBackend) -> void:

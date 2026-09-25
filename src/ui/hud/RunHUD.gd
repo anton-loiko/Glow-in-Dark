@@ -19,7 +19,7 @@ var _xp_flicker: bool = false
 
 
 func _ready() -> void:
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_build()
 	EventBus.xp_changed.connect(_on_xp_changed)
@@ -50,70 +50,46 @@ func _process(delta: float) -> void:
 
 func _build() -> void:
 	_vignette = ColorRect.new()
-	_vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_vignette.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_vignette_material = ShaderMaterial.new()
 	_vignette_material.shader = preload("res://src/ui/theme/shaders/vignette.gdshader")
 	_vignette.material = _vignette_material
 	add_child(_vignette)
 
-	var safe: MarginContainer = MarginContainer.new()
-	safe.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	safe.add_theme_constant_override(&"margin_top", 44 + UITokens.S2)
-	safe.add_theme_constant_override(&"margin_left", UITokens.S5)
-	safe.add_theme_constant_override(&"margin_right", UITokens.S5)
-	safe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var safe: SafeAreaContainer = SafeAreaContainer.new()
+	safe.side_margin = UITokens.S5
 	add_child(safe)
-
-	var column: VBoxContainer = VBoxContainer.new()
-	column.add_theme_constant_override(&"separation", UITokens.S2)
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var column: VBoxContainer = UIKit.vbox(UITokens.S2)
 	safe.add_child(column)
 
-	var xp_row: HBoxContainer = HBoxContainer.new()
-	xp_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# XP-полоса 8pt spark с номером уровня.
+	var xp_row: HBoxContainer = UIKit.hbox(UITokens.S2)
 	column.add_child(xp_row)
-	_level_label = _label("1", UITokens.SPARK)
+	_level_label = UIKit.label("1", &"number", UITokens.SPARK)
 	xp_row.add_child(_level_label)
 	_xp_bar = ProgressBar.new()
 	_xp_bar.show_percentage = false
 	_xp_bar.custom_minimum_size = Vector2(0, 8)
 	_xp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_xp_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var fill: StyleBoxFlat = StyleBoxFlat.new()
-	fill.bg_color = UITokens.SPARK
-	fill.set_corner_radius_all(4)
-	var bg: StyleBoxFlat = StyleBoxFlat.new()
-	bg.bg_color = UITokens.INK_600
-	bg.set_corner_radius_all(4)
-	_xp_bar.add_theme_stylebox_override(&"fill", fill)
-	_xp_bar.add_theme_stylebox_override(&"background", bg)
+	_xp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	xp_row.add_child(_xp_bar)
 
-	var info_row: HBoxContainer = HBoxContainer.new()
+	# Искры забега · таймер · пауза 44pt.
+	var info_row: HBoxContainer = UIKit.hbox(UITokens.S2)
 	info_row.mouse_filter = Control.MOUSE_FILTER_PASS
 	column.add_child(info_row)
-	_sparks_label = _label("● 0", UITokens.SPARK)
-	info_row.add_child(_sparks_label)
-	var spacer: Control = Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	info_row.add_child(spacer)
-	_timer_label = _label("00:00", UITokens.TEXT_SECONDARY)
+	var pill: PanelContainer = UIKit.panel(&"PanelPill")
+	pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	info_row.add_child(pill)
+	_sparks_label = UIKit.label("● 0", &"number", UITokens.SPARK)
+	pill.add_child(_sparks_label)
+	info_row.add_child(UIKit.spacer(false))
+	_timer_label = UIKit.label("00:00", &"number", UITokens.TEXT_SECONDARY)
 	info_row.add_child(_timer_label)
-	var pause: Button = Button.new()
-	pause.text = "II"
-	pause.custom_minimum_size = Vector2(44, 44)
-	pause.pressed.connect(_on_pause_pressed)
+	var pause: GlowButton = UIKit.button("II", GlowButton.Variant.ICON, _on_pause_pressed)
 	info_row.add_child(pause)
-
-
-func _label(text: String, color: Color) -> Label:
-	var label: Label = Label.new()
-	label.text = text
-	label.add_theme_color_override(&"font_color", color)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return label
 
 
 func _on_xp_changed(current: int, needed: int, level: int) -> void:
@@ -124,12 +100,12 @@ func _on_xp_changed(current: int, needed: int, level: int) -> void:
 
 
 func _on_sparks_changed(total: int, _delta: int) -> void:
-	_sparks_label.text = "● %d" % total
+	_sparks_label.text = "● " + UIKit.format_number(total)
 
 
 func _on_timer_tick(elapsed_s: float) -> void:
 	var s: int = floori(elapsed_s)
-	_timer_label.text = "%02d:%02d" % [floori(s / 60.0), s % 60]
+	_timer_label.text = UIKit.format_time(s)
 
 
 func _on_light_changed(current: float, max_value: float) -> void:

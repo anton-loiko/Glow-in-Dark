@@ -1,0 +1,13 @@
+{
+  "_doc": "Дар дня S03 (DS S03, task_7 §4). Серия прерывается при пропуске дня; день 7 — эпик.",
+  "_todo": "Размеры наград — баланс; предметы и сундуки выдаются через pending_rewards (task_6)",
+  "days": [
+    {"sparks": 200},
+    {"sparks": 300},
+    {"sparks": 500},
+    {"item": "helmet", "rarity": "common", "label": "Шлем"},
+    {"sparks": 1000},
+    {"crystals": 30},
+    {"chest": "epic", "label": "Сундук Света"}
+  ]
+}

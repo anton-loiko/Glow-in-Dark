@@ -13,7 +13,7 @@ func _init(p_screen_id: StringName = &"", p_info: Dictionary = {}) -> void:
 	info = p_info
 	name = "Stub_%s" % screen_id
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func _ready() -> void:
@@ -21,7 +21,7 @@ func _ready() -> void:
 	var is_modal: bool = info.get("kind", &"screen") != &"screen"
 	var background: ColorRect = ColorRect.new()
 	background.color = Color(0.03, 0.035, 0.06, 0.8 if is_modal else 1.0)
-	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
 
 	var box: VBoxContainer = VBoxContainer.new()

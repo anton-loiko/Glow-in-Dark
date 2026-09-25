@@ -22,7 +22,7 @@ var _rerolls_this_level: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_build()
 	EventBus.ad_reward_granted.connect(_on_ad_reward)
 
@@ -39,10 +39,10 @@ func on_screen_enter(_params: Dictionary) -> void:
 func _build() -> void:
 	var dim: ColorRect = ColorRect.new()
 	dim.color = Color(UITokens.INK_900, 0.72)
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(dim)
 	var column: VBoxContainer = VBoxContainer.new()
-	column.set_anchors_preset(Control.PRESET_FULL_RECT)
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.add_theme_constant_override(&"separation", UITokens.S4)
 	add_child(column)

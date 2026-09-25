@@ -40,6 +40,9 @@ var skills_seen: Array[StringName] = []
 # daily gift
 var daily_streak_day: int = 0
 var daily_last_claim_day: int = 0
+var free_gift_ts: int = 0 ## последний бесплатный дар магазина (unix)
+## Награды, которые выдаст система соответствующей задачи (предметы, сундуки — task_6).
+var pending_rewards: Array[Dictionary] = []
 
 # purchases
 var starter_pack_bought: bool = false
@@ -200,7 +203,8 @@ func to_dict() -> Dictionary:
 			"ads_day_stamp": ads_day_stamp,
 		},
 		"skills_archive": {"seen": _names_to_strings(skills_seen)},
-		"daily": {"streak_day": daily_streak_day, "last_claim_day": daily_last_claim_day},
+		"daily": {"streak_day": daily_streak_day, "last_claim_day": daily_last_claim_day, "free_gift_ts": free_gift_ts},
+		"pending_rewards": pending_rewards.duplicate(true),
 		"purchases": {
 			"starter_pack": {"bought": starter_pack_bought, "expires_at": starter_pack_expires_at},
 			"receipts": receipts.duplicate(),
@@ -255,6 +259,9 @@ static func from_dict(d: Dictionary) -> PlayerProfile:
 	var daily: Dictionary = d.get("daily", {}) as Dictionary
 	p.daily_streak_day = int(daily.get("streak_day", 0))
 	p.daily_last_claim_day = int(daily.get("last_claim_day", 0))
+	p.free_gift_ts = int(daily.get("free_gift_ts", 0))
+	for reward: Variant in d.get("pending_rewards", []):
+		p.pending_rewards.append(reward as Dictionary)
 
 	var purchases: Dictionary = d.get("purchases", {}) as Dictionary
 	var starter: Dictionary = purchases.get("starter_pack", {}) as Dictionary
