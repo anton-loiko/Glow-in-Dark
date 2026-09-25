@@ -1,17 +1,126 @@
 {
   "_doc": "Директор волн (Enemy DS §05). Таймлайн плотностей заполняет task_3.",
-  "_todo": "Плотности спавна по отрезкам — task_3",
+  "_todo": "Плотности ●/●●/… из Enemy DS §05 переведены в спавн/мин — тюнинг на плейтестах",
   "loop": [
-    {"phase": "calm", "duration_s": 45},
-    {"phase": "tension", "duration_s": 30},
-    {"phase": "reward", "duration_s": 15, "spawn_pause_s": 5}
+    {
+      "phase": "calm",
+      "duration_s": 45
+    },
+    {
+      "phase": "tension",
+      "duration_s": 30
+    },
+    {
+      "phase": "reward",
+      "duration_s": 15,
+      "spawn_pause_s": 5
+    }
   ],
   "final_tension_from_s": 540,
-  "extinguisher_at_s": [300, 480, 590],
+  "extinguisher_at_s": [
+    300,
+    480,
+    590
+  ],
   "spawn_ring_screens": 1.2,
   "max_side_share": 0.4,
   "movement_bias": 1.5,
-  "ambush_pairs": [12, 20],
-  "limits": {"total": 150, "whisper": 120, "reaper": 8, "mourner": 4, "devourer": 4, "elite": 2, "extinguisher": 1},
-  "max_markers": 6
+  "ambush_pairs": [
+    12,
+    20
+  ],
+  "limits": {
+    "total": 150,
+    "whisper": 120,
+    "reaper": 8,
+    "mourner": 4,
+    "devourer": 4,
+    "elite": 2,
+    "extinguisher": 1
+  },
+  "max_markers": 6,
+  "timeline": [
+    {
+      "from_s": 0,
+      "whisper": 40,
+      "reaper": 0,
+      "devourer": 0,
+      "mourner": 0,
+      "elite_per_wave": 0
+    },
+    {
+      "from_s": 90,
+      "whisper": 40,
+      "reaper": 4,
+      "devourer": 0,
+      "mourner": 0,
+      "elite_per_wave": 0
+    },
+    {
+      "from_s": 180,
+      "whisper": 55,
+      "reaper": 8,
+      "devourer": 2,
+      "mourner": 2,
+      "elite_per_wave": 1
+    },
+    {
+      "from_s": 270,
+      "whisper": 55,
+      "reaper": 8,
+      "devourer": 2,
+      "mourner": 2,
+      "elite_per_wave": 1
+    },
+    {
+      "from_s": 360,
+      "whisper": 70,
+      "reaper": 12,
+      "devourer": 4,
+      "mourner": 4,
+      "elite_per_wave": 1
+    },
+    {
+      "from_s": 450,
+      "whisper": 70,
+      "reaper": 12,
+      "devourer": 4,
+      "mourner": 4,
+      "elite_per_wave": 2
+    },
+    {
+      "from_s": 540,
+      "whisper": 70,
+      "reaper": 16,
+      "devourer": 6,
+      "mourner": 4,
+      "elite_per_wave": 2
+    }
+  ],
+  "phase_mul": {
+    "calm": {
+      "whisper": 1.3,
+      "others": 0.3
+    },
+    "tension": {
+      "whisper": 0.8,
+      "others": 1.6
+    },
+    "reward": {
+      "whisper": 0.3,
+      "others": 0.0
+    }
+  },
+  "whisper_group": [
+    6,
+    12
+  ],
+  "ambush": {
+    "eyes_only_s": 0.8,
+    "radius_screens": 0.75
+  },
+  "reward_fuel": [
+    2,
+    3
+  ]
 }

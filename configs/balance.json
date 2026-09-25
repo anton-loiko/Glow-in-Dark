@@ -40,7 +40,7 @@
     "reroll_crystal_cost": 10,
     "debug_pickup_spawner": {
       "_doc": "Временный источник искр/топлива до task_3 (враги, WaveDirector)",
-      "enabled": true,
+      "enabled": false,
       "sparks_per_s": 2.0,
       "fuel_every_s": 25.0,
       "ring_min_pt": 120,

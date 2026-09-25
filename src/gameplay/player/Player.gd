@@ -23,6 +23,8 @@ var friction: float = 16.0
 var px_per_light: float = 1.0
 ## Множитель радиуса от эффектов (перелёт Взрыва Света, Полнолуние Лунного и т.п.).
 var radius_boost: float = 1.0
+## Свет, «съеденный» аурой Гасителя (1.0 — нет ауры). Выставляет EnemyManager каждый кадр.
+var aura_radius_mult: float = 1.0
 
 var _shown_radius: float = 0.0
 
@@ -80,7 +82,7 @@ func _physics_process(delta: float) -> void:
 
 
 func target_radius() -> float:
-	var mult: float = (stats.light_radius_mult * stats.area_scale if stats != null else 1.0) * radius_boost
+	var mult: float = (stats.light_radius_mult * stats.area_scale if stats != null else 1.0) * radius_boost * aura_radius_mult
 	return light_model.current * px_per_light * mult
 
 

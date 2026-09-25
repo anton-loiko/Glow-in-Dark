@@ -11,6 +11,8 @@ extends Node2D
 @export var burst: LightBurst
 @export var fx_layer: Node2D
 @export var director: RunDirector
+@export var enemies: EnemyManager
+@export var waves: WaveDirector
 
 
 func _ready() -> void:
@@ -32,6 +34,8 @@ func on_screen_enter(_params: Dictionary) -> void:
 	streamer.setup(player, chapter, run.run_seed, balance)
 	burst.setup(balance)
 	director.setup(run, chapter, balance)
+	enemies.setup(player, pickups, streamer, camera, run)
+	waves.setup(run, enemies, pickups, streamer, player, camera)
 	DamagePool.bind_world(fx_layer)
 
 

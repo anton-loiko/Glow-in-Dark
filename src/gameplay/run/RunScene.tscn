@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://src/gameplay/run/RunScene.gd" id="1_scene"]
 [ext_resource type="Script" path="res://src/gameplay/world/ChapterEnvironment.gd" id="2_env"]
@@ -10,8 +10,10 @@
 [ext_resource type="Script" path="res://src/gameplay/run/RunDirector.gd" id="8_director"]
 [ext_resource type="Script" path="res://src/ui/hud/RunHUD.gd" id="9_hud"]
 [ext_resource type="Script" path="res://src/ui/hud/FloatingJoystick.gd" id="10_joystick"]
+[ext_resource type="Script" path="res://src/gameplay/enemies/EnemyManager.gd" id="11_enemies"]
+[ext_resource type="Script" path="res://src/gameplay/waves/WaveDirector.gd" id="12_waves"]
 
-[node name="RunScene" type="Node2D" node_paths=PackedStringArray("chapter_environment", "streamer", "pickups", "player", "camera", "burst", "fx_layer", "director")]
+[node name="RunScene" type="Node2D" node_paths=PackedStringArray("chapter_environment", "streamer", "pickups", "player", "camera", "burst", "fx_layer", "director", "enemies", "waves")]
 script = ExtResource("1_scene")
 chapter_environment = NodePath("ChapterEnvironment")
 streamer = NodePath("World/ChunkStreamer")
@@ -21,6 +23,8 @@ camera = NodePath("World/Player/Camera")
 burst = NodePath("World/Burst")
 fx_layer = NodePath("World/FX")
 director = NodePath("RunDirector")
+enemies = NodePath("World/Enemies")
+waves = NodePath("WaveDirector")
 
 [node name="ChapterEnvironment" type="Node" parent="." node_paths=PackedStringArray("canvas_modulate", "world_environment")]
 script = ExtResource("2_env")
@@ -39,6 +43,9 @@ script = ExtResource("3_streamer")
 
 [node name="Pickups" type="Node2D" parent="World"]
 script = ExtResource("4_pickups")
+
+[node name="Enemies" type="Node2D" parent="World"]
+script = ExtResource("11_enemies")
 
 [node name="Player" parent="World" instance=ExtResource("5_player")]
 
@@ -62,6 +69,9 @@ pickups = NodePath("../World/Pickups")
 streamer = NodePath("../World/ChunkStreamer")
 burst = NodePath("../World/Burst")
 camera = NodePath("../World/Player/Camera")
+
+[node name="WaveDirector" type="Node" parent="."]
+script = ExtResource("12_waves")
 
 [node name="InputLayer" type="CanvasLayer" parent="."]
 layer = 5
